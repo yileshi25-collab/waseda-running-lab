@@ -119,7 +119,11 @@ create trigger wsd_before_submit
 
 alter table public.wsd_community_submissions enable row level security;
 revoke all on public.wsd_community_submissions from anon, authenticated;
-grant select on public.wsd_community_submissions to anon, authenticated;
+-- Public readers can see community posts but not contributor Auth user IDs.
+grant select (id, kind, athlete_name, display_name, event_name, race_date,
+  result_time, rank, notes, source_url, image_path, image_credit,
+  image_license, created_at, status)
+  on public.wsd_community_submissions to anon, authenticated;
 grant insert (author_id, display_name, kind, athlete_name, event_name,
   race_date, result_time, rank, notes, source_url, image_path,
   image_credit, image_license) on public.wsd_community_submissions to authenticated;
@@ -148,6 +152,19 @@ create policy "wsd_owner_or_admin_delete" on public.wsd_community_submissions
     author_id = (select auth.uid())
     or (select public.wsd_is_community_admin())
   );
+
+-- Owner-only lookup for delete buttons without exposing author IDs in the public feed.
+create or replace function public.wsd_my_submission_ids()
+returns setof uuid language sql stable security definer
+set search_path = ''
+as $
+  select s.id
+  from public.wsd_community_submissions s
+  where s.author_id = (select auth.uid())
+    and s.status = 'published';
+$;
+revoke all on function public.wsd_my_submission_ids() from public, anon;
+grant execute on function public.wsd_my_submission_ids() to authenticated;
 
 create table if not exists public.wsd_community_reports (
   id uuid primary key default gen_random_uuid(),
