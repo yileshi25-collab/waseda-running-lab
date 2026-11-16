@@ -10,7 +10,15 @@
 4. 在 Storage 确认 wsd-community-photos bucket 是 Public，允许 image/jpeg，单图不超过 2MB。
 5. 在 Realtime 设置中确认实时服务开启，数据库脚本已将 wsd_community_submissions 加入 supabase_realtime 发布表。
 
-## 邮箱六位验证码登录（建议启用）
+## 当前版本：Google 登录与赛事协作
+
+现在使用 **Google OAuth 登录**，不再使用电子邮件六位验证码。以下“邮箱六位验证码”章节仅供历史参考；请按 `GOOGLE-OAUTH-SETUP.md` 配置 Google Provider。
+
+登录用户可在 2026 年度赛果旁直接补充／修正日期，原始 176 条 Word/CSV 记录不变；日期修正保存为独立的社区记录。发布的新赛事自动加入相应选手的 2026 年度成绩或 2025 年归档，并标注为未经独立核实。作者可以删除自己的赛事、照片和日期修订；管理员可以删除任何人的投稿和修订。
+
+**首次部署需要依序执行两个 SQL 文件：** `supabase/community.sql` 和 `supabase/community-date-corrections.sql`。现有项目只需要执行后者一次；重复运行也不会删除已提交的数据。
+
+## 邮箱六位验证码登录（旧版，当前不使用）
 
 为了避免邮箱安全扫描提前消耗 Magic Link（表现为 403: Email link is invalid or has expired），
 网站支持直接输入六位数字的 OTP 登录。需要将 Supabase 的邮件模板改为发数字验证码：
@@ -81,15 +89,16 @@
 - 不要上传住址、私人联络方式、医疗记录或具有隐私风险的图片。
 - 公共图片如果被截图或缓存，即使管理员后来删除，也无法保证彻底收回。
 - 若社区流量扩大，建议再增加 Edge Function 的 IP 级限流、恶意内容扫描、图像审核以及数据库/存储备份。
-- 社区默认只展示最新 60 条投稿，可后续添加分页。
+- 社区最多读取最新 1000 条投稿；流量扩大后应添加服务端分页。
 
 ## 项目文件
 
 - index.html：原网站与跑友共建导航
 - community.css：社区界面样式
-- community.js：邮箱登录、照片和成绩投稿、实时列表、举报与管理员撤下
+- community.js：Google 登录、照片和成绩投稿、日期修订、实时列表、举报与作者/管理员删除
 - community-config.js：仅包含公开密钥和 Project URL，默认关闭
-- supabase/community.sql：RLS 与服务端限制
+- supabase/community.sql：社区照片与赛果表的 RLS 与服务端限制
+- supabase/community-date-corrections.sql：2026 年度日期修订表及作者/管理员 RLS 权限
 
 参考：https://supabase.com/docs/guides/auth/auth-captcha
 参考：https://supabase.com/docs/guides/database/postgres/row-level-security
