@@ -610,6 +610,87 @@
       note(error?"举报失败："+error.message:"已收到举报，谢谢。",!!error);
     }
   };
+  async function saveSharedDateCorrection(form){
+    if(!user){note("请先使用 Google 登录才能修正日期。",true);return;}
+    const recordId=Number(form.dataset.wsdRecordId);
+    if(!Number.isInteger(recordId)||recordId<1||recordId>176){note("原始赛果记录编号无效。",true);return;}
+    const correctedDate=form.elements.namedItem("corrected_date")?.value||"";
+    const isValid=/^2026-\d{2}-\d{2}$/.test(correctedDate)&&
+      !Number.isNaN(Date.parse(correctedDate+"T00:00:00Z"))&&
+      new Date(correctedDate+"T00:00:00Z").toISOString().slice(0,10)===correctedDate;
+    if(!isValid){form.querySelector("[data-wsd-date-error]").textContent="请输入正确的 2026 年比赛日期。";return;}
+    const button=form.querySelector('button[type="submit"]');
+    button.disabled=true;button.textContent="保存中…";
+    const {error}=await sb.from(CORRECTIONS).insert({
+      record_id:recordId,author_id:user.id,corrected_date:correctedDate
+    });
+    if(error){
+      form.querySelector("[data-wsd-date-error]").textContent="日期保存失败："+error.message;
+      button.disabled=false;button.textContent="保存修正";
+      return;
+    }
+    const message="日期已公开更新为 "+correctedDate+"（跑友修订，未作独立核实）。";
+    note(message);
+    if(typeof toast==="function")toast(message);
+    await refreshCorrections();
+  }
+  async function removeSharedDateCorrection(id){
+    if(!user){note("请先登录以撤销日期修正。",true);return;}
+    if(!/^[0-9a-f-]{36}$/i.test(id)){note("日期修正编号无效。",true);return;}
+    if(!admin&&!ownCorrectionIds.has(id)){note("只能撤销自己补充的日期，管理员可删除所有修正。",true);return;}
+    if(!confirm("确认删除这条日期修正吗？\n页面将恢复原始日期或显示上一条有效修订。该操作不能撤销。"))return;
+    const {data,error}=await sb.from(CORRECTIONS).delete().eq("id",id).select("id");
+    if(error||!data?.length){note("撤销日期修正失败："+(error?.message||"无权删除或记录不存在"),true);return;}
+    const message="日期修订已删除，页面已恢复到之前的有效日期。";
+    note(message);if(typeof toast==="function")toast(message);
+    await refreshCorrections();
+  }
+  document.addEventListener("click",e=>{
+    const globalDelete=e.target.closest("[data-wsd-delete]");
+    if(globalDelete&&!globalDelete.closest("#wsdFeed,#detailBody")){
+      e.preventDefault();
+      deletePost(globalDelete.dataset.wsdDelete).catch(err=>note("删除投稿失败："+err.message,true));
+      return;
+    }
+    const remove=e.target.closest("[data-wsd-date-remove]");
+    if(remove){
+      e.preventDefault();
+      removeSharedDateCorrection(remove.dataset.wsdDateRemove).catch(err=>note("撤销修订失败："+err.message,true));
+      return;
+    }
+    const cancel=e.target.closest("[data-wsd-date-cancel]");
+    if(cancel){e.preventDefault();cancel.closest(".wsd-date-edit-slot")?.replaceChildren();return;}
+    const edit=e.target.closest("[data-wsd-date-edit]");
+    if(!edit)return;
+    e.preventDefault();
+    if(!user){
+      note("请先使用 Google 登录，然后回到 2026 年度成绩修改日期。",true);
+      navigateCommunity();
+      return;
+    }
+    const id=Number(edit.dataset.wsdDateEdit);
+    if(!Number.isInteger(id)||id<1||id>176)return;
+    const record=ANNUAL_2026.find(r=>r.id===id);
+    if(!record)return;
+    const slot=edit.closest(".annual26-result,.season-result")?.querySelector(".wsd-date-edit-slot");
+    if(!slot)return;
+    if(slot.querySelector("form")){slot.replaceChildren();return;}
+    const today=edit.dataset.wsdCurrentDate||"";
+    const initial=/^2026-\d{2}-\d{2}$/.test(today)?today:"";
+    slot.innerHTML='<form class="wsd-inline-date-form" data-wsd-correction-form data-wsd-record-id="'+id+'">'+
+      '<label>比赛准确日期<input name="corrected_date" type="date" min="2026-01-01" max="2026-12-31" value="'+esc(initial)+'" required></label>'+
+      '<div class="wsd-inline-date-buttons"><button type="submit" class="btn btn-primary btn-small">保存修正</button>'+
+      '<button type="button" class="btn btn-small" data-wsd-date-cancel>取消</button></div>'+
+      '<small>仅修正此条赛事的日期；原始资料不会被改写。日期将标注为跑友补录。</small>'+
+      '<div class="wsd-inline-date-error" data-wsd-date-error role="status"></div></form>';
+    slot.querySelector('input[type="date"]')?.focus();
+  });
+  document.addEventListener("submit",e=>{
+    const form=e.target.closest("[data-wsd-correction-form]");
+    if(!form)return;
+    e.preventDefault();
+    saveSharedDateCorrection(form).catch(err=>note("提交修订失败："+err.message,true));
+  });
   sb.auth.onAuthStateChange(()=>{Promise.resolve().then(setAuth).catch(()=>{});});
   await setAuth();await Promise.all([refresh(),refreshCorrections()]);
   const callbackParams=new URLSearchParams(location.search);
