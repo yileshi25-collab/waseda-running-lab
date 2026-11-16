@@ -79,7 +79,7 @@
 .hak26-summary a{font-size:11px;color:#873858;text-decoration:underline}
 .hak26-academic{font-size:10px;color:#947887}
 </style>
-<link rel="stylesheet" href="community.css?v=20261116-post-delete">
+<link rel="stylesheet" href="community.css?v=20261117-shared-results1">
 </head>
 <body>
 <div class="mobile-head"><strong>W / RUNNING LAB</strong><nav class="mobile-nav" id="mobileNav"></nav></div>
@@ -311,6 +311,11 @@ function renderSeason(){
  const liveRows=getAnnualRows();
  const eventSelect=$('seasonEvent'),known=new Set([...eventSelect.options].map(x=>x.value));
  for(const event of new Set(liveRows.map(r=>r.event))){if(!known.has(event)){const option=document.createElement('option');option.value=event;option.textContent=event;eventSelect.appendChild(option);known.add(event);}}
+ const stats=$('seasonKpis')?.querySelectorAll('b');
+ if(stats&&stats.length>=2){
+   if(stats[0].firstChild)stats[0].firstChild.nodeValue=String(liveRows.length);
+   if(stats[1].firstChild)stats[1].firstChild.nodeValue=String(new Set(liveRows.map(r=>r.name)).size);
+ }
  const selected=liveRows.filter(r=>
  (g==='all'||r.gender===g)&&(grade==='all'||String(r.grade)===grade)&&(ev==='all'||r.event===ev)&&(month==='all'||r.date.slice(5,7)===month)&&(s==='all'||(s==='word'?r.source==='原始Word':!!r.link))&&(!pb||r.pb)&&(!focus||r.featured)&&(!q||[r.name,r.csvName,r.meet,r.event,r.time,r.notes,r.raw,r.stage].some(x=>String(x||'').toLowerCase().includes(q))));
  const grouped=new Map();for(const r of selected){if(!grouped.has(r.name))grouped.set(r.name,[]);grouped.get(r.name).push(r);}
@@ -465,7 +470,7 @@ $a('arc25Races').addEventListener('click',e=>{const t=e.target.closest('[data-ar
 $a('arc25Reset').addEventListener('click',()=>{$a('arc25Search').value='';['arc25Type','arc25Month','arc25Metric'].forEach(id=>$a(id).value='all');renderResults();});
 $a('arc25Csv').addEventListener('click',()=>{
  const rows=allArchiveRows().map(r=>({date:r.date,event:r.event,type:r.type,metric:r.metric,athlete:r.name,grade_at_race:r.grade,time:r.time,rank:r.rank,notes:(r.communityId?'[社区投稿] ':'')+r.note,source:r.source}));
- download('waseda_2025_verified_results.csv',csvExport(rows,['date','event','type','metric','athlete','grade_at_race','time','rank','notes','source']),'text/csv;charset=utf-8');
+ download('waseda_2025_results_including_community.csv',csvExport(rows,['date','event','type','metric','athlete','grade_at_race','time','rank','notes','source']),'text/csv;charset=utf-8');
 });
 window.WSD_REFRESH_SHARED_VIEWS=function(){
  if($('view-season')?.classList.contains('active'))renderSeason();
@@ -478,4 +483,4 @@ renderRelays();renderResults();
 if(location.hash==='#archive2025')show('archive2025');
 })();
 
-</script><script src="community-config.js?v=20261116-google1" defer></script><script src="community.js?v=20261116-post-delete-private2" defer></script></body></html>
+</script><script src="community-config.js?v=20261116-google1" defer></script><script src="community.js?v=20261117-shared-results1" defer></script></body></html>
