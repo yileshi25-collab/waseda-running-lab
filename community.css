@@ -106,3 +106,20 @@
 .wsd-photo-tile-delete,.wsd-athlete-race-delete{border:1px solid #edd3dd;background:#fff7fa;color:#a33960;font-size:10px;line-height:1.4;border-radius:6px;padding:6px 7px;cursor:pointer}
 .wsd-photo-tile-delete:hover,.wsd-athlete-race-delete:hover{background:#f9e8ef}
 .wsd-athlete-race-delete{margin-left:5px}
+
+
+/* Collaborative season date edits and crowdsourced race markers. */
+.wsd-season-source-actions{display:flex;align-items:center;flex-wrap:wrap;gap:7px;margin-top:9px;padding-top:7px;border-top:1px dashed #e9d9e1}
+.wsd-date-edit-btn,.wsd-date-revert-btn{display:inline-flex;align-items:center;justify-content:center;gap:4px;border:1px solid #ddbbcd;background:#fcf3f7;color:#7b3859;border-radius:7px;padding:5px 9px;font:650 11px inherit;cursor:pointer;font-size:11px;line-height:1.5}
+.wsd-date-edit-btn:hover,.wsd-date-revert-btn:hover{background:#f7e6ef}
+.wsd-date-revert-btn{color:#a43457;border-color:#e5a7bb;background:#fff}
+.wsd-date-edit-btn:focus-visible,.wsd-date-revert-btn:focus-visible{outline:2px solid #a34a72;outline-offset:2px}
+.wsd-community-origin{font-size:10px;color:#9b5d78;font-weight:650;line-height:1.5}
+.wsd-inline-date-form{background:#fff8fb;border:1px solid #e7c8d7;border-radius:10px;margin-top:9px;padding:12px;display:grid;gap:8px}
+.wsd-inline-date-form label{display:grid;gap:5px;font-size:11px;font-weight:700;color:#663952}
+.wsd-inline-date-form input[type="date"]{background:#fff;border:1px solid #d8b8c7;border-radius:7px;padding:8px 9px;width:100%;max-width:200px;color:#59364a;font-size:12px}
+.wsd-inline-date-buttons{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.wsd-inline-date-form small{font-size:10px;color:#9b778b;line-height:1.6}
+.wsd-inline-date-error{font-size:11px;color:#b43958;overflow-wrap:anywhere}
+.wsd-roster-race-count{font-size:10px;color:#98516e;margin-top:4px;font-weight:650}
+#arc25List .wsd-community-delete{display:inline-block;text-align:left;align-self:flex-start;padding:4px}
