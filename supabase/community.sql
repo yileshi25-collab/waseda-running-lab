@@ -60,6 +60,7 @@ create table if not exists public.wsd_community_submissions (
       and split_part(image_path,'/',1) = author_id::text
     )
   ),
+-- Photo source_url is optional for every license choice; rights and image_credit remain mandatory.
   constraint wsd_kind_fields check (
      (kind = 'race'
        and event_name is not null
@@ -72,7 +73,6 @@ create table if not exists public.wsd_community_submissions (
        and image_path is not null
        and image_license in ('own','permission','cc-by','public-domain')
        and image_credit is not null and char_length(trim(image_credit)) > 0
-       and (image_license not in ('cc-by','public-domain') or source_url is not null)
        and event_name is null and race_date is null and result_time is null and rank is null)
   )
 );
