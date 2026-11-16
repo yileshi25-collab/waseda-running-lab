@@ -267,12 +267,18 @@ function sharedDateControls(r){
    return '<div class="wsd-season-source-actions"><span class="wsd-community-origin">社区新增赛果 · 未经官方核实</span>'+
      (canDelete?'<button class="wsd-community-delete" type="button" data-wsd-delete="'+escapeHTML(r.communityId)+'">删除投稿</button>':"")+'</div>';
  }
- const canRemove=window.WSD_IS_ADMIN||(window.WSD_MY_DATE_CORRECTION_IDS||[]).includes(r.correctionId);
+ const all=(window.WSD_DATE_CORRECTIONS||[]).filter(c=>Number(c.record_id)===r.id);
+ const canRemove=id=>window.WSD_IS_ADMIN||(window.WSD_MY_DATE_CORRECTION_IDS||[]).includes(id);
+ const history=all.length>1?'<details class="wsd-date-history"><summary>查看 '+all.length+' 条日期修订历史</summary>'+
+   all.map((c,i)=>'<div class="wsd-date-history-row"><span>'+
+     escapeHTML(c.corrected_date)+(i===0?' · 当前显示':' · 历史记录')+
+     '</span>'+(canRemove(c.id)?'<button type="button" class="wsd-date-revert-btn" data-wsd-date-remove="'+escapeHTML(c.id)+'">删除此修订</button>':"")+'</div>').join('')+
+   '</details>':"";
  return '<div class="wsd-season-source-actions">'+
   '<button class="wsd-date-edit-btn" type="button" data-wsd-date-edit="'+escapeHTML(r.id)+'" data-wsd-current-date="'+escapeHTML(r.date||"")+'">✎ '+(r.date?'修改日期':'补充日期')+'</button>'+
   (r.correctionId?'<span class="wsd-community-origin">跑友补录日期 · 未独立核实</span>':"")+
-  (r.correctionId&&canRemove?'<button class="wsd-date-revert-btn" type="button" data-wsd-date-remove="'+escapeHTML(r.correctionId)+'">撤销此修订</button>':"")+
-  '</div><div class="wsd-date-edit-slot"></div>';
+  (r.correctionId&&canRemove(r.correctionId)?'<button class="wsd-date-revert-btn" type="button" data-wsd-date-remove="'+escapeHTML(r.correctionId)+'">撤销此修订</button>':"")+
+  '</div><div class="wsd-date-edit-slot"></div>'+history;
 }
 function annualFor(name){return getAnnualRows().filter(r=>r.name===name)
  .sort((a,b)=>b.date.localeCompare(a.date)||String(b.id).localeCompare(String(a.id)));}
@@ -483,4 +489,4 @@ renderRelays();renderResults();
 if(location.hash==='#archive2025')show('archive2025');
 })();
 
-</script><script src="community-config.js?v=20261116-google1" defer></script><script src="community.js?v=20261117-shared-results1" defer></script></body></html>
+</script><script src="community-config.js?v=20261116-google1" defer></script><script src="community.js?v=20261117-shared-results2" defer></script></body></html>
