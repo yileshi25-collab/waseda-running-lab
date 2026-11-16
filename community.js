@@ -80,6 +80,7 @@
   const sb=createClient(cfg.url,cfg.publishableKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
   let user=null,admin=false,posts=[],active="all";
   const oauthPendingKey="wsd-google-signin-pending";
+  const photoPendingKey="wsd-pending-athlete-photo";
   function navigateCommunity(){
     const btn=document.querySelector('[data-go="community"]');
     if(btn){btn.click();return;}
@@ -130,7 +131,7 @@
   async function refresh(){
     const {data,error}=await sb.from(TABLE).select(
       "id,kind,athlete_name,display_name,event_name,race_date,result_time,rank,notes,source_url,image_path,image_credit,image_license,created_at,status"
-    ).eq("status","published").order("created_at",{ascending:false}).limit(60);
+    ).eq("status","published").order("created_at",{ascending:false}).limit(200);
     if(error){note("读取社区资料失败："+error.message,true);return;}
     posts=data||[];drawFeed();
   }
@@ -141,36 +142,208 @@
     for(const r of posts)if(r.kind==="photo"&&!images.has(r.athlete_name))images.set(r.athlete_name,r);
     list.querySelectorAll(".playercell").forEach(cell=>{
       const name=cell.querySelector("[data-player]")?.getAttribute("data-player");
-      const data=images.get(name),icon=cell.querySelector(".playericon");
-      if(!data||!icon)return;
-      const url=postImage(data);if(!url)return;
+      if(!name)return;
+      const data=images.get(name);
+      const icon=cell.querySelector(".playericon");
+      const current=cell.querySelector("img.wsd-community-avatar");
+      const url=data?postImage(data):"";
+      if(!url){
+        if(current){
+          const placeholder=document.createElement("div");
+          placeholder.className="playericon";placeholder.textContent="W";
+          current.replaceWith(placeholder);
+        }
+        return;
+      }
+      if(current){if(current.getAttribute("src")!==url)current.src=url;return;}
+      if(!icon)return;
       const img=document.createElement("img");
       img.src=url;img.loading="lazy";img.referrerPolicy="no-referrer";
       img.alt=name+" · 跑友分享的照片";img.className="wsd-community-avatar";
       icon.replaceWith(img);
     });
   }
+  function photoCardsFor(name){
+    const all=posts.filter(r=>r.athlete_name===name&&r.kind==="photo").slice(0,16);
+    const cards=all.map(r=>{
+      const url=postImage(r);
+      return url?'<a target="_blank" rel="noopener noreferrer" href="'+esc(url)+'" title="摄影：'+esc(r.image_credit||"")+'">'+
+         '<img loading="lazy" referrerpolicy="no-referrer" alt="'+esc(name)+' 跑友分享照片" src="'+esc(url)+'">'+
+         '<span>摄影：'+esc(r.image_credit||"")+'</span></a>':"";
+    }).join("");
+    return {count:all.length,ids:all.map(r=>r.id).join(","),
+      html:cards||'<div class="wsd-no-athlete-photos"><span aria-hidden="true">▧</span><strong>暂无公开照片</strong><small>欢迎上传你有权分享的选手照片</small></div>'};
+  }
+  function athleteUploader(name){
+    if(!user){
+      return '<div class="wsd-athlete-photo-signin">'+
+        '<div class="wsd-athlete-photo-add-icon" aria-hidden="true">＋</div>'+
+        '<strong>为这位选手添加照片</strong><p>Google 登录后即可投稿，所有访问者都能查看。</p>'+
+        '<button class="btn btn-primary" type="button" data-wsd-photo-login="'+esc(name)+'">使用 Google 登录上传</button></div>';
+    }
+    return '<form class="wsd-community-form wsd-athlete-photo-form" data-wsd-photo-form data-wsd-athlete="'+esc(name)+'">'+
+      '<label class="wsd-photo-drop">'+
+        '<div class="wsd-photo-drop-instruction" data-wsd-photo-instruction>'+
+          '<span class="wsd-photo-add-icon" aria-hidden="true">＋</span>'+
+          '<strong>点击选择照片</strong><small>JPEG / PNG / WebP，原图最多 6 MB</small></div>'+
+        '<img class="wsd-photo-selected-preview" data-wsd-photo-preview alt="即将上传的照片预览" hidden>'+
+        '<input type="file" name="photo" accept="image/jpeg,image/png,image/webp" required aria-label="选择'+esc(name)+'的照片">'+
+      '</label>'+
+      '<label>投稿署名<input type="text" name="display_name" value="早稻田跑友" minlength="2" maxlength="30" required></label>'+
+      '<label>摄影者／来源署名<input type="text" name="credit" maxlength="120" required placeholder="照片由谁拍摄？"></label>'+
+      '<label>照片使用依据<select name="license" required>'+
+        '<option value="own">本人拍摄，同意公开</option>'+
+        '<option value="permission">已获得摄影者明确授权</option>'+
+        '<option value="cc-by">CC BY（需提供来源）</option>'+
+        '<option value="public-domain">公共领域（需提供来源）</option>'+
+      '</select></label>'+
+      '<label>原始来源网址（开放授权必填）<input type="url" name="source" maxlength="400" placeholder="https://..."></label>'+
+      '<label class="wsd-community-tick"><input type="checkbox" name="rights" required><span>我拥有公开这张照片的权利，照片不包含私人信息，同意作为社区投稿公开。</span></label>'+
+      '<button class="btn btn-primary wsd-athlete-upload-button" type="submit">发布这位选手的照片</button>'+
+      '<div class="wsd-athlete-upload-status" data-wsd-photo-status role="status" aria-live="polite"></div>'+
+      '<p class="wsd-photo-upload-caveat">自动压缩为不含 EXIF 位置资料的 JPEG（≤2 MB）。照片由跑友投稿，未经官方核实。</p>'+
+    '</form>';
+  }
   function decorateDetails(){
     const body=$("detailBody");
     if(!body)return;
-    const name=body.querySelector(".detail-head h2")?.textContent?.trim();
-    if(!name||body.querySelector(".wsd-community-gallery"))return;
-    const relevant=posts.filter(r=>r.athlete_name===name).slice(0,8);
-    if(!relevant.length)return;
-    const section=document.createElement("section");
-    section.className="wsd-community-gallery";
-    const cards=relevant.map(r=>{
-      if(r.kind==="photo"){
-        const url=postImage(r);
-        return url?'<a target="_blank" rel="noopener noreferrer" href="'+esc(url)+'"><img loading="lazy" alt="'+esc(name)+' 社区照片" src="'+esc(url)+'"><span>摄影：'+esc(r.image_credit||"")+'</span></a>':"";
+    const head=body.querySelector(".detail-head");
+    const name=head?.querySelector("h2")?.textContent?.trim();
+    if(!name)return;
+    let section=body.querySelector(".wsd-community-gallery");
+    if(section&&section.dataset.wsdAthlete!==name){section.remove();section=null;}
+    if(!section){
+      section=document.createElement("section");
+      section.className="wsd-community-gallery wsd-athlete-photo-section";
+      section.dataset.wsdAthlete=name;
+      section.innerHTML='<div class="wsd-athlete-photo-heading"><h4>选手照片 · ATHLETE PHOTOS</h4>'+
+        '<span data-wsd-photo-count>0 张</span></div>'+
+        '<div class="wsd-athlete-photo-collection" data-wsd-photo-cards></div>'+
+        '<div data-wsd-uploader></div>'+
+        '<div class="wsd-athlete-race-extras" data-wsd-athlete-races></div>';
+      head.after(section);
+    }
+    const result=photoCardsFor(name);
+    const cards=section.querySelector("[data-wsd-photo-cards]");
+    if(cards.dataset.photoIds!==result.ids){
+      cards.innerHTML=result.html;
+      cards.dataset.photoIds=result.ids;
+    }
+    section.querySelector("[data-wsd-photo-count]").textContent=result.count+" 张社区照片";
+    const upload=section.querySelector("[data-wsd-uploader]");
+    const authState=user?"signed":"guest";
+    if(upload.dataset.authState!==authState){
+      upload.innerHTML=athleteUploader(name);
+      upload.dataset.authState=authState;
+    }
+    const races=posts.filter(r=>r.athlete_name===name&&r.kind==="race").slice(0,6);
+    const extras=section.querySelector("[data-wsd-athlete-races]");
+    const raceIds=races.map(r=>r.id).join(",");
+    if(extras.dataset.raceIds!==raceIds){
+      extras.innerHTML=races.length?'<h5>跑友补充赛果</h5>'+
+        races.map(r=>'<div class="wsd-community-mini-races">'+
+          esc(r.race_date||"")+" · "+esc(r.event_name||"")+" · <b>"+esc(r.result_time||"")+"</b> "+
+          sourceLink(r.source_url,"来源")+'</div>').join(""):"";
+      extras.dataset.raceIds=raceIds;
+    }
+  }
+  const detailEl=$("detailBody");
+  if(detailEl){
+    detailEl.addEventListener("click",e=>{
+      const button=e.target.closest("[data-wsd-photo-login]");
+      if(!button)return;
+      const name=button.getAttribute("data-wsd-photo-login");
+      if(!name)return;
+      try{sessionStorage.setItem(photoPendingKey,name);}catch(e){}
+      $("wsdGoogleSignIn").click();
+    });
+    detailEl.addEventListener("change",e=>{
+      const input=e.target.closest('input[type="file"][name="photo"]');
+      if(!input||!input.closest("[data-wsd-photo-form]"))return;
+      const form=input.closest("[data-wsd-photo-form]");
+      const preview=form.querySelector("[data-wsd-photo-preview]");
+      const instruction=form.querySelector("[data-wsd-photo-instruction]");
+      const file=input.files?.[0];
+      if(!file){
+        preview.hidden=true;
+        instruction.hidden=false;
+        return;
       }
-      return '<div class="wsd-community-mini-races">'+esc(r.race_date)+' · '+esc(r.event_name)+' · <b>'+esc(r.result_time)+'</b> '+sourceLink(r.source_url,"来源")+'</div>';
-    }).join("");
-    section.innerHTML='<h4>社区投稿 · '+relevant.length+' 条</h4><div class="wsd-community-gallery-items">'+cards+'</div><p class="wsd-community-help">跑友投稿，未经官方核实。</p>';
-    body.querySelector(".detail-head")?.after(section);
+      if(!["image/jpeg","image/png","image/webp"].includes(file.type)||file.size>6*1024*1024){
+        input.value="";
+        preview.hidden=true;
+        instruction.hidden=false;
+        form.querySelector("[data-wsd-photo-status]").textContent="只支持 JPEG/PNG/WebP，原图最多 6 MB。";
+        return;
+      }
+      const previewURL=URL.createObjectURL(file);
+      preview.onload=()=>URL.revokeObjectURL(previewURL);
+      preview.onerror=()=>{URL.revokeObjectURL(previewURL);preview.hidden=true;};
+      preview.src=previewURL;
+      preview.hidden=false;
+      instruction.hidden=true;
+      form.querySelector("[data-wsd-photo-status]").textContent=file.name+" · 已选中，填写署名与授权后即可发布。";
+    });
+    detailEl.addEventListener("submit",async e=>{
+      const form=e.target.closest("[data-wsd-photo-form]");
+      if(!form)return;
+      e.preventDefault();
+      const status=form.querySelector("[data-wsd-photo-status]");
+      const say=(message,bad=false)=>{
+        status.textContent=message;
+        status.style.color=bad?"#b33659":"#755163";
+      };
+      if(!user){say("请先使用 Google 登录。",true);return;}
+      const name=form.dataset.wsdAthlete||"";
+      const who=form.elements.namedItem("display_name").value.trim();
+      const credit=form.elements.namedItem("credit").value.trim();
+      const license=form.elements.namedItem("license").value;
+      const source=form.elements.namedItem("source").value.trim();
+      const file=form.elements.namedItem("photo").files?.[0];
+      if(!name||name.length<2||name.length>75){say("选手姓名无效。",true);return;}
+      if(who.length<2||who.length>30||!credit||credit.length>120){say("请检查投稿署名和摄影者署名。",true);return;}
+      if(!["own","permission","cc-by","public-domain"].includes(license)){say("请选择照片的使用依据。",true);return;}
+      if(source&&!https(source)){say("照片来源须使用 HTTPS 链接。",true);return;}
+      if(["cc-by","public-domain"].includes(license)&&!source){say("开放授权照片必须填写原始来源链接。",true);return;}
+      if(!file||!form.elements.namedItem("rights").checked){say("请选择照片并确认公开权限。",true);return;}
+      const button=form.querySelector('button[type="submit"]');
+      button.disabled=true;button.textContent="正在上传…";
+      let uploaded=null;
+      try{
+        const blob=await convertJpeg(file);
+        const key=user.id+"/"+crypto.randomUUID()+".jpg";
+        const {error:storageError}=await sb.storage.from(BUCKET).upload(
+          key,blob,{contentType:"image/jpeg",upsert:false});
+        if(storageError)throw storageError;
+        uploaded=key;
+        const {error:postError}=await sb.from(TABLE).insert({
+          author_id:user.id,
+          display_name:who,
+          kind:"photo",
+          athlete_name:name,
+          notes:"",
+          source_url:source||null,
+          image_path:key,
+          image_credit:credit,
+          image_license:license
+        });
+        if(postError)throw postError;
+        say("照片发布成功！已加入 "+name+" 的资料页，其他访客可以看到。");
+        form.reset();
+        const preview=form.querySelector("[data-wsd-photo-preview]");
+        preview.hidden=true;preview.removeAttribute("src");
+        form.querySelector("[data-wsd-photo-instruction]").hidden=false;
+        await refresh();
+      }catch(err){
+        if(uploaded)await sb.storage.from(BUCKET).remove([uploaded]);
+        say("照片发布失败："+(err?.message||String(err)),true);
+      }finally{
+        button.disabled=false;button.textContent="发布这位选手的照片";
+      }
+    });
   }
   $("wsdFeedKind").onchange=e=>{active=e.target.value;drawFeed();};
-  const rosterEl=$("rosterBody"),detailEl=$("detailBody");
+  const rosterEl=$("rosterBody");
   if(rosterEl)new MutationObserver(()=>{if(rosterEl.querySelector(".playericon"))decorateRoster();}).observe(rosterEl,{childList:true});
   if(detailEl)new MutationObserver(()=>{if(detailEl.querySelector(".detail-head")&&!detailEl.querySelector(".wsd-community-gallery"))decorateDetails();}).observe(detailEl,{childList:true});
   async function setAuth(){
@@ -180,7 +353,20 @@
     $("wsdSubmitForm").hidden=!u;
     $("wsdSignOut").hidden=!u;
     $("wsdAuthName").textContent=u?"已登录："+u.email:"未登录 · 访客仅可浏览";
-    if(u&&shouldReturnCommunity())navigateCommunity();
+    if(u){
+      let photoTarget="";
+      try{
+        photoTarget=sessionStorage.getItem(photoPendingKey)||"";
+        if(photoTarget)sessionStorage.removeItem(photoPendingKey);
+      }catch(e){}
+      if(photoTarget&&typeof getAthlete==="function"&&getAthlete(photoTarget)&&typeof openDetail==="function"){
+        try{sessionStorage.removeItem(oauthPendingKey);}catch(e){}
+        if(typeof show==="function")show("athletes");
+        openDetail(photoTarget);
+      }else if(shouldReturnCommunity()){
+        navigateCommunity();
+      }
+    }
     if(u){
       const {data}=await sb.rpc("wsd_is_community_admin");
       admin=data===true;
@@ -202,7 +388,7 @@
         options:{redirectTo}
       });
       if(error)throw error;
-      // The browser normally leaves this page here for Google's consent flow.
+      // Browser navigates to Google; the selected athlete is stored in this tab.
     }catch(err){
       try{sessionStorage.removeItem(oauthPendingKey);}catch(e){}
       button.disabled=false;
@@ -248,7 +434,7 @@
   }
   $("wsdSubmitForm").onsubmit=async e=>{
     e.preventDefault();
-    if(!user){note("请先登录邮箱账号。",true);return;}
+    if(!user){note("请先使用 Google 账号登录。",true);return;}
     if(!$("wsdRights").checked){note("请确认公开授权与数据准确性。",true);return;}
     const kind=$("wsdKind").value;
     const name=$("wsdAthlete").value.trim();
