@@ -994,6 +994,126 @@
       note(msg,true);if(typeof toast==="function")toast(msg);
     }finally{photoActionBusy=false;set.disabled=false;}
   });
+  function editorialFormHTML(scope,name,raceRef){
+    const choices=scope==="race"?
+      '<label>资料类型<select name="category" required>'+
+      '<option value="interview">采访</option><option value="summary">赛后总结</option>'+
+      '<option value="article">相关文章</option><option value="analysis">赛事分析</option>'+
+      '<option value="other">其他补充</option></select></label>':"";
+    return '<form class="wsd-editorial-form" data-wsd-editorial-form data-scope="'+esc(scope)+'"'+
+      ' data-wsd-athlete="'+esc(name)+'"'+
+      (raceRef?' data-wsd-race-ref="'+esc(raceRef)+'"':"")+'>'+
+      choices+
+      '<label>标题<input name="title" type="text" maxlength="100" minlength="2" required placeholder="'+
+        (scope==="bio"?'例如：选手经历与比赛风格':'例如：赛后采访／赛事回顾')+'"></label>'+
+      '<label>手写内容（可选）<textarea name="body" rows="5" maxlength="4000" placeholder="可以直接撰写简介、采访摘要或比赛总结；请勿整段复制未经许可的文章。"></textarea></label>'+
+      '<label>原文／采访链接（可选）<input name="source_url" type="url" maxlength="400" placeholder="https://..."></label>'+
+      '<label>投稿署名<input name="display_name" type="text" minlength="2" maxlength="30" value="早稻田跑友" required></label>'+
+      '<p class="wsd-editorial-hint">文字和链接至少填写一项；允许两者同时填写。投稿将向所有访客公开。</p>'+
+      '<div class="wsd-editorial-form-controls"><button class="btn btn-primary btn-small" type="submit">发布资料</button>'+
+      '<button class="btn btn-small" type="button" data-wsd-editorial-cancel>取消</button></div>'+
+      '<div class="wsd-editorial-form-status" role="status" data-wsd-editorial-status></div></form>';
+  }
+  function editorialRaceRefValid(ref){
+    return /^(?:2026-[1-9][0-9]{0,4}|2025-[0-9]{1,5}|community-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/i.test(ref);
+  }
+  document.addEventListener("click",async e=>{
+    const cancel=e.target.closest("[data-wsd-editorial-cancel]");
+    if(cancel){
+      e.preventDefault();
+      cancel.closest(".wsd-editorial-form-slot")?.replaceChildren();
+      return;
+    }
+    const del=e.target.closest("[data-wsd-editorial-delete]");
+    if(del){
+      e.preventDefault();
+      if(!user){note("请先登录才能删除自己投稿的资料。",true);return;}
+      const id=del.dataset.wsdEditorialDelete||"";
+      if(!/^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(id))return;
+      if(!admin&&!ownEditorialIds.has(id)){note("你只能删除自己写的简介或采访资料。",true);return;}
+      if(!confirm("确定永久删除这条简介／采访资料吗？删除后无法撤销。"))return;
+      del.disabled=true;
+      const {data,error}=await sb.from(EDITORIAL).delete().eq("id",id).select("id");
+      if(error||!data?.length){
+        del.disabled=false;
+        note("删除资料失败："+(error?.message||"账号没有删除权限"),true);
+        return;
+      }
+      await refreshEditorial();
+      note("这条简介／采访资料已删除。");
+      return;
+    }
+    const button=e.target.closest("[data-wsd-editorial-add]");
+    if(!button)return;
+    e.preventDefault();
+    if(!user){note("请先使用 Google 账号登录，再添加资料。",true);return;}
+    const scope=button.dataset.wsdEditorialAdd||"";
+    const name=resolveAthleteName(button.dataset.wsdAthlete||"");
+    const raceRef=button.dataset.wsdRaceRef||"";
+    if(!["bio","race"].includes(scope)||name.length<2||name.length>75)return;
+    if(scope==="race"&&!editorialRaceRefValid(raceRef))return;
+    const target=button.closest(".wsd-athlete-bio,.wsd-race-editorial-slot");
+    const holder=target?.querySelector(".wsd-editorial-form-slot");
+    if(!holder)return;
+    if(holder.querySelector("form")){holder.replaceChildren();return;}
+    holder.innerHTML=editorialFormHTML(scope,name,raceRef);
+    holder.querySelector('input[name="title"]')?.focus();
+  });
+  document.addEventListener("submit",async e=>{
+    const form=e.target.closest("[data-wsd-editorial-form]");
+    if(!form)return;
+    e.preventDefault();
+    const status=form.querySelector("[data-wsd-editorial-status]");
+    const fail=msg=>{status.textContent=msg;status.style.color="#b33659";};
+    if(!user){fail("请先使用 Google 登录。");return;}
+    const scope=form.dataset.scope||"";
+    const name=resolveAthleteName(form.dataset.wsdAthlete||"");
+    const raceRef=form.dataset.wsdRaceRef||"";
+    const title=form.elements.namedItem("title").value.trim();
+    const body=form.elements.namedItem("body").value.trim();
+    const url=form.elements.namedItem("source_url").value.trim();
+    const displayName=form.elements.namedItem("display_name").value.trim();
+    const category=scope==="bio"?"bio":form.elements.namedItem("category")?.value;
+    if(!["bio","race"].includes(scope)||name.length<2||name.length>75){fail("选手姓名无效。");return;}
+    if(scope==="race"&&!editorialRaceRefValid(raceRef)){fail("关联赛事编号无效。");return;}
+    if(!["bio","interview","summary","article","analysis","other"].includes(category)||(scope==="race"&&category==="bio")){fail("资料类型无效。");return;}
+    if(title.length<2||title.length>100||body.length>4000||displayName.length<2||displayName.length>30){fail("请检查标题、正文及署名长度。");return;}
+    if(!body&&!url){fail("请填写文字内容或原文链接，至少填写一项。");return;}
+    if(url&&!https(url)){fail("链接需要使用 HTTPS，且长度不超过 400 字。");return;}
+    const button=form.querySelector('button[type="submit"]');
+    button.disabled=true;button.textContent="正在发布…";
+    try{
+      const {error}=await sb.from(EDITORIAL).insert({
+        author_id:user.id,athlete_name:name,scope,
+        race_ref:scope==="race"?raceRef:null,category,title,body,
+        source_url:url||null,display_name:displayName
+      });
+      if(error)throw error;
+      status.textContent="已公开发布！";
+      await refreshEditorial();
+      note("资料已添加，其他访客也可以查看。");
+      if(typeof toast==="function")toast("简介／采访资料已保存");
+    }catch(err){
+      fail("发布失败："+(err?.message||String(err)));
+      button.disabled=false;button.textContent="发布资料";
+    }
+  });
+  // The original application redraws race cards on search/filter changes.
+  // Reattach small article widgets to new cards without disrupting form input.
+  let editorialDecorationPending=false;
+  const articleTargets=["seasonCards","arc25List","detailBody","wsdFeed"];
+  for(const id of articleTargets){
+    const container=$(id);
+    if(!container)continue;
+    new MutationObserver(()=>{
+      if(editorialDecorationPending)return;
+      editorialDecorationPending=true;
+      queueMicrotask(()=>{
+        editorialDecorationPending=false;
+        decorateEditorialSlots();
+      });
+    }).observe(container,{childList:true,subtree:true});
+  }
   async function saveSharedDateCorrection(form){
     if(!user){note("请先使用 Google 登录才能修正日期。",true);return;}
     const recordId=Number(form.dataset.wsdRecordId);
