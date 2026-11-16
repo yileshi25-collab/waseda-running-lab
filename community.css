@@ -48,3 +48,6 @@
 .wsd-community-admin-post{color:#b33256!important}
 @media(max-width:850px){.wsd-community-grid{grid-template-columns:1fr}.wsd-community-feed{grid-template-columns:1fr}}
 @media(max-width:650px){.wsd-community-intro{padding:23px}.wsd-community-intro h2{font-size:24px}.wsd-community-panel{padding:15px}}
+
+/* Author CSS must never override HTML hidden on sensitive upload/auth panels */
+#wsdCommunityRoot [hidden],.wsd-community-form[hidden]{display:none!important}
