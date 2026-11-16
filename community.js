@@ -23,6 +23,7 @@
   const BUCKET = "wsd-community-photos";
   const REPORTS = "wsd_community_reports";
   const CORRECTIONS = "wsd_community_date_corrections";
+  const EDITORIAL = "wsd_community_editorial";
   const $ = id => document.getElementById(id);
   const esc = v => String(v == null ? "" : v).replace(/[&<>"']/g,
     c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -84,6 +85,7 @@
   const sb=createClient(cfg.url,cfg.publishableKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
   let user=null,admin=false,posts=[],active="all";
   let ownPostIds=new Set(),ownCorrectionIds=new Set(),corrections=[],deleting=false;
+  let editorial=[],ownEditorialIds=new Set();
   async function loadOwnPostIds(){
     if(!user){ownPostIds=new Set();return;}
     // The public feed does not expose author UUIDs. This RPC returns
@@ -98,6 +100,88 @@
     const {data,error}=await sb.rpc("wsd_my_date_correction_ids");
     if(error){ownCorrectionIds=new Set();note("读取日期修正权限失败："+error.message,true);return;}
     ownCorrectionIds=new Set((data||[]).map(x=>x?.id).filter(Boolean));
+  }
+  async function loadOwnEditorialIds(){
+    if(!user){ownEditorialIds=new Set();return;}
+    const {data,error}=await sb.rpc("wsd_my_editorial_ids");
+    if(error){ownEditorialIds=new Set();note("读取个人文字投稿权限失败："+error.message,true);return;}
+    ownEditorialIds=new Set((data||[]).map(x=>x?.id).filter(Boolean));
+  }
+  const editorialCategories={bio:"选手简介",interview:"采访",summary:"赛后总结",
+    article:"相关文章",analysis:"赛事分析",other:"其他补充"};
+  function canDeleteEditorial(row){
+    return !!user&&(admin||ownEditorialIds.has(row.id));
+  }
+  function publicEditorialEntries(scope,name,raceRef){
+    return editorial.filter(r=>r.scope===scope&&resolveAthleteName(r.athlete_name)===name&&
+      (scope==="bio"||r.race_ref===raceRef));
+  }
+  function editorialEntryHTML(row){
+    return '<article class="wsd-editorial-entry">'+
+      '<div class="wsd-editorial-entry-head"><span class="wsd-editorial-tag">'+
+        esc(editorialCategories[row.category]||"补充资料")+'</span>'+
+        '<small>'+esc(row.display_name)+' · '+new Date(row.created_at).toLocaleDateString("zh-CN")+'</small></div>'+
+      '<strong>'+esc(row.title)+'</strong>'+
+      (row.body?'<p class="wsd-editorial-body">'+esc(row.body)+'</p>':"")+
+      (https(row.source_url||"")?'<a href="'+esc(row.source_url)+'" rel="noopener noreferrer nofollow" target="_blank">阅读采访／原文链接 ↗</a>':"")+
+      (canDeleteEditorial(row)?'<button type="button" class="wsd-editorial-delete" data-wsd-editorial-delete="'+esc(row.id)+'">删除这条补充</button>':"")+
+      '</article>';
+  }
+  function editorialAddButton(scope,name,raceRef,label){
+    return user?
+      '<button type="button" class="wsd-editorial-add" data-wsd-editorial-add="'+scope+'" data-wsd-athlete="'+esc(name)+'"'+
+      (raceRef?' data-wsd-race-ref="'+esc(raceRef)+'"':"")+'>'+esc(label)+'</button>':
+      '<small class="wsd-editorial-guest">登录 Google 后可补充链接或文字。</small>';
+  }
+  function decorateBio(name,head){
+    const body=$("detailBody");
+    if(!body||!head)return;
+    let panel=body.querySelector(".wsd-athlete-bio");
+    if(panel&&panel.dataset.wsdAthlete!==name){panel.remove();panel=null;}
+    if(!panel){
+      panel=document.createElement("section");
+      panel.className="wsd-community-gallery wsd-athlete-bio";
+      panel.dataset.wsdAthlete=name;
+      head.after(panel);
+    }
+    const entries=publicEditorialEntries("bio",name,null);
+    const sig=entries.map(x=>x.id).join(",")+"|"+[...ownEditorialIds].join(",")+"|"+admin+"|"+!!user;
+    if(panel.dataset.wsdEditorialSignature===sig)return;
+    panel.innerHTML='<div class="wsd-athlete-photo-heading"><h4>选手简介 · ATHLETE BIO</h4>'+
+      '<span>'+entries.length+' 条资料</span></div>'+
+      (entries.length?entries.map(editorialEntryHTML).join(""):'<div class="wsd-editorial-empty">暂无公开简介。可以补充选手经历、特点及相关采访资料。</div>')+
+      '<div class="wsd-editorial-actions">'+editorialAddButton("bio",name,null,"＋ 添加选手简介")+'</div>'+
+      '<div class="wsd-editorial-form-slot"></div>'+
+      '<small class="wsd-editorial-disclaimer">简介由跑友补充，不代表官方认证；请勿发布私人联系方式等敏感信息。</small>';
+    panel.dataset.wsdEditorialSignature=sig;
+  }
+  function decorateEditorialSlots(){
+    document.querySelectorAll("[data-wsd-race-attach]").forEach(slot=>{
+      const name=resolveAthleteName(slot.dataset.wsdAthlete||"");
+      const raceRef=slot.dataset.wsdRaceRef||"";
+      if(!name||!raceRef)return;
+      const entries=publicEditorialEntries("race",name,raceRef);
+      const sig=entries.map(x=>x.id).join(",")+"|"+[...ownEditorialIds].join(",")+"|"+admin+"|"+!!user;
+      if(slot.dataset.wsdEditorialSignature===sig)return;
+      slot.innerHTML='<div class="wsd-race-editorial-head"><strong>采访与赛后总结</strong>'+
+        '<span>'+entries.length+' 条</span></div>'+
+        (entries.length?entries.map(editorialEntryHTML).join(""):"")+
+        '<div class="wsd-editorial-actions">'+editorialAddButton("race",name,raceRef,"＋ 添加采访／赛后总结")+'</div>'+
+        '<div class="wsd-editorial-form-slot"></div>';
+      slot.dataset.wsdEditorialSignature=sig;
+    });
+  }
+  async function refreshEditorial(){
+    const {data,error}=await sb.from(EDITORIAL)
+      .select("id,athlete_name,scope,race_ref,category,title,body,source_url,display_name,created_at")
+      .order("created_at",{ascending:false}).limit(1500);
+    if(error){note("读取选手简介／采访资料失败："+error.message,true);return;}
+    editorial=data||[];
+    await loadOwnEditorialIds();
+    const head=$("detailBody")?.querySelector(".detail-head");
+    const name=head?.querySelector("h2")?.textContent?.trim();
+    if(name)decorateBio(name,head);
+    decorateEditorialSlots();
   }
   function syncSharedViews(){
     window.WSD_COMMUNITY_RACES=posts.filter(p=>p.kind==="race").map(p=>({...p,athlete_name:resolveAthleteName(p.athlete_name)}));
@@ -401,6 +485,7 @@
       head.after(section);
     }
     decorateCareerHistory(name,head);
+    decorateBio(name,head);
     const result=photoCardsFor(name);
     const cards=section.querySelector("[data-wsd-photo-cards]");
     const coverSlot=section.querySelector("[data-wsd-photo-cover]");
@@ -578,6 +663,7 @@
     await loadOwnCorrectionIds();
     drawFeed();
     syncSharedViews();
+    await refreshEditorial();
   }
   $("wsdGoogleSignIn").onclick=async()=>{
     const button=$("wsdGoogleSignIn");
@@ -987,7 +1073,7 @@
     saveSharedDateCorrection(form).catch(err=>note("提交修订失败："+err.message,true));
   });
   sb.auth.onAuthStateChange(()=>{Promise.resolve().then(setAuth).catch(()=>{});});
-  await setAuth();await Promise.all([refresh(),refreshCorrections()]);
+  await setAuth();await Promise.all([refresh(),refreshCorrections(),refreshEditorial()]);
   const callbackParams=new URLSearchParams(location.search);
   const fragmentParams=new URLSearchParams(location.hash.startsWith("#")?location.hash.slice(1):"");
   const callbackError=callbackParams.get("error_description")||
@@ -1003,8 +1089,8 @@
   sb.channel("wsd-community-public").on("postgres_changes",
     {event:"*",schema:"public",table:TABLE},()=>{refresh().catch(()=>{});}).subscribe();
   // Reconnect fallback and updates from other tabs, keeping public feed fresh.
-  document.addEventListener("visibilitychange",()=>{if(!document.hidden)Promise.all([refresh(),refreshCorrections()]).catch(()=>{});});
-  window.addEventListener("focus",()=>refreshCorrections().catch(()=>{}));
+  document.addEventListener("visibilitychange",()=>{if(!document.hidden)Promise.all([refresh(),refreshCorrections(),refreshEditorial()]).catch(()=>{});});
+  window.addEventListener("focus",()=>Promise.all([refreshCorrections(),refreshEditorial()]).catch(()=>{}));
   // Date changes are refreshed periodically without broadcasting author IDs through Realtime.
-  setInterval(()=>{if(!document.hidden)refreshCorrections().catch(()=>{});},60000);
+  setInterval(()=>{if(!document.hidden)Promise.all([refreshCorrections(),refreshEditorial()]).catch(()=>{});},60000);
 })();
