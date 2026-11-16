@@ -60,7 +60,7 @@
         '</form>'+
       '</div>'+
       '<div class="wsd-community-status" id="wsdCommunityStatus" role="status" aria-live="polite"></div>'+
-      '<p class="wsd-community-help">Google 账号登录；每个账号限 1 条/分钟、6 条/小时、20 条/天。图片限制大小并重新编码以清除位置元数据。违规内容可以举报并由管理员撤下。</p>'+
+      '<p class="wsd-community-help">Google 账号登录；每个账号限 1 条/分钟、6 条/小时、20 条/天。图片限制大小并重新编码以清除位置元数据。作者可删除自己的投稿，管理员可删除任何投稿；违规内容也可举报。</p>'+
     '</section><section class="wsd-community-panel"><div class="wsd-community-top">'+
     '<h3>跑友实时投稿</h3><select id="wsdFeedKind" aria-label="筛选投稿"><option value="all">所有投稿</option><option value="race">比赛成绩</option><option value="photo">人物照片</option></select></div>'+
     '<div class="wsd-community-feed" id="wsdFeed"><div class="wsd-community-skeleton">正在准备投稿列表…</div></div>'+
