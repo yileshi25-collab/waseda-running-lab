@@ -37,8 +37,11 @@
         '<div class="wsd-community-auth-line"><strong id="wsdAuthName">未登录</strong><button class="btn btn-small" type="button" id="wsdSignOut" hidden>退出登录</button></div>'+
         '<div id="wsdLogin" class="wsd-auth-mode"><form id="wsdLoginForm" class="wsd-community-form">'+
           '<label>邮箱地址<input id="wsdEmail" type="email" maxlength="150" autocomplete="email" required placeholder="your@email.com"></label>'+
-          '<div id="wsdTurnstile"></div><button class="btn btn-primary" type="submit" id="wsdLoginButton">发送登录邮件</button></form>'+
-          '<p>使用邮箱登录链接验证身份。请在同一浏览器中打开邮件链接。</p></div>'+
+          '<div id="wsdTurnstile"></div><button class="btn btn-primary" type="submit" id="wsdLoginButton">发送六位邮箱验证码</button></form>'+
+          '<form id="wsdOtpForm" class="wsd-community-form wsd-otp-form" hidden>'+
+            '<label>邮件中的 6 位验证码<input id="wsdOtp" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" placeholder="请输入 6 位数字" required></label>'+
+            '<button class="btn btn-primary" type="submit" id="wsdVerifyOtp">验证并登录</button></form>'+
+          '<p>收到验证码后在这里输入，不需要再点击邮件链接。若邮件只有登录链接，请先在 Supabase 的 Magic Link 邮件模板中启用数字验证码。</p></div>'+
         '<form id="wsdSubmitForm" class="wsd-community-form" hidden>'+
           '<label>投稿类型<select id="wsdKind"><option value="race">比赛成绩</option><option value="photo">选手照片</option></select></label>'+
           '<label>投稿署名<input id="wsdDisplayName" maxlength="30" minlength="2" required value="早稻田跑友"></label>'+
@@ -80,6 +83,11 @@
   catch { note("数据库组件加载失败，请检查网络连接。",true);return; }
   const sb=createClient(cfg.url,cfg.publishableKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
   let user=null,admin=false,posts=[],active="all",captchaToken="",captchaWidget=null;
+  const pendingEmailKey="wsd-pending-login-email";
+  let pendingEmail="";
+  try{pendingEmail=sessionStorage.getItem(pendingEmailKey)||"";}catch(e){}
+  if(pendingEmail){$("wsdEmail").value=pendingEmail;$("wsdOtpForm").hidden=false;}
+  function clearPendingEmail(){pendingEmail="";try{sessionStorage.removeItem(pendingEmailKey);}catch(e){}}
   const roster=Array.isArray(window.WSD_ATHLETE_NAMES)?window.WSD_ATHLETE_NAMES:[];
   $("wsdAthleteNames").innerHTML=roster.map(n=>'<option value="'+esc(n)+'"></option>').join("");
   $("wsdAuth").hidden=false;
@@ -166,6 +174,10 @@
     $("wsdSignOut").hidden=!u;
     $("wsdAuthName").textContent=u?"已登录："+u.email:"未登录 · 访客仅可浏览";
     if(u){
+      clearPendingEmail();$("wsdOtpForm").hidden=true;$("wsdOtp").value="";
+      if(typeof show==="function"&&location.hash!=="#community")show("community");
+    }
+    if(u){
       const {data}=await sb.rpc("wsd_is_community_admin");
       admin=data===true;
       if(admin)loadReports();else $("wsdAdminSummary").textContent="";
@@ -190,18 +202,40 @@
     if(!captchaToken){note("请先通过验证码验证。",true);return;}
     const btn=$("wsdLoginButton");btn.disabled=true;
     try{
-      const redirect=location.origin+location.pathname+"#community";
+      // Supabase may return tokens in URL fragments: use a clean callback URL.
+      const redirect=location.origin+location.pathname;
       const {error}=await sb.auth.signInWithOtp({
         email:$("wsdEmail").value.trim(),
         options:{emailRedirectTo:redirect,captchaToken}
       });
       if(error)throw error;
-      note("已发送登录链接，请查看邮箱。");
+      pendingEmail=$("wsdEmail").value.trim();
+      try{sessionStorage.setItem(pendingEmailKey,pendingEmail);}catch(e){}
+      $("wsdOtpForm").hidden=false;
+      note("登录邮件已发送，请输入邮件中的六位验证码。如果邮件只有链接，请先更改 Supabase 邮件模板。");
+      $("wsdOtp").focus();
     }catch(err){note("发送登录邮件失败："+err.message,true);}
     finally{
       btn.disabled=false;captchaToken="";
       if(window.turnstile&&captchaWidget!==null)window.turnstile.reset(captchaWidget);
     }
+  };
+  $("wsdOtpForm").onsubmit=async e=>{
+    e.preventDefault();
+    const email=(pendingEmail||$("wsdEmail").value).trim();
+    const token=$("wsdOtp").value.trim();
+    if(!/^[0-9]{6}$/.test(token)||!email){note("请输入邮件中的六位验证码。",true);return;}
+    const btn=$("wsdVerifyOtp");btn.disabled=true;btn.textContent="验证中…";
+    try{
+      const {data,error}=await sb.auth.verifyOtp({email,token,type:"email"});
+      if(error)throw error;
+      if(!data?.session)throw new Error("验证码已接受，但登录会话尚未建立");
+      await setAuth();
+      if(typeof show==="function")show("community");
+      note("邮箱验证成功，现在可以上传照片或比赛成绩。");
+    }catch(err){
+      note("验证码无效或已失效："+(err?.message||String(err))+"。请检查最新邮件中的验证码。",true);
+    }finally{btn.disabled=false;btn.textContent="验证并登录";}
   };
   $("wsdSignOut").onclick=async()=>{await sb.auth.signOut();await setAuth();};
   $("wsdKind").onchange=()=>{
@@ -341,6 +375,13 @@
   };
   sb.auth.onAuthStateChange(()=>{Promise.resolve().then(setAuth).catch(()=>{});});
   await setAuth();await refresh();
+  const callbackParams=new URLSearchParams(location.search);
+  const fragmentParams=new URLSearchParams(location.hash.startsWith("#")?location.hash.slice(1):"");
+  const callbackError=callbackParams.get("error_description")||fragmentParams.get("error_description");
+  if(callbackError){
+    if(typeof show==="function")show("community");
+    note("邮件登录链接无法使用："+callbackError+"。建议使用邮件六位验证码登录。",true);
+  }
   await loadTurnstile();
   sb.channel("wsd-community-public").on("postgres_changes",
     {event:"*",schema:"public",table:TABLE},()=>{refresh().catch(()=>{});}).subscribe();
