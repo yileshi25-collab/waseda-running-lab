@@ -103,3 +103,14 @@
 参考：https://supabase.com/docs/guides/auth/auth-captcha
 参考：https://supabase.com/docs/guides/database/postgres/row-level-security
 参考：https://supabase.com/docs/guides/storage/buckets/fundamentals
+
+## 选手头像与照片集（已部署）
+
+- 每位选手默认使用按发布时间最早的第一张照片作为头像；其他照片进入选手详情页的「其他照片」相册，点击能查看完整图片。
+- 投稿者可为自己上传的照片点击「调整显示位置」，拖动照片或使用横向／纵向滑块，同时查看帖子横向裁切和方形头像预览。
+- 投稿者可以把自己上传的照片「设为头像」；管理员可以设置任意照片。数据库会取消前一张的主头像标记。
+- 当头像被删除时自动回退至剩余照片中最早上传的一张；没有照片则显示占位图。
+- 调整只改变网站 CSS 的 object-position 显示焦点，原始 JPEG 在 Storage 中保持不变，点击图片可查看原图。
+- 后端增量 SQL 文件：supabase/community-photo-covers.sql，线上项目已经执行，无需重建已有表。
+- 修改通过受严格账号身份校验的 wsd_update_photo_crop 和 wsd_set_photo_primary RPC，只有投稿者或管理员有操作权。
+- 照片外观通过 Supabase 数据表同步，其他浏览者重新加载或 Realtime 收到变更后可以看到。
