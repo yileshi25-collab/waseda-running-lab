@@ -687,9 +687,10 @@
     '<div class="wsd-crop-dialog" role="dialog" aria-modal="true" aria-labelledby="wsdCropTitle">'+
       '<div class="wsd-crop-header"><h3 id="wsdCropTitle">调整照片显示位置</h3>'+
       '<button type="button" data-wsd-crop-close aria-label="关闭照片调整" class="wsd-crop-close">×</button></div>'+
-      '<p>拖动预览图片，或调整横向／纵向滑块。这里只调整网站里的显示区域，不会修改原图。</p>'+
-      '<div class="wsd-crop-preview" data-wsd-crop-drag>'+
-        '<img data-wsd-crop-image alt="照片裁切实时预览"></div>'+
+      '<p>可拖动左侧预览，或调整横向／纵向滑块；同时查看右侧头像效果。不会修改原图。</p>'+
+      '<div class="wsd-crop-preview-grid"><div class="wsd-crop-preview" data-wsd-crop-drag>'+
+        '<img data-wsd-crop-image alt="投稿照片横向裁切预览"><span>投稿照片</span></div>'+
+        '<div class="wsd-crop-avatar-preview"><img data-wsd-crop-avatar alt="选手头像正方形裁切预览"><span>选手头像</span></div></div>'+
       '<form id="wsdPhotoCropForm">'+
         '<label>左右位置 <output data-wsd-crop-x-value>50%</output>'+
           '<input type="range" name="focal_x" min="0" max="100" step="1" value="50" aria-label="照片左右位置"></label>'+
@@ -710,6 +711,7 @@
     const x=Number(cropForm.elements.namedItem("focal_x").value);
     const y=Number(cropForm.elements.namedItem("focal_y").value);
     cropOverlay.querySelector("[data-wsd-crop-image]").style.objectPosition=x+"% "+y+"%";
+    cropOverlay.querySelector("[data-wsd-crop-avatar]").style.objectPosition=x+"% "+y+"%";
     cropOverlay.querySelector("[data-wsd-crop-x-value]").textContent=x+"%";
     cropOverlay.querySelector("[data-wsd-crop-y-value]").textContent=y+"%";
   }
@@ -717,6 +719,7 @@
     cropOverlay.hidden=true;
     croppingId=null;
     cropOverlay.querySelector("[data-wsd-crop-image]").removeAttribute("src");
+    cropOverlay.querySelector("[data-wsd-crop-avatar]").removeAttribute("src");
   }
   function openCrop(id){
     const row=posts.find(r=>r.id===id&&r.kind==="photo");
@@ -726,6 +729,7 @@
     croppingId=id;
     const image=cropOverlay.querySelector("[data-wsd-crop-image]");
     image.src=url;
+    cropOverlay.querySelector("[data-wsd-crop-avatar]").src=url;
     cropForm.elements.namedItem("focal_x").value=Number.isInteger(row.focal_x)?row.focal_x:50;
     cropForm.elements.namedItem("focal_y").value=Number.isInteger(row.focal_y)?row.focal_y:20;
     cropOverlay.querySelector("[data-wsd-crop-status]").textContent="";
