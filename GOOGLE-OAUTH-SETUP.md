@@ -8,7 +8,7 @@ Supabase 项目：https://supabase.com/dashboard/project/oflrjljywtqpgrcetwob
 
 1. 打开 https://console.cloud.google.com/auth/overview 并选择 Google Cloud 项目；没有就创建名为 `Waseda Running Lab` 的项目。
 2. 若系统提示配置 Google Auth Platform，进入 **Branding**，填写 App name `Waseda Running Lab`，User support email 选择你的邮箱，Developer contact information 选择你自己的邮箱，按屏幕要求保存。
-3. **Audience** 选择 **External**（面向任何 Google 账号）。如果处于 Testing 状态，在 **Test users** 添加你自己及测试朋友的 Google 邮箱；Testing 时其他 Google 账号可能无法登录。
+3. **Audience** 选择 **External**（允许其他 Google 账号）。如果你希望把网页链接发给朋友，让朋友直接用 Google 登录而不用逐个添加邮箱，推荐将 **Publishing status → Publish app（In production）**。只请求基础身份范围 openid / email / profile；Google 最新政策允许这类 Testing 应用不通过 Test users 名单登录，但公开使用建议发布。
 4. **Data Access / Scopes** 仅需要 `openid`、`.../auth/userinfo.email` 和 `.../auth/userinfo.profile`。不要随意增加 Gmail、Drive 等更高权限。
 5. 打开 **Clients** → **Create client**（或 Create OAuth client ID），**Application type** 选择 **Web application**。
 6. 设置 **Name**：`Waseda Running Lab Web`。
@@ -53,10 +53,10 @@ Supabase 项目：https://supabase.com/dashboard/project/oflrjljywtqpgrcetwob
 1. 打开 https://yileshi25-collab.github.io/waseda-running-lab/#community
 2. 点击 **使用 Google 账号登录** → 选择账号 → 同意授权 → 返回网站。
 3. 页面应显示 **已登录：你的邮箱** 和 **发布比赛成绩或照片** 表单。
-4. 如果提示 `access_denied`：确认 Google Cloud **Audience → Test users** 已加入该账号。
+4. 如果提示 `access_denied`：确认 Google Cloud **Audience → External** 与 OAuth 应用发布状态，并检查 Google Cloud / Google Workspace 账户政策。Testing 且请求敏感权限时才需要额外核实 Test users。
 5. 如果提示 `redirect_uri_mismatch`：检查 Google Cloud 的 **Authorized redirect URIs** 是否精确等于 Supabase 回调地址（注意末尾不要多加 `/`）。
 6. 如果提示 `provider is not enabled`：检查 Supabase Authentication → Sign In / Providers → Google 是否已开启并保存。
-7. 如果想让任何 Google 账号使用，测试成功后到 Google Cloud **Audience** 将应用发布到 Production，并按 Google 当前要求完成适用的发布或验证步骤。测试状态仅允许 Test users。
+7. 分享给朋友共同使用时，建议到 Google Cloud **Audience → Publish app（In production）**，确保无需逐个配置测试邮箱。此举会开放 Google 登录给符合条件的 Google 用户，不是只限知道链接的人；仍需保留投稿权限、举报和防刷机制。
 
 **安全提示**
 
@@ -68,3 +68,12 @@ Supabase 项目：https://supabase.com/dashboard/project/oflrjljywtqpgrcetwob
 官方文档：https://supabase.com/docs/guides/auth/social-sign-in/auth-google
 Google Cloud 文档：https://developers.google.com/identity/protocols/oauth2/web-server
 Supabase Redirect URL 文档：https://supabase.com/docs/guides/auth/redirect-urls
+
+## 多人协作权限的边界
+
+- 分享网址后，其他人可以登录后**新增**照片和赛事成绩；目前的社区投稿会立即公开。
+- 其他人**不能直接修改现有 2025/2026 官方赛果、PB 或他人的投稿**。这是刻意的权限隔离，避免误操作或恶意覆盖。
+- 如果未来希望允许修改，建议先实现“作者可修改自己的社区投稿，管理员能更正和撤下”，并在数据库 RLS 中单独授予权限，而非开放所有人修改所有记录。
+- Google OAuth 的 In production 登录对外开放，不等于仅限“拥有链接的人”；公开网址也可能被其他人发现。
+
+Google 官方 OAuth 应用状态说明：https://developers.google.com/identity/protocols/oauth2/production-readiness/overview
