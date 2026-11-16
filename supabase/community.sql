@@ -157,12 +157,12 @@ create policy "wsd_owner_or_admin_delete" on public.wsd_community_submissions
 create or replace function public.wsd_my_submission_ids()
 returns setof uuid language sql stable security definer
 set search_path = ''
-as $
+as $$
   select s.id
   from public.wsd_community_submissions s
   where s.author_id = (select auth.uid())
     and s.status = 'published';
-$;
+$$;
 revoke all on function public.wsd_my_submission_ids() from public, anon;
 grant execute on function public.wsd_my_submission_ids() to authenticated;
 
