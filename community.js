@@ -146,7 +146,7 @@
     }
     const entries=publicEditorialEntries("bio",name,null);
     const sig=entries.map(x=>x.id).join(",")+"|"+[...ownEditorialIds].join(",")+"|"+admin+"|"+!!user;
-    if(panel.dataset.wsdEditorialSignature===sig)return;
+    if(panel.dataset.wsdEditorialSignature===sig||panel.querySelector("[data-wsd-editorial-form]"))return;
     panel.innerHTML='<div class="wsd-athlete-photo-heading"><h4>选手简介 · ATHLETE BIO</h4>'+
       '<span>'+entries.length+' 条资料</span></div>'+
       (entries.length?entries.map(editorialEntryHTML).join(""):'<div class="wsd-editorial-empty">暂无公开简介。可以补充选手经历、特点及相关采访资料。</div>')+
@@ -162,7 +162,7 @@
       if(!name||!raceRef)return;
       const entries=publicEditorialEntries("race",name,raceRef);
       const sig=entries.map(x=>x.id).join(",")+"|"+[...ownEditorialIds].join(",")+"|"+admin+"|"+!!user;
-      if(slot.dataset.wsdEditorialSignature===sig)return;
+      if(slot.dataset.wsdEditorialSignature===sig||slot.querySelector("[data-wsd-editorial-form]"))return;
       slot.innerHTML='<div class="wsd-race-editorial-head"><strong>采访与赛后总结</strong>'+
         '<span>'+entries.length+' 条</span></div>'+
         (entries.length?entries.map(editorialEntryHTML).join(""):"")+
@@ -267,6 +267,9 @@
       '</div>';
   }
   function drawFeed(){
+    if($("wsdFeed")?.querySelector("[data-wsd-editorial-form]")){
+      decorateRoster();decorateDetails();return;
+    }
     const items=posts.filter(r=>active==="all"||r.kind===active);
     $("wsdFeed").innerHTML=items.length?items.map(r=>{
       const image=r.kind==="photo"?postImage(r):"";
@@ -1090,6 +1093,7 @@
       });
       if(error)throw error;
       status.textContent="已公开发布！";
+      form.closest(".wsd-editorial-form-slot")?.replaceChildren();
       await refreshEditorial();
       note("资料已添加，其他访客也可以查看。");
       if(typeof toast==="function")toast("简介／采访资料已保存");
