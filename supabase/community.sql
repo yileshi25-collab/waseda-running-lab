@@ -83,35 +83,22 @@ create index if not exists wsd_submissions_author_idx
 create index if not exists wsd_submissions_athlete_idx
   on public.wsd_community_submissions (athlete_name, created_at desc);
 
--- Server-enforced per-account limits. Inserts are serialized per user.
+-- Community submissions are not time-limited. Google authentication and
+-- RLS remain required; keep the author/status/creation-time guard.
 create or replace function public.wsd_submission_guard()
-returns trigger language plpgsql security definer
-set search_path = ''
+returns trigger language plpgsql security definer set search_path=''
 as $$
-declare
-  recent_minute integer;
-  recent_hour integer;
-  recent_day integer;
 begin
   if (select auth.uid()) is null then
-    raise exception 'You must sign in to submit';
+    raise exception 'You must sign in to submit' using errcode='42501';
   end if;
   new.author_id := (select auth.uid());
   new.created_at := now();
   new.status := 'published';
-  perform pg_catalog.pg_advisory_xact_lock(pg_catalog.hashtextextended(new.author_id::text, 42));
-  select
-     count(*) filter (where created_at >= now() - interval '1 minute'),
-     count(*) filter (where created_at >= now() - interval '1 hour'),
-     count(*) filter (where created_at >= now() - interval '1 day')
-    into recent_minute, recent_hour, recent_day
-    from public.wsd_community_submissions where author_id = new.author_id;
-  if recent_minute >= 1 or recent_hour >= 6 or recent_day >= 20 then
-    raise exception 'Too many submissions. Try later (1/min, 6/hour, 20/day).';
-  end if;
   return new;
 end;
 $$;
+revoke all on function public.wsd_submission_guard() from public, anon, authenticated;
 drop trigger if exists wsd_before_submit on public.wsd_community_submissions;
 create trigger wsd_before_submit
   before insert on public.wsd_community_submissions
