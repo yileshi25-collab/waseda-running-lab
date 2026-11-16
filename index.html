@@ -484,6 +484,7 @@ window.WSD_REFRESH_SHARED_VIEWS=function(){
  if($('detailOverlay')?.classList.contains('active')&&currentDetail)refreshDetail(currentDetail);
  if($('view-archive2025')?.classList.contains('active'))window.WSD_REFRESH_2025_ARCHIVE?.();
 };
+window.WSD_2025_ARCHIVE_ROWS=RESULTS.map(r=>({...r,profileName:currentName(r.name)||""}));
 window.WSD_REFRESH_2025_ARCHIVE=renderResults;
 renderRelays();renderResults();
 if(location.hash==='#archive2025')show('archive2025');
