@@ -22,6 +22,7 @@
   const TABLE = "wsd_community_submissions";
   const BUCKET = "wsd-community-photos";
   const REPORTS = "wsd_community_reports";
+  const CORRECTIONS = "wsd_community_date_corrections";
   const $ = id => document.getElementById(id);
   const esc = v => String(v == null ? "" : v).replace(/[&<>"']/g,
     c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -79,7 +80,7 @@
   catch { note("数据库组件加载失败，请检查网络连接。",true);return; }
   const sb=createClient(cfg.url,cfg.publishableKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
   let user=null,admin=false,posts=[],active="all";
-  let ownPostIds=new Set(),deleting=false;
+  let ownPostIds=new Set(),ownCorrectionIds=new Set(),corrections=[],deleting=false;
   async function loadOwnPostIds(){
     if(!user){ownPostIds=new Set();return;}
     // The public feed does not expose author UUIDs. This RPC returns
@@ -88,6 +89,30 @@
     if(error){ownPostIds=new Set();note("读取自己的投稿列表失败："+error.message,true);return;}
     ownPostIds=new Set((data||[]).map(v=>
       typeof v==="string"?v:v?.wsd_my_submission_ids).filter(Boolean));
+  }
+  async function loadOwnCorrectionIds(){
+    if(!user){ownCorrectionIds=new Set();return;}
+    const {data,error}=await sb.rpc("wsd_my_date_correction_ids");
+    if(error){ownCorrectionIds=new Set();note("读取日期修正权限失败："+error.message,true);return;}
+    ownCorrectionIds=new Set((data||[]).map(x=>x?.id).filter(Boolean));
+  }
+  function syncSharedViews(){
+    window.WSD_COMMUNITY_RACES=posts.filter(p=>p.kind==="race");
+    window.WSD_DATE_CORRECTIONS=corrections;
+    window.WSD_MY_POST_IDS=[...ownPostIds];
+    window.WSD_MY_DATE_CORRECTION_IDS=[...ownCorrectionIds];
+    window.WSD_IS_ADMIN=admin;
+    if(typeof window.WSD_REFRESH_SHARED_VIEWS==="function")window.WSD_REFRESH_SHARED_VIEWS();
+  }
+  async function refreshCorrections(){
+    const {data,error}=await sb.from(CORRECTIONS)
+      .select("id,record_id,corrected_date,created_at")
+      .order("created_at",{ascending:false}).order("id",{ascending:false})
+      .limit(1000);
+    if(error){note("读取日期修正记录失败："+error.message,true);return;}
+    corrections=data||[];
+    await loadOwnCorrectionIds();
+    syncSharedViews();
   }
   const oauthPendingKey="wsd-google-signin-pending";
   const photoPendingKey="wsd-pending-athlete-photo";
@@ -141,11 +166,12 @@
   async function refresh(){
     const {data,error}=await sb.from(TABLE).select(
       "id,kind,athlete_name,display_name,event_name,race_date,result_time,rank,notes,source_url,image_path,image_credit,image_license,created_at,status"
-    ).eq("status","published").order("created_at",{ascending:false}).limit(200);
+    ).eq("status","published").order("created_at",{ascending:false}).limit(1000);
     if(error){note("读取社区资料失败："+error.message,true);return;}
     posts=data||[];
     await loadOwnPostIds();
     drawFeed();
+    syncSharedViews();
   }
   function decorateRoster(){
     const list=$("rosterBody");
@@ -394,7 +420,9 @@
       if(admin)loadReports();else $("wsdAdminSummary").textContent="";
     }else{admin=false;$("wsdAdminSummary").textContent="";}
     await loadOwnPostIds();
+    await loadOwnCorrectionIds();
     drawFeed();
+    syncSharedViews();
   }
   $("wsdGoogleSignIn").onclick=async()=>{
     const button=$("wsdGoogleSignIn");
@@ -583,7 +611,7 @@
     }
   };
   sb.auth.onAuthStateChange(()=>{Promise.resolve().then(setAuth).catch(()=>{});});
-  await setAuth();await refresh();
+  await setAuth();await Promise.all([refresh(),refreshCorrections()]);
   const callbackParams=new URLSearchParams(location.search);
   const fragmentParams=new URLSearchParams(location.hash.startsWith("#")?location.hash.slice(1):"");
   const callbackError=callbackParams.get("error_description")||
@@ -599,5 +627,8 @@
   sb.channel("wsd-community-public").on("postgres_changes",
     {event:"*",schema:"public",table:TABLE},()=>{refresh().catch(()=>{});}).subscribe();
   // Reconnect fallback and updates from other tabs, keeping public feed fresh.
-  document.addEventListener("visibilitychange",()=>{if(!document.hidden)refresh().catch(()=>{});});
+  document.addEventListener("visibilitychange",()=>{if(!document.hidden)Promise.all([refresh(),refreshCorrections()]).catch(()=>{});});
+  window.addEventListener("focus",()=>refreshCorrections().catch(()=>{}));
+  // Date changes are refreshed periodically without broadcasting author IDs through Realtime.
+  setInterval(()=>{if(!document.hidden)refreshCorrections().catch(()=>{});},60000);
 })();
