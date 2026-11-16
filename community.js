@@ -677,6 +677,135 @@
       note(error?"举报失败："+error.message:"已收到举报，谢谢。",!!error);
     }
   };
+  // Small, mobile-friendly shared crop editor. This adjusts presentation only;
+  // the original JPEG in Storage is never recropped or replaced.
+  const cropOverlay=document.createElement("div");
+  cropOverlay.className="wsd-crop-overlay";
+  cropOverlay.id="wsdPhotoCropOverlay";
+  cropOverlay.hidden=true;
+  cropOverlay.innerHTML=
+    '<div class="wsd-crop-dialog" role="dialog" aria-modal="true" aria-labelledby="wsdCropTitle">'+
+      '<div class="wsd-crop-header"><h3 id="wsdCropTitle">调整照片显示位置</h3>'+
+      '<button type="button" data-wsd-crop-close aria-label="关闭照片调整" class="wsd-crop-close">×</button></div>'+
+      '<p>拖动预览图片，或调整横向／纵向滑块。这里只调整网站里的显示区域，不会修改原图。</p>'+
+      '<div class="wsd-crop-preview" data-wsd-crop-drag>'+
+        '<img data-wsd-crop-image alt="照片裁切实时预览"></div>'+
+      '<form id="wsdPhotoCropForm">'+
+        '<label>左右位置 <output data-wsd-crop-x-value>50%</output>'+
+          '<input type="range" name="focal_x" min="0" max="100" step="1" value="50" aria-label="照片左右位置"></label>'+
+        '<label>上下位置 <output data-wsd-crop-y-value>20%</output>'+
+          '<input type="range" name="focal_y" min="0" max="100" step="1" value="20" aria-label="照片上下位置"></label>'+
+        '<div class="wsd-crop-buttons">'+
+          '<button class="btn btn-primary" type="submit" data-wsd-crop-save>保存位置</button>'+
+          '<button class="btn" type="button" data-wsd-crop-close>取消</button>'+
+        '</div><div class="wsd-crop-status" data-wsd-crop-status role="status"></div>'+
+      '</form>'+
+    '</div>';
+  document.body.appendChild(cropOverlay);
+  let croppingId=null;
+  let photoActionBusy=false;
+  const cropForm=cropOverlay.querySelector("#wsdPhotoCropForm");
+  const cropPreview=cropOverlay.querySelector("[data-wsd-crop-drag]");
+  function updateCropPreview(){
+    const x=Number(cropForm.elements.namedItem("focal_x").value);
+    const y=Number(cropForm.elements.namedItem("focal_y").value);
+    cropOverlay.querySelector("[data-wsd-crop-image]").style.objectPosition=x+"% "+y+"%";
+    cropOverlay.querySelector("[data-wsd-crop-x-value]").textContent=x+"%";
+    cropOverlay.querySelector("[data-wsd-crop-y-value]").textContent=y+"%";
+  }
+  function closeCrop(){
+    cropOverlay.hidden=true;
+    croppingId=null;
+    cropOverlay.querySelector("[data-wsd-crop-image]").removeAttribute("src");
+  }
+  function openCrop(id){
+    const row=posts.find(r=>r.id===id&&r.kind==="photo");
+    if(!row||!canManagePhoto(row)){note("只有照片上传者或管理员可以调整这张照片。",true);return;}
+    const url=postImage(row);
+    if(!url)return;
+    croppingId=id;
+    const image=cropOverlay.querySelector("[data-wsd-crop-image]");
+    image.src=url;
+    cropForm.elements.namedItem("focal_x").value=Number.isInteger(row.focal_x)?row.focal_x:50;
+    cropForm.elements.namedItem("focal_y").value=Number.isInteger(row.focal_y)?row.focal_y:20;
+    cropOverlay.querySelector("[data-wsd-crop-status]").textContent="";
+    cropOverlay.hidden=false;
+    updateCropPreview();
+    cropForm.elements.namedItem("focal_y").focus();
+  }
+  cropOverlay.addEventListener("click",e=>{
+    if(e.target===cropOverlay||e.target.closest("[data-wsd-crop-close]"))closeCrop();
+  });
+  cropForm.addEventListener("input",updateCropPreview);
+  document.addEventListener("keydown",e=>{
+    if(e.key==="Escape"&&!cropOverlay.hidden){
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      closeCrop();
+    }
+  },true);
+  let dragStart=null;
+  cropPreview.addEventListener("pointerdown",e=>{
+    if(!croppingId)return;
+    dragStart={id:e.pointerId,x:e.clientX,y:e.clientY,
+      fx:Number(cropForm.elements.namedItem("focal_x").value),
+      fy:Number(cropForm.elements.namedItem("focal_y").value)};
+    cropPreview.setPointerCapture(e.pointerId);
+  });
+  cropPreview.addEventListener("pointermove",e=>{
+    if(!dragStart||dragStart.id!==e.pointerId)return;
+    const clamp=n=>Math.max(0,Math.min(100,Math.round(n)));
+    const fx=clamp(dragStart.fx-(e.clientX-dragStart.x)*100/Math.max(cropPreview.clientWidth,1));
+    const fy=clamp(dragStart.fy-(e.clientY-dragStart.y)*100/Math.max(cropPreview.clientHeight,1));
+    cropForm.elements.namedItem("focal_x").value=fx;
+    cropForm.elements.namedItem("focal_y").value=fy;
+    updateCropPreview();
+  });
+  for(const kind of ["pointerup","pointercancel","lostpointercapture"]){
+    cropPreview.addEventListener(kind,()=>{dragStart=null;});
+  }
+  cropForm.addEventListener("submit",async e=>{
+    e.preventDefault();
+    if(!croppingId||photoActionBusy)return;
+    const button=cropForm.querySelector("[data-wsd-crop-save]");
+    const status=cropOverlay.querySelector("[data-wsd-crop-status]");
+    button.disabled=true;button.textContent="正在保存…";photoActionBusy=true;
+    try{
+      const {error}=await sb.rpc("wsd_update_photo_crop",{
+        p_photo_id:croppingId,
+        p_x:Number(cropForm.elements.namedItem("focal_x").value),
+        p_y:Number(cropForm.elements.namedItem("focal_y").value)
+      });
+      if(error)throw error;
+      closeCrop();
+      await refresh();
+      note("照片显示位置已保存，所有访问者都会看到新位置。");
+      if(typeof toast==="function")toast("照片位置已更新");
+    }catch(err){status.textContent="保存失败："+(err?.message||String(err));}
+    finally{photoActionBusy=false;button.disabled=false;button.textContent="保存位置";}
+  });
+  document.addEventListener("click",async e=>{
+    const edit=e.target.closest("[data-wsd-edit-crop]");
+    if(edit){e.preventDefault();openCrop(edit.dataset.wsdEditCrop);return;}
+    const set=e.target.closest("[data-wsd-set-cover]");
+    if(!set)return;
+    e.preventDefault();
+    if(photoActionBusy)return;
+    const id=set.dataset.wsdSetCover;
+    const photo=posts.find(r=>r.id===id&&r.kind==="photo");
+    if(!photo||!canManagePhoto(photo)){note("只有照片上传者或管理员可以设置这张照片为头像。",true);return;}
+    photoActionBusy=true;set.disabled=true;
+    try{
+      const {error}=await sb.rpc("wsd_set_photo_primary",{p_photo_id:id});
+      if(error)throw error;
+      await refresh();
+      note("已设置为 "+resolveAthleteName(photo.athlete_name)+" 的头像。");
+      if(typeof toast==="function")toast("已设置为选手头像");
+    }catch(err){
+      const msg="设置头像失败："+(err?.message||String(err));
+      note(msg,true);if(typeof toast==="function")toast(msg);
+    }finally{photoActionBusy=false;set.disabled=false;}
+  });
   async function saveSharedDateCorrection(form){
     if(!user){note("请先使用 Google 登录才能修正日期。",true);return;}
     const recordId=Number(form.dataset.wsdRecordId);
