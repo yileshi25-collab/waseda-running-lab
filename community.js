@@ -287,7 +287,8 @@
        '<h4>'+esc(r.athlete_name)+'</h4>'+metadata+
        (r.notes?'<p>'+esc(r.notes)+'</p>':"")+
        '<small>投稿者：'+esc(r.display_name)+' · '+new Date(r.created_at).toLocaleString("zh-CN")+'</small>'+
-       (r.kind==="photo"?photoActions(r,isCover,false):"")+
+       (r.kind==="photo"?photoActions(r,isCover,false):
+         '<div class="wsd-race-editorial-slot" data-wsd-race-attach data-wsd-race-ref="community-'+esc(r.id)+'" data-wsd-athlete="'+esc(resolveAthleteName(r.athlete_name))+'"></div>')+
        '<footer>'+sourceLink(r.source_url,"资料来源")+
        (user?'<button data-wsd-report="'+esc(r.id)+'" type="button">举报</button>':'<small>登录后可举报</small>')+
        (user&&(admin||ownPostIds.has(r.id))?'<button class="wsd-community-delete" data-wsd-delete="'+esc(r.id)+'" type="button">'+(admin&&!ownPostIds.has(r.id)?'管理员删除':'删除我的投稿')+'</button>':"")+
@@ -410,11 +411,11 @@
     const rows=[
       ...static2025.map(r=>({date:r.date,stage:"站内 2025 赛事档案",
         meet:r.event||"",event:r.metric||"",time:r.time||"",rank:r.rank,
-        school:"",note:r.note||"",source:r.source||"",communityId:null})),
+        school:"",note:r.note||"",source:r.source||"",communityId:null,raceRef:r.raceRef||""})),
       ...schoolPosts.map(r=>({date:r.race_date,stage:careerStageLabel(r.career_stage),
         meet:r.meet_name||"跑友补充赛事",event:r.event_name||"",
         time:r.result_time||"",rank:r.rank,school:r.school_name||"",
-        note:r.notes||"",source:r.source_url||"",communityId:r.id}))
+        note:r.notes||"",source:r.source_url||"",communityId:r.id,raceRef:"community-"+r.id}))
     ].sort((a,b)=>b.date.localeCompare(a.date)||a.event.localeCompare(b.event));
     const groups=new Map();
     for(const row of rows){
@@ -448,6 +449,7 @@
           (r.rank?'<span>第 '+esc(r.rank)+' 名</span>':"")+'</div>'+
         (r.school?'<small>当时学校／队伍：'+esc(r.school)+'</small>':"")+
         (r.note?'<p>'+esc(r.note)+'</p>':"")+
+        '<div class="wsd-race-editorial-slot" data-wsd-race-attach data-wsd-race-ref="'+esc(r.raceRef||"")+'" data-wsd-athlete="'+esc(name)+'"></div>'+
         '<div class="wsd-career-record-foot">'+
           (r.communityId?'<span class="wsd-community-origin">跑友补录 · 未经独立核实</span>':
             '<span class="wsd-community-origin">站内 2025 原始档案</span>')+
@@ -469,7 +471,7 @@
     const head=body.querySelector(".detail-head");
     const name=head?.querySelector("h2")?.textContent?.trim();
     if(!name)return;
-    let section=body.querySelector(".wsd-community-gallery");
+    let section=body.querySelector(".wsd-athlete-photo-section");
     if(section&&section.dataset.wsdAthlete!==name){section.remove();section=null;}
     if(!section){
       section=document.createElement("section");
@@ -509,6 +511,7 @@
         races.map(r=>'<div class="wsd-community-mini-races">'+
           esc(r.race_date||"")+" · "+esc(r.event_name||"")+" · <b>"+esc(r.result_time||"")+"</b> "+
           sourceLink(r.source_url,"来源")+
+          '<div class="wsd-race-editorial-slot" data-wsd-race-attach data-wsd-race-ref="community-'+esc(r.id)+'" data-wsd-athlete="'+esc(name)+'"></div>'+
           (user&&(admin||ownPostIds.has(r.id))?' <button type="button" class="wsd-athlete-race-delete" data-wsd-delete="'+esc(r.id)+'">删除投稿</button>':"")+
           '</div>').join(""):"";
       extras.dataset.raceIds=raceIds;
