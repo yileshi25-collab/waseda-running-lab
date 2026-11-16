@@ -94,3 +94,15 @@
 .wsd-athlete-race-extras:empty{display:none}
 .wsd-athlete-race-extras h5{margin:0 0 6px;padding-top:12px;border-top:1px solid #eddae3;color:#70415b;font-size:12px}
 .wsd-community-avatar{width:33px;height:33px;object-fit:cover;border-radius:9px}
+
+
+/* Author/admin deletion actions in community feed and athlete profiles. */
+.wsd-community-delete{font-size:11px!important;font-weight:700;color:#af365e!important;text-decoration:underline;cursor:pointer}
+.wsd-community-delete:focus-visible,.wsd-photo-tile-delete:focus-visible,.wsd-athlete-race-delete:focus-visible{outline:2px solid #b84671;outline-offset:2px}
+.wsd-athlete-photo-tile{display:flex;flex-direction:column;gap:5px;min-width:0}
+.wsd-athlete-photo-tile>a{display:flex;flex-direction:column;gap:4px;min-width:0}
+.wsd-athlete-photo-tile>a img{width:100%;height:auto;aspect-ratio:1;object-fit:cover}
+.wsd-athlete-photo-tile>a span{font-size:10px;color:#765365;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wsd-photo-tile-delete,.wsd-athlete-race-delete{border:1px solid #edd3dd;background:#fff7fa;color:#a33960;font-size:10px;line-height:1.4;border-radius:6px;padding:6px 7px;cursor:pointer}
+.wsd-photo-tile-delete:hover,.wsd-athlete-race-delete:hover{background:#f9e8ef}
+.wsd-athlete-race-delete{margin-left:5px}
