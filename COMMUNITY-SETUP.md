@@ -10,6 +10,24 @@
 4. 在 Storage 确认 wsd-community-photos bucket 是 Public，允许 image/jpeg，单图不超过 2MB。
 5. 在 Realtime 设置中确认实时服务开启，数据库脚本已将 wsd_community_submissions 加入 supabase_realtime 发布表。
 
+## 邮箱六位验证码登录（建议启用）
+
+为了避免邮箱安全扫描提前消耗 Magic Link（表现为 403: Email link is invalid or has expired），
+网站支持直接输入六位数字的 OTP 登录。需要将 Supabase 的邮件模板改为发数字验证码：
+
+1. 打开 https://supabase.com/dashboard/project/oflrjljywtqpgrcetwob/auth/templates
+2. 选择 **Magic Link**，把正文改为：
+
+    <h2>Waseda Running Lab 登录验证码</h2>
+    <p>请回到网站输入这 6 位验证码：</p>
+    <p><strong>{{ .Token }}</strong></p>
+    <p>如果不是你本人发起的登录，请忽略这封邮件。</p>
+
+3. 保存。如首次注册使用 **Confirm Signup** 邮件模板，也要在该模板正文中加入 `{{ .Token }}`，并去掉直接跳转的 `{{ .ConfirmationURL }}` 链接。
+4. 在网站发送新邮件，回到「跑友共建」，将邮件中的数字填入验证码输入框，点击「验证并登录」。
+5. 不要向任何人发送邮件验证码、完整登录链接或会话 token。
+
+官方参考：https://supabase.com/docs/guides/auth/auth-email-passwordless
 ## 2. 设置邮箱登录与防机器人
 
 1. Supabase Authentication → Providers → Email：启用邮箱登录及用户注册。
