@@ -131,3 +131,50 @@
 .wsd-date-history-row{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 0;border-bottom:1px solid #f1e1e9}
 .wsd-date-history-row:last-child{border-bottom:0}
 .wsd-date-history-row>span{font-size:11px;color:#6e455b;font-variant-numeric:tabular-nums}
+
+
+/* Athlete cover photo, secondary gallery and crop management (2026-11). */
+.wsd-post-image-link{display:block;background:#f6eff3;overflow:hidden}
+.wsd-post-image-link:focus-visible{outline:3px solid #9e4168;outline-offset:-3px}
+.wsd-post-photo{height:clamp(190px,34vw,290px);object-fit:cover;object-position:50% 20%}
+.wsd-cover-label{display:inline-block;font-size:10px;letter-spacing:0;background:#f2e1e9;color:#7e3354;border-radius:999px;padding:3px 7px;vertical-align:middle;margin-left:5px}
+.wsd-community-avatar{object-fit:cover;object-position:50% 20%}
+.wsd-athlete-photo-cover{margin:0 0 15px}
+.wsd-athlete-photo-hero{border:1px solid #ead8e1;border-radius:13px;background:#fff;overflow:hidden}
+.wsd-athlete-photo-hero>a{display:block;line-height:0;background:#f3e8ed}
+.wsd-athlete-main-photo{width:100%;height:clamp(190px,37vw,310px);display:block;object-fit:cover;object-position:50% 20%}
+.wsd-athlete-cover-meta{display:flex;flex-direction:column;gap:4px;padding:12px}
+.wsd-athlete-cover-meta strong{font-size:13px;color:#622b46}
+.wsd-athlete-cover-meta span,.wsd-athlete-cover-meta small{font-size:10px;color:#896476}
+.wsd-gallery-subheading{font-size:12px;color:#673651;margin:13px 0 9px;font-weight:800}
+.wsd-gallery-empty{grid-column:1/-1;font-size:11px;color:#967384;padding:14px 10px;background:#faf5f8;border:1px dashed #e9d5df;border-radius:9px}
+.wsd-athlete-photo-tile{display:flex;flex-direction:column;gap:6px;min-width:0}
+.wsd-athlete-photo-tile a{min-width:0;display:flex;flex-direction:column;gap:4px}
+.wsd-athlete-photo-tile img{width:100%;aspect-ratio:1;object-fit:cover;object-position:50% 20%}
+.wsd-photo-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:10px 0 4px}
+.wsd-photo-actions button{font:inherit!important;font-size:10px!important;font-weight:700!important;background:#f9edf2!important;border:1px solid #e5c3d1!important;color:#873c5e!important;padding:7px 9px!important;border-radius:7px!important;cursor:pointer;text-decoration:none!important;min-height:30px}
+.wsd-photo-actions button:hover{background:#f1dce6!important}
+.wsd-photo-actions .wsd-photo-action-delete{background:#fff6f8!important;border-color:#edd3dd!important;color:#a43c60!important}
+.wsd-photo-actions button:disabled{opacity:.55;cursor:progress}
+.wsd-photo-actions button:focus-visible{outline:2px solid #a04d70;outline-offset:2px}
+.wsd-athlete-photo-tile .wsd-photo-actions{display:flex;flex-direction:column;align-items:stretch;margin:0}
+.wsd-athlete-photo-tile .wsd-photo-actions button{width:100%;text-align:center;font-size:10px!important;padding:6px 4px!important;min-height:29px}
+.wsd-athlete-cover-meta .wsd-photo-actions{margin-top:9px}
+.wsd-crop-overlay{position:fixed;inset:0;z-index:1000;display:flex;justify-content:center;align-items:center;padding:14px;background:rgba(24,8,17,.76)}
+.wsd-crop-overlay[hidden]{display:none!important}
+.wsd-crop-dialog{box-sizing:border-box;width:100%;max-width:470px;max-height:calc(100dvh - 28px);overflow:auto;background:#fff;border-radius:17px;padding:18px;box-shadow:0 25px 80px #0006;color:#51283d}
+.wsd-crop-header{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.wsd-crop-header h3{font-size:17px;margin:0;font-weight:800;color:#612843}
+.wsd-crop-close{border:1px solid #eddae2;background:#fff;border-radius:8px;font-size:24px;width:35px;height:35px;cursor:pointer;color:#81445c}
+.wsd-crop-dialog>p{font-size:11px;line-height:1.75;color:#8d7080;margin:9px 0 12px}
+.wsd-crop-preview{height:clamp(185px,32vh,300px);position:relative;overflow:hidden;background:#f4e9ef;border:1px solid #ead7e1;border-radius:12px;touch-action:none;cursor:grab;user-select:none}
+.wsd-crop-preview:active{cursor:grabbing}
+.wsd-crop-preview img{display:block;width:100%;height:100%;object-fit:cover;pointer-events:none;user-select:none}
+#wsdPhotoCropForm{display:grid;gap:14px;margin-top:16px}
+#wsdPhotoCropForm label{font-size:12px;font-weight:700;color:#75445e;display:grid;gap:7px}
+#wsdPhotoCropForm label output{font-weight:600;color:#9b7489}
+#wsdPhotoCropForm input[type=range]{width:100%;accent-color:#923759;min-height:26px;cursor:pointer}
+.wsd-crop-buttons{display:flex;flex-wrap:wrap;gap:9px}
+.wsd-crop-buttons .btn{flex:1;min-width:110px}
+.wsd-crop-status{min-height:16px;color:#ad3b5d;font-size:11px;line-height:1.6;overflow-wrap:anywhere}
+@media(max-width:480px){.wsd-athlete-photo-collection{grid-template-columns:repeat(2,minmax(0,1fr))}.wsd-crop-dialog{padding:15px}.wsd-post-photo{height:235px}.wsd-crop-preview{height:235px}}
