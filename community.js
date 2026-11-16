@@ -45,8 +45,11 @@
           '<label>投稿署名<input id="wsdDisplayName" maxlength="30" minlength="2" required value="早稻田跑友"></label>'+
           '<label>选手姓名<input id="wsdAthlete" list="wsdAthleteNames" maxlength="75" required placeholder="按日文姓名检索／输入"></label><datalist id="wsdAthleteNames"></datalist>'+
           '<div id="wsdRaceFields" class="wsd-community-form">'+
-            '<label>比赛项目<input id="wsdEvent" maxlength="80" placeholder="5000m / 箱根驿传 4区"></label>'+
-            '<label>比赛日期<input id="wsdRaceDate" type="date" min="2020-01-01"></label>'+
+            '<label>比赛项目<input id="wsdEvent" maxlength="80" placeholder="1500m / 5000m / 箱根驿传 4区"></label>'+
+            '<label>赛事名称（选填）<input id="wsdMeet" maxlength="120" placeholder="例如：全国高校综合体育大会"></label>'+
+            '<label>成绩所属阶段<select id="wsdCareerStage"><option value="university">大学</option><option value="high_school">高中</option><option value="junior_high">初中</option><option value="elementary">小学</option><option value="other">其他／待核实</option></select></label>'+
+            '<label>当时就读学校／队伍（选填）<input id="wsdSchool" maxlength="100" placeholder="例如：某某高校／中学"></label>'+
+            '<label>比赛日期<input id="wsdRaceDate" type="date" min="1990-01-01"></label>'+
             '<label>成绩<input id="wsdTime" maxlength="20" placeholder="13:45.12 或 1:02:36"></label>'+
             '<label>名次（可选）<input id="wsdRank" type="number" min="1" max="50000"></label>'+
           '</div><div id="wsdPhotoFields" class="wsd-community-form" hidden>'+
@@ -187,6 +190,9 @@
       const isCover=chosen?.id===r.id;
       const metadata=r.kind==="race"?
         '<strong>'+esc(r.result_time||"")+'</strong><div class="wsd-post-meta"><span>'+esc(r.event_name||"")+'</span><span>'+esc(r.race_date||"")+'</span>'+
+        '<span>'+esc(({university:"大学",high_school:"高中",junior_high:"初中",elementary:"小学",other:"其他／待核实"})[r.career_stage]||"大学")+'</span>'+
+        (r.meet_name?'<span>'+esc(r.meet_name)+'</span>':"")+
+        (r.school_name?'<span>'+esc(r.school_name)+'</span>':"")+
         (r.rank?'<span>第 '+Number(r.rank)+' 名</span>':"")+'</div>':
         '<small>摄影／来源：'+esc(r.image_credit||"")+' · '+esc(r.image_license||"")+'</small>';
       return '<article class="wsd-post">'+
@@ -208,7 +214,7 @@
   }
   async function refresh(){
     const {data,error}=await sb.from(TABLE).select(
-      "id,kind,athlete_name,display_name,event_name,race_date,result_time,rank,notes,source_url,image_path,image_credit,image_license,created_at,status,is_primary,focal_x,focal_y"
+      "id,kind,athlete_name,display_name,event_name,race_date,result_time,rank,notes,source_url,image_path,image_credit,image_license,created_at,status,is_primary,focal_x,focal_y,career_stage,school_name,meet_name"
     ).eq("status","published").order("created_at",{ascending:false}).limit(1000);
     if(error){note("读取社区资料失败："+error.message,true);return;}
     posts=data||[];
@@ -456,6 +462,21 @@
       }
     });
   }
+  document.addEventListener("click",e=>{
+    const b=e.target.closest("[data-wsd-add-history]");
+    if(!b)return;
+    e.preventDefault();
+    const name=resolveAthleteName(b.dataset.wsdAddHistory||"");
+    if(!name)return;
+    if(typeof closeDetail==="function")closeDetail();
+    navigateCommunity();
+    $("wsdKind").value="race";
+    $("wsdKind").onchange();
+    $("wsdAthlete").value=name;
+    $("wsdCareerStage").value="university";
+    note(user?"已选择 "+name+"，请补充所属年份、学校阶段和成绩。":"请先使用 Google 登录，再为这位选手补充历史成绩。");
+    if(user)$("wsdRaceDate").focus();
+  });
   $("wsdFeedKind").onchange=e=>{active=e.target.value;drawFeed();};
   const rosterEl=$("rosterBody");
   if(rosterEl)new MutationObserver(()=>{if(rosterEl.querySelector(".playericon"))decorateRoster();}).observe(rosterEl,{childList:true});
@@ -572,6 +593,13 @@
         const time=$("wsdTime").value.trim();
         if(!/^\d{1,2}(:\d{2}){1,2}(\.\d{1,2})?$/.test(time))throw Error("成绩格式如 13:45.12 或 1:02:36");
         const rank=$("wsdRank").value.trim();
+        const stage=$("wsdCareerStage").value;
+        const meet=$("wsdMeet").value.trim();
+        const school=$("wsdSchool").value.trim();
+        if(!["university","high_school","junior_high","elementary","other"].includes(stage))throw Error("请选择成绩所属阶段");
+        if(meet&&(meet.length<2||meet.length>120||/https?:\/\/|www\./i.test(meet)))throw Error("赛事名称应为 2–120 字，不含网址");
+        if(school&&(school.length<2||school.length>100||/https?:\/\/|www\./i.test(school)))throw Error("学校名称应为 2–100 字，不含网址");
+        item.career_stage=stage;item.meet_name=meet||null;item.school_name=school||null;
         item.event_name=$("wsdEvent").value.trim();
         item.race_date=$("wsdRaceDate").value;
         item.result_time=time;item.rank=rank?Number(rank):null;
