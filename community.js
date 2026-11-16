@@ -8,6 +8,17 @@
   const root = document.getElementById("wsdCommunityRoot");
   if (!root) return;
   const cfg = window.WSD_COMMUNITY_CONFIG || {};
+  function safePublicKey(key) {
+    if (typeof key!=="string" || key.length<=30 || key.startsWith("sb_secret_")) return false;
+    if (key.startsWith("sb_publishable_")) return true;
+    // Historical Supabase "anon" keys are JWTs; reject any service_role JWT.
+    try {
+      const part = key.split(".")[1];
+      if (!part) return false;
+      const raw = atob(part.replace(/-/g,"+").replace(/_/g,"/"));
+      return JSON.parse(raw).role === "anon";
+    } catch { return false; }
+  }
   const TABLE = "wsd_community_submissions";
   const BUCKET = "wsd-community-photos";
   const REPORTS = "wsd_community_reports";
@@ -57,8 +68,7 @@
     '<div id="wsdAdminSummary" class="wsd-admin-indicator"></div>'+
     '</section></div>';
   const setup = $("wsdSetup");
-  if (!(cfg.enabled===true && https(cfg.url) && typeof cfg.publishableKey==="string" &&
-        cfg.publishableKey.length>30 && !cfg.publishableKey.startsWith("sb_secret_") &&
+  if (!(cfg.enabled===true && https(cfg.url) && safePublicKey(cfg.publishableKey) &&
         typeof cfg.turnstileSiteKey==="string" && cfg.turnstileSiteKey.length>8)) {
     setup.hidden=false;
     setup.innerHTML = '协作上传尚未开启：需要先安装数据库并填写 Supabase 公共配置。<a href="https://github.com/yileshi25-collab/waseda-running-lab/blob/main/COMMUNITY-SETUP.md" target="_blank" rel="noopener noreferrer">启用步骤 ↗</a>';
@@ -158,7 +168,7 @@
     if(u){
       const {data}=await sb.rpc("wsd_is_community_admin");
       admin=data===true;
-      $("wsdAdminSummary").textContent=admin?"管理员已登录，可撤下不当投稿":"";
+      if(admin)loadReports();else $("wsdAdminSummary").textContent="";
     }else{admin=false;$("wsdAdminSummary").textContent="";}
     drawFeed();
   }
@@ -278,6 +288,42 @@
       note("投稿失败："+(err?.message||String(err)),true);
     }finally{button.disabled=false;button.textContent="发布后立即公开";}
   };
+  async function loadReports(){
+    if(!admin)return;
+    const {data,error}=await sb.from(REPORTS).select("submission_id,reason,created_at").order("created_at",{ascending:false}).limit(40);
+    if(error){$("wsdAdminSummary").textContent="管理员举报列表加载失败："+error.message;return;}
+    const grouped=new Map();
+    for(const x of data||[]){
+      if(!grouped.has(x.submission_id))grouped.set(x.submission_id,[]);
+      grouped.get(x.submission_id).push(x.reason);
+    }
+    $("wsdAdminSummary").innerHTML="<strong>管理员 · 举报处理</strong><p>当前显示最近 40 次举报。隐藏照片会同时尝试删除公开存储中的图片。</p>"+
+      ([...grouped.entries()].map(([id,reasons])=>
+        '<div class="wsd-admin-report"><span>'+esc(id)+' · '+reasons.length+' 次 · '+esc(reasons.join("、"))+
+        '</span><button data-wsd-admin-hide="'+esc(id)+'" class="btn btn-small" type="button">隐藏内容</button></div>'
+      ).join("")||'<p>暂无举报</p>');
+  }
+  async function hidePost(id){
+    if(!admin)return;
+    const {data:items,error:queryErr}=await sb.from(TABLE).select("id,kind,image_path,status").eq("id",id).limit(1);
+    if(queryErr){note("无法加载目标内容："+queryErr.message,true);return;}
+    const post=items?.[0];
+    if(!post){note("未找到投稿。",true);return;}
+    if(!confirm("确认撤下此投稿吗？照片会尝试从公共存储永久删除。"))return;
+    const {error}=await sb.from(TABLE).update({status:"hidden"}).eq("id",id);
+    if(error){note("撤下失败："+error.message,true);return;}
+    let photoProblem="";
+    if(post.kind==="photo"&&post.image_path){
+      const {error:removeErr}=await sb.storage.from(BUCKET).remove([post.image_path]);
+      if(removeErr)photoProblem="；图片删除失败，请在 Supabase Storage 手动删除："+removeErr.message;
+    }
+    note("投稿已撤下"+photoProblem,!!photoProblem);
+    await refresh();await loadReports();
+  }
+  $("wsdAdminSummary").onclick=async e=>{
+    const b=e.target.closest("[data-wsd-admin-hide]");
+    if(b)await hidePost(b.dataset.wsdAdminHide);
+  };
   $("wsdFeed").onclick=async e=>{
     const report=e.target.closest("[data-wsd-report]");
     const hide=e.target.closest("[data-wsd-hide]");
@@ -291,12 +337,7 @@
       const {error}=await sb.from(REPORTS).insert({submission_id:id,reporter_id:user.id,reason});
       note(error?"举报失败："+error.message:"已收到举报，谢谢。",!!error);
     }
-    if(hide&&admin){
-      if(!confirm("将该投稿从网站列表撤下？照片文件仍可能通过已知的公开链接访问，必要时还需在 Supabase Storage 删除原图。"))return;
-      const {error}=await sb.from(TABLE).update({status:"hidden"}).eq("id",hide.dataset.wsdHide);
-      note(error?"撤下失败："+error.message:"投稿已从公开列表撤下。",!!error);
-      if(!error)await refresh();
-    }
+    if(hide&&admin)await hidePost(hide.dataset.wsdHide);
   };
   sb.auth.onAuthStateChange(()=>{Promise.resolve().then(setAuth).catch(()=>{});});
   await setAuth();await refresh();
