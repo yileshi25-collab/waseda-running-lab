@@ -53,7 +53,7 @@
             '<label>摄影者 / 来源署名<input id="wsdCredit" maxlength="120"></label>'+
             '<label>使用依据<select id="wsdLicense"><option value="own">本人拍摄，允许网站公开</option><option value="permission">获得原摄影者明确许可</option><option value="cc-by">CC BY 可再分发</option><option value="public-domain">公共领域</option></select></label>'+
           '</div>'+
-          '<label>来源链接（成绩必填；HTTPS）<input id="wsdSource" type="url" maxlength="400" placeholder="https://..."></label>'+
+          '<label>来源链接（比赛成绩必填，照片选填；HTTPS）<input id="wsdSource" type="url" maxlength="400" placeholder="https://..."></label>'+
           '<label>补充说明<input id="wsdNotes" maxlength="500" placeholder="可填赛事轮次、出处或授权说明；不要填隐私"></label>'+
           '<label class="wsd-community-tick"><input type="checkbox" id="wsdRights" required><span>我确认成绩与来源真实、拥有照片公开权限，未包含私人信息，同意立即公开及接受举报。</span></label>'+
           '<button type="submit" class="btn btn-primary" id="wsdPublish">发布后立即公开</button>'+
@@ -194,10 +194,10 @@
       '<label>照片使用依据<select name="license" required>'+
         '<option value="own">本人拍摄，同意公开</option>'+
         '<option value="permission">已获得摄影者明确授权</option>'+
-        '<option value="cc-by">CC BY（需提供来源）</option>'+
-        '<option value="public-domain">公共领域（需提供来源）</option>'+
+        '<option value="cc-by">CC BY（遵守署名要求）</option>'+
+        '<option value="public-domain">公共领域</option>'+
       '</select></label>'+
-      '<label>原始来源网址（开放授权必填）<input type="url" name="source" maxlength="400" placeholder="https://..."></label>'+
+      '<label>照片来源网址（选填）<input type="url" name="source" maxlength="400" placeholder="可留空"></label>'+
       '<label class="wsd-community-tick"><input type="checkbox" name="rights" required><span>我拥有公开这张照片的权利，照片不包含私人信息，同意作为社区投稿公开。</span></label>'+
       '<button class="btn btn-primary wsd-athlete-upload-button" type="submit">发布这位选手的照片</button>'+
       '<div class="wsd-athlete-upload-status" data-wsd-photo-status role="status" aria-live="polite"></div>'+
@@ -304,7 +304,6 @@
       if(who.length<2||who.length>30||!credit||credit.length>120){say("请检查投稿署名和摄影者署名。",true);return;}
       if(!["own","permission","cc-by","public-domain"].includes(license)){say("请选择照片的使用依据。",true);return;}
       if(source&&!https(source)){say("照片来源须使用 HTTPS 链接。",true);return;}
-      if(["cc-by","public-domain"].includes(license)&&!source){say("开放授权照片必须填写原始来源链接。",true);return;}
       if(!file||!form.elements.namedItem("rights").checked){say("请选择照片并确认公开权限。",true);return;}
       const button=form.querySelector('button[type="submit"]');
       button.disabled=true;button.textContent="正在上传…";
@@ -462,7 +461,6 @@
         const credit=$("wsdCredit").value.trim();
         if(!credit)throw Error("照片必须填写摄影者／来源署名");
         const license=$("wsdLicense").value;
-        if(["cc-by","public-domain"].includes(license)&&!source)throw Error("开放授权需提供原始来源链接");
         const blob=await convertJpeg($("wsdPhoto").files[0]);
         const id=crypto.randomUUID();
         const key=user.id+"/"+id+".jpg";
