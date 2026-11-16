@@ -485,6 +485,8 @@ $a('arc25Csv').addEventListener('click',()=>{
  download('waseda_2025_results_including_community.csv',csvExport(rows,['date','event','type','metric','athlete','grade_at_race','time','rank','notes','source']),'text/csv;charset=utf-8');
 });
 window.WSD_REFRESH_SHARED_VIEWS=function(){
+ // Do not erase a user's unfinished long-form biography or race recap.
+ if(document.querySelector('[data-wsd-editorial-form]'))return;
  if($('view-season')?.classList.contains('active'))renderSeason();
  if($('view-athletes')?.classList.contains('active'))renderRoster();
  if($('detailOverlay')?.classList.contains('active')&&currentDetail)refreshDetail(currentDetail);
@@ -496,4 +498,4 @@ renderRelays();renderResults();
 if(location.hash==='#archive2025')show('archive2025');
 })();
 
-</script><script src="community-config.js?v=20261116-google1" defer></script><script src="community.js?v=20261117-editorial1" defer></script></body></html>
+</script><script src="community-config.js?v=20261116-google1" defer></script><script src="community.js?v=20261117-editorial2" defer></script></body></html>
