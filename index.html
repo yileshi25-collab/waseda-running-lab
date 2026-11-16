@@ -8,8 +8,8 @@
 <meta name="description" content="独立非官方的早稻田大学竞走部长距离及驿传数据可视化研究工具，支持成绩筛选、对比、收藏和个人备注。">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:title" content="Waseda Running Lab 2026 · 早稻田竞走部数据研究室">
-<meta property="og:description" content="38名长距离选手、大学驿传成绩、2026上半赛季73条赛事记录，支持筛选、比较与收藏。非官方独立研究项目。">
+<meta property="og:title" content="Waseda Running Lab 2025–2026 · 早稻田竞走部数据研究室">
+<meta property="og:description" content="2025全年官方赛事档案、38名现役长距离选手、2026赛季回顾，支持筛选、比较与收藏。非官方独立研究项目。">
 <meta name="twitter:card" content="summary">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <style>
@@ -48,11 +48,11 @@
 <body>
 <div class="mobile-head"><strong>W / RUNNING LAB</strong><nav class="mobile-nav" id="mobileNav"></nav></div>
 <div class="layout">
-<aside class="sidebar"><div class="brand"><div class="brandmark">W</div><div class="brandtxt"><strong>WASEDA LAB</strong><span>RUNNING ANALYTICS</span></div></div><div class="sidegroup">WORKSPACE / 研究空间</div><div class="nav" id="sideNav"></div><div class="sidebar-bottom"><b>2026 赛季 · 研究版</b>数据是离线快照，不会自动更新。<br><a href="https://waseda-ac.jp/" target="_blank" rel="noopener">早稻田竞走部官网 ↗</a><br>非早稻田官方产品</div></aside>
+<aside class="sidebar"><div class="brand"><div class="brandmark">W</div><div class="brandtxt"><strong>WASEDA LAB</strong><span>RUNNING ANALYTICS</span></div></div><div class="sidegroup">WORKSPACE / 研究空间</div><div class="nav" id="sideNav"></div><div class="sidebar-bottom"><b>2025–2026 赛季 · 研究版</b>数据是离线快照，不会自动更新。<br><a href="https://waseda-ac.jp/" target="_blank" rel="noopener">早稻田竞走部官网 ↗</a><br>非早稻田官方产品</div></aside>
 <main class="main">
-<div class="topbar"><div class="bread"><span>研究工作台</span><span> / </span><span class="strong" id="breadCurrent">总览</span></div><div class="topright"><button class="btn btn-small" id="shareWebsite" type="button" style="display:none;white-space:nowrap" title="分享此研究网站">分享网站 ↗</button><span class="chip"><i class="dot"></i> 公开资料 · 截至 2026.11.08</span><div class="avatar" title="个人研究空间（浏览器本地）">W</div></div></div>
+<div class="topbar"><div class="bread"><span>研究工作台</span><span> / </span><span class="strong" id="breadCurrent">总览</span></div><div class="topright"><button class="btn btn-small" id="shareWebsite" type="button" style="display:none;white-space:nowrap" title="分享此研究网站">分享网站 ↗</button><span class="chip"><i class="dot"></i> 公开资料 · 更新至 2026.11.16</span><div class="avatar" title="个人研究空间（浏览器本地）">W</div></div></div>
 <div class="view active" id="view-overview">
-<section class="hero"><div class="eyebrow">WASEDA UNIVERSITY · EKIDEN RESEARCH 2026</div><h1>早稻田竞走部<br>数据研究室</h1><p>把长跑选手的个人最佳成绩、大学驿传战绩与自己的观察整理在一个地方。筛选、比较、收藏，研究你感兴趣的选手与赛季变化。</p><div class="hero-buttons"><button class="btn btn-white" data-go="athletes">探索选手数据 →</button><button class="btn btn-ghost" data-go="races">查看 2026 赛季战绩</button><button class="btn btn-ghost" data-go="season">上半赛季回顾 ✦</button></div></section>
+<section class="hero"><div class="eyebrow">WASEDA UNIVERSITY · EKIDEN RESEARCH 2026</div><h1>早稻田竞走部<br>数据研究室</h1><p>把长跑选手的个人最佳成绩、大学驿传战绩与自己的观察整理在一个地方。筛选、比较、收藏，研究你感兴趣的选手与赛季变化。</p><div class="hero-buttons"><button class="btn btn-white" data-go="athletes">探索选手数据 →</button><button class="btn btn-ghost" data-go="races">查看 2026 赛季战绩</button><button class="btn btn-ghost" data-go="season">上半赛季回顾 ✦</button><button class="btn btn-ghost" data-go="archive2025">查看 2025 全年档案 →</button></div></section>
 <div class="stats"><div class="stat"><div class="label">2026年度长距离收录人数</div><div class="number">38 <small style="font-size:12px;font-weight:600">人</small></div><div class="foot">独立数据库收录，非全队人数</div></div><div class="stat"><div class="label">5000m · 前10人PB均值</div><div class="number">13:35.08</div><div class="foot">数值越低越快</div></div><div class="stat"><div class="label">10000m · 前10人PB均值</div><div class="number">29:00.51</div><div class="foot">有10000m记录者 26人</div></div><div class="stat"><div class="label">2026 大学驿传</div><div class="number">2 冠</div><div class="foot">出云 + 全日本</div></div></div>
 
 <section class="section" id="homeSeasonPreview"><div class="sectionhead"><div><div class="eyebrow">SPRING / SUMMER REVIEW</div><h2>2026 上半赛季 · 重点选手</h2><p>从你上传的成绩回顾中选取的代表性表现（原文记录，未经独立核验）</p></div><button class="btn btn-small" data-go="season">浏览全部成绩 →</button></div>
@@ -193,4 +193,117 @@ setupNav();renderRank();renderTrend();renderRoster();renderRace();renderCompare(
     window.prompt('复制下列网站链接，发送给朋友：',url);
   });
 })();
+</script><script>
+/* Waseda Running Lab 2025 archive · selected verified results, not a complete team census. */
+(function(){
+'use strict';
+const SRC={
+ hak:'https://waseda-ac.jp/competition/detail/451',izu:'https://waseda-ac.jp/competition/detail/721',zen:'https://waseda-ac.jp/competition/detail/722',
+ maru:'https://waseda-ac.jp/competition/detail/464',tach:'https://waseda-ac.jp/competition/detail/491',six:'https://waseda-ac.jp/competition/detail/510',
+ indiv:'https://waseda-ac.jp/competition/detail/538',speed:'https://waseda-ac.jp/news/detail/552',kanto:'https://waseda-ac.jp/competition/detail/557',
+ ic:'https://waseda-ac.jp/competition/detail/578',nation:'https://waseda-ac.jp/competition/detail/605',record:'https://waseda-ac.jp/record/',
+ fisu:'https://waseda-ac.jp/diary/detail/1021',ageo:'https://waseda-ac.jp/competition/detail/740',nittai:'https://waseda-ac.jp/competition/detail/743',dec:'https://waseda-ac.jp/competition/detail/752',
+ schedule:'https://waseda-ac.jp/competition/schedule/2025'
+};
+const RELAYS={
+ hak:{name:'箱根驿传 · 第101回',date:'2025-01-02',rank:4,total:'10:50:57',legs:[
+ ['間瀬田純平','21.3','1:02:43',4,3],['山口智規','23.1','1:07:01',12,3],['山口竣平','21.4','1:01:15',3,1],['長屋匡起','20.9','1:02:00',8,2],['工藤慎作','20.8','1:09:31',2,2],['山﨑一吹','20.8','58:45',5,2],['伊藤大志','21.3','1:03:36',11,4],['伊福陽太','21.4','1:05:54',11,4],['石塚陽士','23.1','1:10:36',15,4],['菅野雄太','23.0','1:09:36',5,4]]},
+ izu:{name:'出云驿传 · 第37回',date:'2025-10-13',rank:2,total:'2:09:50',legs:[
+ ['吉倉ナヤブ直希','8.0','23:51',10,2],['山口智規','5.8','15:57',1,4],['鈴木琉胤','8.5','24:16',5,1],['佐々木哲','6.2','17:40',6,1],['堀野正太','6.4','18:18',7,1],['工藤慎作','10.2','29:48',3,3]]},
+ zen:{name:'全日本大学驿传 · 第57回',date:'2025-11-02',rank:5,total:'5:10:21',legs:[
+ ['間瀬田純平','9.5','27:20',2,4],['鈴木琉胤','11.1','31:15',4,1],['堀野正太','11.9','34:39',13,1],['吉倉ナヤブ直希','11.8','34:37',6,2],['小平敦之','12.4','36:43',7,3],['宮岡凜太','12.8','37:56',6,4],['山口智規','17.6','50:57',4,4],['工藤慎作','19.7','56:54',1,3]]}
+};
+const RESULTS=[];
+const add=(date,event,type,metric,src,rows)=>rows.forEach(([name,grade,time,rank,note])=>RESULTS.push({date,event,type,metric,name,grade,time,rank,note:note||'',source:SRC[src]}));
+for(const [key,race] of Object.entries(RELAYS))race.legs.forEach(([name,km,time,rank,grade],idx)=>add(key==='hak'&&idx>=5?'2025-01-03':race.date,race.name,'驿传',`${idx+1}区 · ${km}km`,key,[[name,grade,time,rank,`${idx+1}区区间排名`]]));
+add('2025-02-02','丸龟国际半马 / 日本学生半马','路跑','半马','maru',[
+ ['工藤慎作',2,'1:00:06',5,'日本学生锦标赛冠军 · PB · 早稻田新纪录'],['宮岡凜太',3,'1:01:59',81,'PB · 学生锦标赛第46名']]);
+add('2025-03-09','立川 City Half Marathon','路跑','半马','tach',[
+ ['伊藤幸太郎',3,'1:04:15',40,''],['安江悠登',2,'1:07:37',257,'PB'],['佐藤広人',1,'1:08:35',314,'PB'],['栗原周平',2,'1:09:20',347,''],['門馬海成',3,'1:10:05',380,'']]);
+add('2025-04-05','东京六大学对校田径赛','场地','1500m','six',[
+ ['山田晃央',1,'3:51.18',4,'决赛'],['地案尚宏',2,'3:51.54',5,'决赛 · PB']]);
+add('2025-04-05','东京六大学对校田径赛','场地','5000m','six',[
+ ['工藤慎作',3,'13:54.36',3,'PB'],['伊藤幸太郎',4,'14:16.44',7,'PB']]);
+add('2025-04-27','日本学生个人锦标赛','场地','5000m','indiv', [['鈴木琉胤',1,'13:44.83',2,'大会纪录 GR']]);
+add('2025-04-27','日本学生个人锦标赛','场地','10000m','indiv', [['山口智規',4,'29:52.00',11,'']]);
+add('2025-05-03','Tokyo : Speed : Race','路跑','5km','speed',[
+ ['瀬間元輔',2,'14:02',18,'PB'],['堀野正太',1,'14:05',21,'PB'],['多田真',1,'14:14',24,'PB'],['山﨑一吹',3,'14:33',32,'PB']]);
+add('2025-05-11','关东学生锦标赛（关东IC）','场地','1500m','kanto', [['山田晃央',1,'3:55.43',11,'决赛']]);
+add('2025-05-11','关东学生锦标赛（关东IC）','场地','5000m','kanto',[
+ ['鈴木琉胤',1,'13:32.34',2,'决赛'],['山口竣平',2,'13:49.72',8,'决赛'],['山口智規',4,'14:09.40',12,'决赛']]);
+add('2025-05-11','关东学生锦标赛（关东IC）','场地','10000m','kanto', [['山口智規',4,'28:37.82',3,'决赛']]);
+add('2025-05-11','关东学生锦标赛（关东IC）','路跑','半马','kanto',[
+ ['工藤慎作',3,'1:04:16',2,'决赛'],['伊藤幸太郎',4,'1:06:21',15,'决赛'],['瀬間元輔',2,'1:06:44',20,'决赛']]);
+add('2025-05-11','关东学生锦标赛（关东IC）','场地','3000mSC','kanto', [['佐々木哲',1,'8:58.38',1,'预赛分组第1名；决赛DNS']]);
+add('2025-06-08','日本学生锦标赛（日本IC）','场地','1500m','ic',[
+ ['山口智規',4,'3:40.46',1,'决赛冠军 · PB · 早稻田新纪录'],['吉倉ナヤブ直希',2,'3:45.03',8,'决赛']]);
+add('2025-06-08','日本学生锦标赛（日本IC）','场地','5000m','ic', [['山口智規',4,'13:40.06',1,'冠军']]);
+add('2025-07-06','日本田径锦标赛','场地','1500m','nation', [['山口智規',4,'3:38.16',2,'决赛 · PB · 早稻田新纪录']]);
+add('2025-07-06','日本田径锦标赛','场地','5000m','nation', [['鈴木琉胤',1,'13:46.69',10,'决赛']]);
+add('2025-07-12','2025 田径赛 · 早稻田校纪录','场地','5000m','record', [['山口智規',4,'13:16.56',null,'官网校纪录表记载日期，赛事名称未在该表注明']]);
+add('2025-07','FISU 世界大学生运动会','路跑','半马','fisu', [['工藤慎作',3,'1:02:29',1,'个人冠军 · 大会纪录；原出处未注明具体日期']]);
+add('2025-11-16','上尾 City Half Marathon','路跑','半马','ageo',[
+ ['伊藤幸太郎',4,'1:02:14',13,'PB'],['吉倉ナヤブ直希',2,'1:02:26',22,'PB'],['小平敦之',3,'1:02:28',26,'PB'],['堀野正太',1,'1:02:28',27,'PB'],['間瀬田純平',4,'1:02:31',28,'PB'],['宮本優希',3,'1:03:06',56,'PB'],['多田真',1,'1:03:17',62,'PB'],['瀬間元輔',2,'1:03:33',78,'PB'],['安江悠登',3,'1:04:48',158,'PB'],['冨田拓臣',1,'1:05:17',182,'PB'],['大和田春',2,'1:05:31',197,'PB'],['須山向陽',4,'1:05:40',202,''],['鈴木翔瑛',2,'1:06:23',239,'PB'],['武田知典',3,'1:06:38',254,'PB'],['宮岡凜太',4,'1:06:42',257,''],['増子陽季',3,'1:06:45',260,'PB'],['門馬海成',4,'1:08:23',315,''],['佐藤広人',2,'1:09:00',336,'']]);
+add('2025-11-30','日体大长距离记录会（第325回）','场地','5000m','nittai',[
+ ['桑原マテウス大地',1,'14:55.26',10,'18组'],['神先強志',1,'15:20.40',24,'18组'],['斉藤天紀',1,'15:22.63',26,'18组'],['門馬海成',4,'14:50.23',24,'23组'],['須山向陽',4,'14:45.73',28,'27组'],['佐藤広人',2,'14:57.40',34,'27组'],['立迫大徳',2,'14:37.81',36,'33组']]);
+add('2025-11-29','日体大长距离记录会（第325回）','场地','10000m','nittai',[
+ ['鈴木翔瑛',2,'30:01.49',10,'4组 · PB'],['武田知典',3,'29:46.96',12,'6组']]);
+add('2025-12-27','早稻田大学竞技会（第7回）','场地','5000m','dec',[
+ ['鈴木翔瑛',2,'14:50.10',4,'1组'],['桑原マテウス大地',1,'14:51.96',6,'1组'],['辻陽介',2,'14:53.04',7,'1组 · PB'],['門馬海成',4,'14:56.25',9,'1组'],['神先強志',1,'14:57.19',10,'1组'],['安食光翔',1,'14:57.45',11,'1组'],['須山向陽',4,'15:01.97',14,'1组'],['斉藤天紀',1,'15:17.33',21,'1组'],['佐藤広人',2,'14:38.68',10,'2组'],['立迫大徳',2,'14:19.56',3,'3组']]);
+add('2025-12-27','早稻田大学竞技会（第7回）','场地','10000m','dec',[
+ ['大和田春',2,'30:31.72',8,'1组 · PB'],['冨田拓臣',1,'30:34.62',10,'1组 · PB'],['安江悠登',3,'30:54.34',17,'1组']]);
+
+const full=e=>String(e||'').replace(/[\s　]/g,'').replace(/﨑/g,'崎').replace(/桜/g,'櫻');
+const currentName=n=>{const found=typeof getAthletes==='function'&&getAthletes().find(a=>full(a.name)===full(n)||a.name.replace(/\s/g,'')===n);return found?found.name:null;};
+const htmlSafe=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const rowcount=RESULTS.length, people=[...new Set(RESULTS.map(x=>x.name))].length, meets=[...new Set(RESULTS.map(x=>x.event))].length;
+const style=`
+.arc25-hero{position:relative;overflow:hidden;padding:30px 32px;background:linear-gradient(112deg,#4b1728,#782c46);color:#fff;border-radius:20px}.arc25-hero:after{content:'25';font-family:Georgia,serif;font-size:150px;font-weight:900;opacity:.07;position:absolute;right:18px;top:-40px;pointer-events:none}.arc25-hero .eyebrow{color:#e9c6d3}.arc25-hero h2{font-size:clamp(26px,3.2vw,38px);margin:11px 0}.arc25-hero p{max-width:750px;font-size:13px;color:#eed7e0;line-height:1.85}.arc25-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:16px 0 23px}.arc25-metric{border:1px solid var(--line);background:#fff;border-radius:15px;padding:18px}.arc25-metric small{font-size:11px;color:var(--muted)}.arc25-metric b{display:block;font-size:27px;color:var(--deep);padding-top:9px}.arc25-races{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.arc25-race{background:#fff;border:1px solid #eadfe4;border-radius:15px;padding:19px;text-align:left;cursor:pointer}.arc25-race:hover,.arc25-race.active{border-color:#8e3454;box-shadow:0 4px 16px #74304712}.arc25-race .nm{font-weight:800;font-size:14px}.arc25-race strong{display:block;color:#64233e;font-size:27px;margin:9px 0 3px}.arc25-race small{font-size:11px;color:#968088}.arc25-legtable{margin-top:14px;background:#fff;border-radius:15px;border:1px solid #eadfe4;overflow:hidden}.arc25-legtable .hdr{display:flex;align-items:center;justify-content:space-between;padding:15px 18px;border-bottom:1px solid #eee4e8;gap:10px}.arc25-legs{overflow-x:auto}.arc25-legtable table{width:100%;min-width:550px;border-collapse:collapse;font-size:12px}.arc25-legtable th{text-align:left;background:#fbf8f9;color:#957781;font-size:10px;padding:10px 15px}.arc25-legtable td{padding:10px 15px;border-top:1px solid #f2eaed}.arc25-note{padding:13px 15px;border-left:3px solid #b87894;background:#f8edf2;color:#744c5c;line-height:1.9;font-size:12px;border-radius:0 10px 10px 0;margin:20px 0}.arc25-filter{display:flex;gap:9px;flex-wrap:wrap;margin:16px 0 11px;align-items:center}.arc25-filter .input{flex:1;min-width:175px}.arc25-filter .select{max-width:180px}.arc25-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.arc25-item{background:#fff;border:1px solid #ece2e6;border-radius:13px;padding:15px 17px;display:flex;flex-direction:column;gap:9px}.arc25-itemtop{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}.arc25-itemtop small{color:#987d88;font-size:10px}.arc25-name{font-size:14px;font-weight:800;color:#59233b}.arc25-name.player{cursor:pointer;text-decoration:underline;text-decoration-color:#e7bdcb;text-underline-offset:4px}.arc25-time{font-size:21px;font-weight:850;font-variant-numeric:tabular-nums;color:#4d1c30}.arc25-tags{display:flex;gap:5px;flex-wrap:wrap}.arc25-tag{border-radius:6px;padding:4px 7px;background:#f7edf2;color:#90526c;font-size:10px;font-weight:700}.arc25-note2{font-size:11px;color:#796672;line-height:1.7}.arc25-item a{font-size:11px;color:#833b59;text-decoration:underline;text-underline-offset:3px}.arc25-source{display:flex;flex-direction:column;gap:8px;margin:18px 0}.arc25-source a{font-size:11px;color:#743c55;text-decoration:underline;line-height:1.7}.arc25-empty{text-align:center;background:#fff;border-radius:12px;border:1px dashed #e0c8d1;color:#8a7480;padding:25px}.arc25-mark{color:#cb9860;font-weight:900;font-size:11px}@media(max-width:950px){.arc25-list{grid-template-columns:1fr}.arc25-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:700px){.arc25-hero{padding:22px}.arc25-races{grid-template-columns:1fr}.arc25-race{padding:14px}.arc25-hero:after{font-size:110px}.arc25-item{padding:14px}}
+`;
+const view=`<div class="view" id="view-archive2025">
+ <div class="arc25-hero"><div class="eyebrow">WASEDA RUNNING LAB · ANNUAL ARCHIVE</div><h2>2025 全年比赛档案</h2><p>按自然年 2025 年 1 月至 12 月整理的公开田径、路跑与大学驿传成绩。逐条附早稻田竞走部官网来源，包含后来毕业的选手；与 2026 年现役选手 PB 数据分开保存。</p></div>
+ <div class="arc25-metrics" id="arc25Metrics"></div>
+ <div class="sectionhead"><div><div class="eyebrow">BIG THREE · 2025</div><h2>三大驿传 · 逐区成绩</h2><p>点击赛事卡片切换每一区跑者、用时及区间排名</p></div></div>
+ <div class="arc25-races" id="arc25Races"></div><div class="arc25-legtable" id="arc25Legs"></div>
+ <div class="sectionhead" style="margin-top:30px"><div><div class="eyebrow">2025 RACE LOG</div><h2>年度成绩检索</h2><p>官方结果整理 · 可以搜索姓名、按月份或项目查看</p></div><button class="btn btn-small" id="arc25Csv">导出 2025 CSV ↓</button></div>
+ <div class="arc25-filter"><input class="input" type="search" id="arc25Search" placeholder="搜索选手 / 赛事 / 成绩 / PB"><select class="select" id="arc25Type"><option value="all">全部类别</option><option value="场地">场地赛</option><option value="路跑">路跑</option><option value="驿传">驿传</option></select><select class="select" id="arc25Month"><option value="all">全年月份</option>${Array.from({length:12},(_,i)=>`<option value="${String(i+1).padStart(2,'0')}">${i+1} 月</option>`).join('')}</select><select class="select" id="arc25Metric"><option value="all">全部项目</option></select><button class="btn btn-small" id="arc25Reset">重置</button></div>
+ <div class="meta-row"><p id="arc25Count" class="keyline" style="margin:0"></p><span class="tag">2025.01—12 · 仅已核验记录</span></div>
+ <div class="arc25-note"><b>数据范围：</b>这是一份持续补录的 <b>2025 年重要赛事成绩档案</b>，目前已核对多场官方赛果，但<b>不是全队所有出赛的完整清单</b>。未收录不代表没有参赛。年级以比赛当时的官方记载为准；某些跨多日比赛用最后一天作为日期，7 月世界大学生运动会只标月份。PB 仅在该场官方结果明确标注时显示，不会擅自认定为赛季最佳。</div>
+ <div class="arc25-list" id="arc25List"></div>
+ <div class="sectionhead" style="margin-top:30px"><div><div class="eyebrow">PRIMARY SOURCES</div><h2>核查资料与说明</h2></div></div><div class="panel panel-pad"><div class="arc25-source" id="arc25Sources"></div><p class="keyline">全部链接均指向原始赛事资料或官方记录页面。2025 为自然年；早稻田官网「2025年度」是 2025 年 4 月至 2026 年 3 月，因此一季度还参考了「2024年度」赛果。</p></div>
+ </div>`;
+if(document.getElementById('view-archive2025'))return;
+const st=document.createElement('style');st.textContent=style;document.head.appendChild(st);
+const anchor=document.getElementById('view-athletes');anchor.insertAdjacentHTML('beforebegin',view);
+navItems.splice(3,0,['archive2025','2025 全年','◷']);
+setupNav();
+const $a=id=>document.getElementById(id);
+$a('arc25Metrics').innerHTML=[['收录个人成绩',rowcount,'条'],['涉及参赛选手',people,'人'],['赛事类别',meets,'项赛事'],['三大驿传','4 / 2 / 5','箱根 / 出云 / 全日本']].map(([lab,val,sub])=>`<div class="arc25-metric"><small>${htmlSafe(lab)}</small><b>${htmlSafe(val)}</b><small>${htmlSafe(sub)}</small></div>`).join('');
+const events=[...new Set(RESULTS.map(x=>x.metric))].sort((a,b)=>a.localeCompare(b,'zh'));
+$a('arc25Metric').innerHTML+='<option value="other-ekiden">驿传各区</option>'+events.filter(x=>!x.includes('区')).map(x=>`<option value="${htmlSafe(x)}">${htmlSafe(x)}</option>`).join('');
+let selected='hak';
+function renderRelays(){
+ $a('arc25Races').innerHTML=Object.entries(RELAYS).map(([key,r])=>`<button class="arc25-race ${selected===key?'active':''}" data-arc25-race="${key}"><div class="nm">${htmlSafe(r.name)}</div><strong>第 ${r.rank} 名</strong><small>${r.date} · ${r.total} · ${r.legs.length} 区</small></button>`).join('');
+ const r=RELAYS[selected];$a('arc25Legs').innerHTML=`<div class="hdr"><b>${r.name} · 逐区成绩</b><a style="font-size:11px;color:#823351;text-decoration:underline" href="${SRC[selected]}" target="_blank" rel="noopener">查看官方赛果 ↗</a></div><div class="arc25-legs"><table><thead><tr><th>区间</th><th>跑者</th><th>里程</th><th>区间成绩</th><th>区间名次</th></tr></thead><tbody>${r.legs.map(([name,km,time,rank],i)=>`<tr><td>${i+1} 区</td><td><strong>${htmlSafe(name)}</strong></td><td>${km} km</td><td style="font-variant-numeric:tabular-nums;font-weight:800">${time}</td><td>${rank===1?'🏅 ':''}${rank} 位</td></tr>`).join('')}</tbody></table></div>`;
+}
+const index=new Map(RESULTS.map((x,i)=>[x,i]));
+function renderResults(){
+ const q=$a('arc25Search').value.trim().toLowerCase(),type=$a('arc25Type').value,mon=$a('arc25Month').value,metric=$a('arc25Metric').value;
+ const filtered=RESULTS.filter(x=>(type==='all'||x.type===type)&&(mon==='all'||x.date.slice(5,7)===mon)&&(metric==='all'||(metric==='other-ekiden'?x.type==='驿传':x.metric===metric))&&(!q||[x.name,x.event,x.metric,x.time,x.note].some(t=>t.toLowerCase().includes(q)))).sort((a,b)=>b.date.localeCompare(a.date)||index.get(a)-index.get(b));
+ $a('arc25Count').textContent=`显示 ${filtered.length} / ${rowcount} 条 · ${new Set(filtered.map(x=>x.name)).size} 名选手`;
+ $a('arc25List').innerHTML=filtered.length?filtered.map(x=>{const match=currentName(x.name),hasPB=x.note.includes('PB'),time=x.time;return `<article class="arc25-item"><div class="arc25-itemtop"><small>${x.date} · ${htmlSafe(x.event)}</small><span class="arc25-tag">${htmlSafe(x.type)}</span></div><div class="arc25-itemtop"><span class="arc25-name ${match?'player':''}" ${match?`data-player="${htmlSafe(match)}" title="打开当前选手档案" role="button" tabindex="0"`:''}>${htmlSafe(x.name)}</span><span class="arc25-time">${htmlSafe(time)}</span></div><div class="arc25-tags"><span class="arc25-tag">${htmlSafe(x.metric)}</span>${x.grade?`<span class="arc25-tag">当时 ${x.grade} 年级</span>`:''}${x.rank!=null?`<span class="arc25-tag">${x.rank} 位</span>`:''}${hasPB?'<span class="arc25-tag">PB</span>':''}</div>${x.note?`<div class="arc25-note2">${htmlSafe(x.note)}</div>`:''}<a href="${x.source}" target="_blank" rel="noopener noreferrer">官方记录 ↗</a></article>`;}).join(''):'<div class="arc25-empty">没有符合当前筛选的成绩，请重置筛选。</div>';
+}
+const sourceLabels={hak:'箱根驿传官方结果',izu:'出云驿传官方结果',zen:'全日本大学驿传官方结果',schedule:'2025 年度官方赛事日历',maru:'丸龟半马',tach:'立川半马',six:'东京六大学',indiv:'学生个人锦标赛',speed:'Tokyo Speed Race',kanto:'关东IC',ic:'日本IC',nation:'日本田径锦标赛',record:'早稻田校纪录',fisu:'世界大学生运动会',ageo:'上尾半马',nittai:'日体大记录赛',dec:'早大竞技会'};
+$a('arc25Sources').innerHTML=Object.entries(SRC).map(([id,url])=>`<a href="${url}" target="_blank" rel="noopener noreferrer">${htmlSafe(sourceLabels[id]||'官方记录')} ↗</a>`).join('');
+$a('arc25Races').addEventListener('click',e=>{const t=e.target.closest('[data-arc25-race]');if(t){selected=t.dataset.arc25Race;renderRelays();}});
+['arc25Search','arc25Type','arc25Month','arc25Metric'].forEach(id=>$a(id).addEventListener(id==='arc25Search'?'input':'change',renderResults));
+$a('arc25Reset').addEventListener('click',()=>{$a('arc25Search').value='';['arc25Type','arc25Month','arc25Metric'].forEach(id=>$a(id).value='all');renderResults();});
+$a('arc25Csv').addEventListener('click',()=>{
+ const rows=RESULTS.map(r=>({date:r.date,event:r.event,type:r.type,metric:r.metric,athlete:r.name,grade_at_race:r.grade,time:r.time,rank:r.rank,notes:r.note,source:r.source}));
+ download('waseda_2025_verified_results.csv',csvExport(rows,['date','event','type','metric','athlete','grade_at_race','time','rank','notes','source']),'text/csv;charset=utf-8');
+});
+renderRelays();renderResults();
+if(location.hash==='#archive2025')show('archive2025');
+})();
+
 </script></body></html>
