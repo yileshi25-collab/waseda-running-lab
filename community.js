@@ -122,7 +122,7 @@
        '<small>投稿者：'+esc(r.display_name)+' · '+new Date(r.created_at).toLocaleString("zh-CN")+'</small>'+
        '<footer>'+sourceLink(r.source_url,"资料来源")+
        (user?'<button data-wsd-report="'+esc(r.id)+'" type="button">举报</button>':'<small>登录后可举报</small>')+
-       (admin?'<button class="wsd-community-admin-post" data-wsd-hide="'+esc(r.id)+'" type="button">管理员撤下</button>':"")+
+       (user&&(admin||r.author_id===user.id)?'<button class="wsd-community-delete" data-wsd-delete="'+esc(r.id)+'" type="button">'+(admin&&r.author_id!==user.id?'管理员删除':'删除我的投稿')+'</button>':"")+
        '</footer></div></article>';
     }).join(""):'<div class="wsd-community-skeleton">暂无此类投稿。登录后可上传第一条。</div>';
     decorateRoster();
@@ -130,7 +130,7 @@
   }
   async function refresh(){
     const {data,error}=await sb.from(TABLE).select(
-      "id,kind,athlete_name,display_name,event_name,race_date,result_time,rank,notes,source_url,image_path,image_credit,image_license,created_at,status"
+      "id,author_id,kind,athlete_name,display_name,event_name,race_date,result_time,rank,notes,source_url,image_path,image_credit,image_license,created_at,status"
     ).eq("status","published").order("created_at",{ascending:false}).limit(200);
     if(error){note("读取社区资料失败："+error.message,true);return;}
     posts=data||[];drawFeed();
@@ -167,9 +167,11 @@
     const all=posts.filter(r=>r.athlete_name===name&&r.kind==="photo").slice(0,16);
     const cards=all.map(r=>{
       const url=postImage(r);
-      return url?'<a target="_blank" rel="noopener noreferrer" href="'+esc(url)+'" title="摄影：'+esc(r.image_credit||"")+'">'+
+      return url?'<div class="wsd-athlete-photo-tile"><a target="_blank" rel="noopener noreferrer" href="'+esc(url)+'" title="摄影：'+esc(r.image_credit||"")+'">'+
          '<img loading="lazy" referrerpolicy="no-referrer" alt="'+esc(name)+' 跑友分享照片" src="'+esc(url)+'">'+
-         '<span>摄影：'+esc(r.image_credit||"")+'</span></a>':"";
+         '<span>摄影：'+esc(r.image_credit||"")+'</span></a>'+
+         (user&&(admin||r.author_id===user.id)?'<button class="wsd-photo-tile-delete" type="button" data-wsd-delete="'+esc(r.id)+'">删除照片</button>':"")+
+         '</div>':"";
     }).join("");
     return {count:all.length,ids:all.map(r=>r.id).join(","),
       html:cards||'<div class="wsd-no-athlete-photos"><span aria-hidden="true">▧</span><strong>暂无公开照片</strong><small>欢迎上传你有权分享的选手照片</small></div>'};
@@ -243,13 +245,21 @@
       extras.innerHTML=races.length?'<h5>跑友补充赛果</h5>'+
         races.map(r=>'<div class="wsd-community-mini-races">'+
           esc(r.race_date||"")+" · "+esc(r.event_name||"")+" · <b>"+esc(r.result_time||"")+"</b> "+
-          sourceLink(r.source_url,"来源")+'</div>').join(""):"";
+          sourceLink(r.source_url,"来源")+
+          (user&&(admin||r.author_id===user.id)?' <button type="button" class="wsd-athlete-race-delete" data-wsd-delete="'+esc(r.id)+'">删除投稿</button>':"")+
+          '</div>').join(""):"";
       extras.dataset.raceIds=raceIds;
     }
   }
   const detailEl=$("detailBody");
   if(detailEl){
     detailEl.addEventListener("click",e=>{
+      const deletion=e.target.closest("[data-wsd-delete]");
+      if(deletion){
+        e.preventDefault();
+        deletePost(deletion.dataset.wsdDelete).catch(err=>note("删除操作失败："+err.message,true));
+        return;
+      }
       const button=e.target.closest("[data-wsd-photo-login]");
       if(!button)return;
       const name=button.getAttribute("data-wsd-photo-login");
@@ -488,36 +498,57 @@
       if(!grouped.has(x.submission_id))grouped.set(x.submission_id,[]);
       grouped.get(x.submission_id).push(x.reason);
     }
-    $("wsdAdminSummary").innerHTML="<strong>管理员 · 举报处理</strong><p>当前显示最近 40 次举报。隐藏照片会同时尝试删除公开存储中的图片。</p>"+
+    $("wsdAdminSummary").innerHTML="<strong>管理员 · 举报处理</strong><p>当前显示最近 40 次举报。可永久删除投稿；照片也会尝试从云端存储删除。</p>"+
       ([...grouped.entries()].map(([id,reasons])=>
         '<div class="wsd-admin-report"><span>'+esc(id)+' · '+reasons.length+' 次 · '+esc(reasons.join("、"))+
-        '</span><button data-wsd-admin-hide="'+esc(id)+'" class="btn btn-small" type="button">隐藏内容</button></div>'
+        '</span><button data-wsd-admin-delete="'+esc(id)+'" class="btn btn-small wsd-community-delete" type="button">管理员永久删除</button></div>'
       ).join("")||'<p>暂无举报</p>');
   }
-  async function hidePost(id){
-    if(!admin)return;
-    const {data:items,error:queryErr}=await sb.from(TABLE).select("id,kind,image_path,status").eq("id",id).limit(1);
-    if(queryErr){note("无法加载目标内容："+queryErr.message,true);return;}
-    const post=items?.[0];
-    if(!post){note("未找到投稿。",true);return;}
-    if(!confirm("确认撤下此投稿吗？照片会尝试从公共存储永久删除。"))return;
-    const {error}=await sb.from(TABLE).update({status:"hidden"}).eq("id",id);
-    if(error){note("撤下失败："+error.message,true);return;}
-    let photoProblem="";
-    if(post.kind==="photo"&&post.image_path){
-      const {error:removeErr}=await sb.storage.from(BUCKET).remove([post.image_path]);
-      if(removeErr)photoProblem="；图片删除失败，请在 Supabase Storage 手动删除："+removeErr.message;
+  async function deletePost(id){
+    if(!user){note("请先使用 Google 登录后再删除投稿。",true);return;}
+    if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)){
+      note("无效的投稿 ID。",true);return;
     }
-    note("投稿已撤下"+photoProblem,!!photoProblem);
-    await refresh();await loadReports();
+    const {data:records,error:lookupError}=await sb.from(TABLE)
+      .select("id,author_id,kind,image_path,status").eq("id",id).limit(1);
+    if(lookupError){note("无法检查投稿权限："+lookupError.message,true);return;}
+    const item=records?.[0];
+    if(!item){note("这条投稿不存在或你无权查看。",true);await refresh();return;}
+    if(!admin&&item.author_id!==user.id){
+      note("你只能删除自己发布的投稿。",true);return;
+    }
+    const description=item.kind==="photo"?"照片":"比赛成绩";
+    if(!confirm("确定永久删除这条"+description+"投稿吗？\n删除后将从社区列表和选手资料页移除，且无法撤销。"))return;
+    const {data:deleted,error:deleteError}=await sb.from(TABLE)
+      .delete().eq("id",id).select("id");
+    if(deleteError){note("删除投稿失败："+deleteError.message,true);return;}
+    if(!deleted?.length){
+      note("删除未成功：投稿可能已被删除，或当前账号没有删除权限。",true);
+      await refresh();return;
+    }
+    let warning="";
+    if(item.kind==="photo"&&item.image_path){
+      try{
+        // Existing Storage policy allows owner to remove an unreferenced file,
+        // or an administrator to remove it. Delete DB row first.
+        const {error:storageError}=await sb.storage.from(BUCKET).remove([item.image_path]);
+        if(storageError)throw storageError;
+      }catch(err){
+        warning="；但云端原图清理失败，请通知管理员进入 Supabase Storage 手动删除该文件";
+      }
+    }
+    await refresh();
+    if(admin)await loadReports();
+    note("这条"+description+"投稿已永久删除"+warning,!!warning);
   }
   $("wsdAdminSummary").onclick=async e=>{
-    const b=e.target.closest("[data-wsd-admin-hide]");
-    if(b)await hidePost(b.dataset.wsdAdminHide);
+    const b=e.target.closest("[data-wsd-admin-delete]");
+    if(b)await deletePost(b.dataset.wsdAdminDelete);
   };
   $("wsdFeed").onclick=async e=>{
     const report=e.target.closest("[data-wsd-report]");
-    const hide=e.target.closest("[data-wsd-hide]");
+    const deletion=e.target.closest("[data-wsd-delete]");
+    if(deletion){await deletePost(deletion.dataset.wsdDelete);return;}
     if(report&&user){
       const id=report.dataset.wsdReport;
       const reason=prompt("举报原因（wrong-result / copyright / privacy / abuse / other）","wrong-result");
@@ -528,7 +559,6 @@
       const {error}=await sb.from(REPORTS).insert({submission_id:id,reporter_id:user.id,reason});
       note(error?"举报失败："+error.message:"已收到举报，谢谢。",!!error);
     }
-    if(hide&&admin)await hidePost(hide.dataset.wsdHide);
   };
   sb.auth.onAuthStateChange(()=>{Promise.resolve().then(setAuth).catch(()=>{});});
   await setAuth();await refresh();
