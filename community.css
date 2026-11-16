@@ -57,3 +57,40 @@
 .wsd-google-symbol{display:inline-grid;place-items:center;font:800 18px Arial,sans-serif;width:25px;height:25px;border-radius:50%;background:#fff;color:#4285f4}
 .wsd-google-button[disabled]{opacity:.65;cursor:progress}
 .wsd-auth-mode a{color:#843759;text-decoration:underline}
+
+
+/* Every athlete profile includes a photo gallery and a direct upload frame. */
+.wsd-athlete-photo-section{padding:15px;margin:17px 0 19px}
+.wsd-athlete-photo-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}
+.wsd-athlete-photo-heading h4{margin:0;color:#57223e;font-size:15px;letter-spacing:.02em}
+.wsd-athlete-photo-heading span{font-size:10px;color:#8f6980;white-space:nowrap}
+.wsd-athlete-photo-collection{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:9px;margin:4px 0 15px}
+.wsd-athlete-photo-collection a{min-width:0;display:flex;flex-direction:column;gap:4px;font-size:10px;color:#765365;text-decoration:none}
+.wsd-athlete-photo-collection a img{width:100%;aspect-ratio:1;object-fit:cover;border:1px solid #eadde3;border-radius:10px;background:#f8eef4}
+.wsd-athlete-photo-collection a span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wsd-no-athlete-photos{grid-column:1/-1;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px;min-height:110px;padding:15px;border:1px dashed #ddbfce;border-radius:11px;background:#fff;color:#94667d;text-align:center}
+.wsd-no-athlete-photos>span{font-size:25px;color:#c899af}
+.wsd-no-athlete-photos strong{font-size:12px;color:#70405a}
+.wsd-no-athlete-photos small{font-size:10px;color:#9c778c}
+.wsd-athlete-photo-form{border-top:1px solid #f1e2e9;padding-top:15px;gap:10px}
+.wsd-athlete-photo-form .wsd-photo-drop{position:relative;display:flex!important;align-items:center;justify-content:center;cursor:pointer;min-height:146px;max-height:170px;overflow:hidden;background:#fff;border:2px dashed #cfa6b9;border-radius:13px;text-align:center;transition:border-color .15s,background .15s}
+.wsd-athlete-photo-form .wsd-photo-drop:hover,.wsd-athlete-photo-form .wsd-photo-drop:focus-within{border-color:#963a62;background:#fff5fa;outline:2px solid #ebcbd9;outline-offset:1px}
+.wsd-athlete-photo-form .wsd-photo-drop input[type="file"]{position:absolute;left:0;top:0;width:1px!important;height:1px!important;padding:0!important;border:0!important;opacity:0;overflow:hidden}
+.wsd-photo-drop-instruction{display:flex;flex-direction:column;align-items:center;gap:5px;padding:12px;color:#814961}
+.wsd-photo-drop-instruction strong{font-size:12px}
+.wsd-photo-drop-instruction small{font-size:10px;color:#97788a;font-weight:400}
+.wsd-photo-add-icon,.wsd-athlete-photo-add-icon{font-size:24px;line-height:1;background:#f5e4ed;color:#873959;border-radius:50%;width:39px;height:39px;display:grid;place-items:center;font-family:system-ui,sans-serif}
+.wsd-athlete-photo-form .wsd-photo-selected-preview{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#fff}
+.wsd-athlete-photo-form .wsd-photo-selected-preview[hidden],.wsd-athlete-photo-form .wsd-photo-drop-instruction[hidden]{display:none!important}
+.wsd-athlete-photo-form .wsd-community-tick{font-size:10px;color:#705568}
+.wsd-athlete-upload-button{width:100%}
+.wsd-athlete-upload-status{font-size:11px;line-height:1.6;min-height:16px;overflow-wrap:anywhere}
+.wsd-photo-upload-caveat{font-size:10px;color:#a28394;line-height:1.65;margin:0}
+.wsd-athlete-photo-signin{display:grid;justify-items:center;gap:10px;padding:18px 12px;background:#fff;border:2px dashed #d6b6c4;border-radius:12px;text-align:center}
+.wsd-athlete-photo-signin strong{font-size:13px;color:#673351}
+.wsd-athlete-photo-signin p{font-size:11px;color:#866b79;line-height:1.7;margin:0}
+.wsd-athlete-photo-signin button{width:100%;max-width:260px}
+.wsd-athlete-race-extras{margin-top:15px}
+.wsd-athlete-race-extras:empty{display:none}
+.wsd-athlete-race-extras h5{margin:0 0 6px;padding-top:12px;border-top:1px solid #eddae3;color:#70415b;font-size:12px}
+.wsd-community-avatar{width:33px;height:33px;object-fit:cover;border-radius:9px}
