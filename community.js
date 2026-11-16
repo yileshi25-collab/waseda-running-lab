@@ -97,7 +97,7 @@
     ownCorrectionIds=new Set((data||[]).map(x=>x?.id).filter(Boolean));
   }
   function syncSharedViews(){
-    window.WSD_COMMUNITY_RACES=posts.filter(p=>p.kind==="race");
+    window.WSD_COMMUNITY_RACES=posts.filter(p=>p.kind==="race").map(p=>({...p,athlete_name:resolveAthleteName(p.athlete_name)}));
     window.WSD_DATE_CORRECTIONS=corrections;
     window.WSD_MY_POST_IDS=[...ownPostIds];
     window.WSD_MY_DATE_CORRECTION_IDS=[...ownCorrectionIds];
@@ -132,6 +132,20 @@
        location.hash.includes("access_token=");
   }
   const roster=Array.isArray(window.WSD_ATHLETE_NAMES)?window.WSD_ATHLETE_NAMES:[];
+  function resolveAthleteName(name){
+    const val=String(name||"").trim();
+    const normalized=val.replace(/\s+/g,"").toLowerCase();
+    const registered=roster.find(n=>n.replace(/\s+/g,"").toLowerCase()===normalized);
+    if(registered)return registered;
+    try{
+      if(typeof ANNUAL_2026!=="undefined"){
+        const record=ANNUAL_2026.find(r=>
+          String(r.csvName||"").replace(/\s+/g,"").toLowerCase()===normalized);
+        if(record)return record.name;
+      }
+    }catch(e){}
+    return val;
+  }
   $("wsdAthleteNames").innerHTML=roster.map(n=>'<option value="'+esc(n)+'"></option>').join("");
   $("wsdAuth").hidden=false;
   function postImage(r) {
@@ -177,7 +191,7 @@
     const list=$("rosterBody");
     if(!list)return;
     const images=new Map();
-    for(const r of posts)if(r.kind==="photo"&&!images.has(r.athlete_name))images.set(r.athlete_name,r);
+    for(const r of posts){const n=resolveAthleteName(r.athlete_name);if(r.kind==="photo"&&!images.has(n))images.set(n,r);}
     list.querySelectorAll(".playercell").forEach(cell=>{
       const name=cell.querySelector("[data-player]")?.getAttribute("data-player");
       if(!name)return;
@@ -202,7 +216,7 @@
     });
   }
   function photoCardsFor(name){
-    const all=posts.filter(r=>r.athlete_name===name&&r.kind==="photo").slice(0,16);
+    const all=posts.filter(r=>resolveAthleteName(r.athlete_name)===name&&r.kind==="photo").slice(0,16);
     const cards=all.map(r=>{
       const url=postImage(r);
       return url?'<div class="wsd-athlete-photo-tile"><a target="_blank" rel="noopener noreferrer" href="'+esc(url)+'" title="摄影：'+esc(r.image_credit||"")+'">'+
@@ -276,7 +290,7 @@
       upload.innerHTML=athleteUploader(name);
       upload.dataset.authState=authState;
     }
-    const races=posts.filter(r=>r.athlete_name===name&&r.kind==="race").slice(0,6);
+    const races=posts.filter(r=>resolveAthleteName(r.athlete_name)===name&&r.kind==="race").slice(0,6);
     const extras=section.querySelector("[data-wsd-athlete-races]");
     const raceIds=races.map(r=>r.id+":"+(admin?"admin":ownPostIds.has(r.id)?"owner":"visitor")).join(",");
     if(extras.dataset.raceIds!==raceIds){
@@ -487,7 +501,7 @@
     if(!user){note("请先使用 Google 账号登录。",true);return;}
     if(!$("wsdRights").checked){note("请确认公开授权与数据准确性。",true);return;}
     const kind=$("wsdKind").value;
-    const name=$("wsdAthlete").value.trim();
+    const name=resolveAthleteName($("wsdAthlete").value.trim());
     const who=$("wsdDisplayName").value.trim();
     const source=$("wsdSource").value.trim();
     if(name.length<2||name.length>75||who.length<2||who.length>30){note("姓名或署名长度不正确。",true);return;}
