@@ -123,3 +123,11 @@
 .wsd-inline-date-error{font-size:11px;color:#b43958;overflow-wrap:anywhere}
 .wsd-roster-race-count{font-size:10px;color:#98516e;margin-top:4px;font-weight:650}
 #arc25List .wsd-community-delete{display:inline-block;text-align:left;align-self:flex-start;padding:4px}
+
+
+/* Existing 2026 result revisions: collapsible history including older edits. */
+.wsd-date-history{margin-top:8px;padding:8px 10px;background:#fff9fc;border:1px solid #ecd4df;border-radius:8px;overflow:hidden}
+.wsd-date-history>summary{font-size:11px;font-weight:700;color:#793f5c;cursor:pointer;list-style-position:inside;padding:3px 0}
+.wsd-date-history-row{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 0;border-bottom:1px solid #f1e1e9}
+.wsd-date-history-row:last-child{border-bottom:0}
+.wsd-date-history-row>span{font-size:11px;color:#6e455b;font-variant-numeric:tabular-nums}
