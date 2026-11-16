@@ -313,6 +313,72 @@
       '<p class="wsd-photo-upload-caveat">自动压缩为不含 EXIF 位置资料的 JPEG（≤2 MB）。照片由跑友投稿，未经官方核实。</p>'+
     '</form>';
   }
+  function careerStageLabel(stage){
+    return ({university:"大学",high_school:"高中",junior_high:"初中",elementary:"小学",other:"其他／待核实"})[stage]||"大学";
+  }
+  function careerHistoryFor(name){
+    const schoolPosts=posts.filter(r=>r.kind==="race"&&resolveAthleteName(r.athlete_name)===name&&
+      (String(r.race_date||"").slice(0,4)<"2026"||r.career_stage!=="university"));
+    // Only historical 2025 rows already present in the site's archive.
+    // We never assume a race was from a specific school stage without evidence.
+    const static2025=(Array.isArray(window.WSD_2025_ARCHIVE_ROWS)?window.WSD_2025_ARCHIVE_ROWS:[])
+      .filter(r=>r.profileName===name);
+    const rows=[
+      ...static2025.map(r=>({date:r.date,stage:"站内 2025 赛事档案",
+        meet:r.event||"",event:r.metric||"",time:r.time||"",rank:r.rank,
+        school:"",note:r.note||"",source:r.source||"",communityId:null})),
+      ...schoolPosts.map(r=>({date:r.race_date,stage:careerStageLabel(r.career_stage),
+        meet:r.meet_name||"跑友补充赛事",event:r.event_name||"",
+        time:r.result_time||"",rank:r.rank,school:r.school_name||"",
+        note:r.notes||"",source:r.source_url||"",communityId:r.id}))
+    ].sort((a,b)=>b.date.localeCompare(a.date)||a.event.localeCompare(b.event));
+    const groups=new Map();
+    for(const row of rows){
+      const year=row.date.slice(0,4)||"年份待核实";
+      if(!groups.has(year))groups.set(year,[]);
+      groups.get(year).push(row);
+    }
+    return {rows,groups};
+  }
+  function decorateCareerHistory(name,head){
+    const body=$("detailBody");
+    if(!body)return;
+    let section=body.querySelector(".wsd-career-history");
+    if(section&&section.dataset.athlete!==name){section.remove();section=null;}
+    if(!section){
+      section=document.createElement("section");
+      section.className="wsd-community-gallery wsd-career-history";
+      section.dataset.athlete=name;
+      head.after(section);
+    }
+    const {rows,groups}=careerHistoryFor(name);
+    const visibleKey=rows.map(r=>r.communityId+":"+r.date+":"+r.event+":"+r.time)
+      .join("|")+";"+admin+";"+[...ownPostIds].join(",");
+    if(section.dataset.historyKey===visibleKey)return;
+    const histories=[...groups].map(([year,items])=>
+      '<details class="wsd-career-year" '+(year==="2025"?'open':"")+'><summary>'+esc(year)+' 年 · '+items.length+' 条</summary>'+
+      items.map(r=>'<div class="wsd-career-record">'+
+        '<div class="wsd-career-record-head"><time>'+esc(r.date)+'</time><span class="wsd-career-stage">'+esc(r.stage)+'</span></div>'+
+        '<div class="wsd-career-record-meet">'+esc(r.meet)+' · '+esc(r.event)+'</div>'+
+        '<div class="wsd-career-record-result"><b>'+esc(r.time)+'</b>'+
+          (r.rank?'<span>第 '+esc(r.rank)+' 名</span>':"")+'</div>'+
+        (r.school?'<small>当时学校／队伍：'+esc(r.school)+'</small>':"")+
+        (r.note?'<p>'+esc(r.note)+'</p>':"")+
+        '<div class="wsd-career-record-foot">'+
+          (r.communityId?'<span class="wsd-community-origin">跑友补录 · 未经独立核实</span>':
+            '<span class="wsd-community-origin">站内 2025 原始档案</span>')+
+          sourceLink(r.source,"成绩来源")+
+          (r.communityId&&(admin||ownPostIds.has(r.communityId))?
+            '<button class="wsd-community-delete" type="button" data-wsd-delete="'+esc(r.communityId)+'">删除我的补充</button>':"")+
+        '</div></div>').join("")+'</details>'
+    ).join("");
+    section.innerHTML='<div class="wsd-athlete-photo-heading"><h4>往年／中学成绩 · CAREER HISTORY</h4>'+
+      '<span>'+rows.length+' 条</span></div>'+
+      '<p class="wsd-career-intro">按比赛年份归档，可补充大学、初中及高中成绩。原始资料与社区补充会明确区分；未经核实的投稿不会修改个人 PB。</p>'+
+      (histories||'<p class="wsd-career-empty">暂无关联的往年或中学成绩，欢迎补录。</p>')+
+      '<button class="btn btn-small wsd-career-add" type="button" data-wsd-add-history="'+esc(name)+'">＋ 为 '+esc(name)+' 补充往年／中学成绩</button>';
+    section.dataset.historyKey=visibleKey;
+  }
   function decorateDetails(){
     const body=$("detailBody");
     if(!body)return;
@@ -334,6 +400,7 @@
         '<div class="wsd-athlete-race-extras" data-wsd-athlete-races></div>';
       head.after(section);
     }
+    decorateCareerHistory(name,head);
     const result=photoCardsFor(name);
     const cards=section.querySelector("[data-wsd-photo-cards]");
     const coverSlot=section.querySelector("[data-wsd-photo-cover]");
