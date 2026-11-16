@@ -110,7 +110,7 @@
 
 /* Collaborative season date edits and crowdsourced race markers. */
 .wsd-season-source-actions{display:flex;align-items:center;flex-wrap:wrap;gap:7px;margin-top:9px;padding-top:7px;border-top:1px dashed #e9d9e1}
-.wsd-date-edit-btn,.wsd-date-revert-btn{display:inline-flex;align-items:center;justify-content:center;gap:4px;border:1px solid #ddbbcd;background:#fcf3f7;color:#7b3859;border-radius:7px;padding:5px 9px;font:650 11px inherit;cursor:pointer;font-size:11px;line-height:1.5}
+.wsd-date-edit-btn,.wsd-date-revert-btn{display:inline-flex;align-items:center;justify-content:center;gap:4px;border:1px solid #ddbbcd;background:#fcf3f7;color:#7b3859;border-radius:7px;padding:5px 9px;font-family:inherit;font-weight:650;font-size:11px;cursor:pointer;line-height:1.5}
 .wsd-date-edit-btn:hover,.wsd-date-revert-btn:hover{background:#f7e6ef}
 .wsd-date-revert-btn{color:#a43457;border-color:#e5a7bb;background:#fff}
 .wsd-date-edit-btn:focus-visible,.wsd-date-revert-btn:focus-visible{outline:2px solid #a34a72;outline-offset:2px}
