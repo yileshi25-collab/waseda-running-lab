@@ -156,19 +156,48 @@
   function sourceLink(url,label){
     return https(url)?'<a href="'+esc(url)+'" target="_blank" rel="noopener noreferrer nofollow">'+esc(label)+' ↗</a>':"";
   }
+  function photoFocus(r){
+    const value=(v,fallback)=>Number.isInteger(Number(v))&&Number(v)>=0&&Number(v)<=100?Number(v):fallback;
+    return value(r.focal_x,50)+"% "+value(r.focal_y,20)+"%";
+  }
+  function athletePhotos(name){
+    return posts.filter(r=>r.kind==="photo"&&resolveAthleteName(r.athlete_name)===name)
+      .sort((a,b)=>a.created_at.localeCompare(b.created_at)||a.id.localeCompare(b.id));
+  }
+  function coverPhoto(name){
+    const photos=athletePhotos(name);
+    return photos.find(r=>r.is_primary===true)||photos[0]||null;
+  }
+  function canManagePhoto(r){
+    return !!user&&(admin||ownPostIds.has(r.id));
+  }
+  function photoActions(r,isCover,withDelete){
+    if(!canManagePhoto(r))return "";
+    return '<div class="wsd-photo-actions">'+
+      '<button type="button" data-wsd-edit-crop="'+esc(r.id)+'">调整显示位置</button>'+
+      (isCover?"":'<button type="button" data-wsd-set-cover="'+esc(r.id)+'">设为头像</button>')+
+      (withDelete?'<button type="button" class="wsd-photo-action-delete" data-wsd-delete="'+esc(r.id)+'">删除照片</button>':"")+
+      '</div>';
+  }
   function drawFeed(){
     const items=posts.filter(r=>active==="all"||r.kind===active);
     $("wsdFeed").innerHTML=items.length?items.map(r=>{
       const image=r.kind==="photo"?postImage(r):"";
+      const chosen=r.kind==="photo"?coverPhoto(resolveAthleteName(r.athlete_name)):null;
+      const isCover=chosen?.id===r.id;
       const metadata=r.kind==="race"?
         '<strong>'+esc(r.result_time||"")+'</strong><div class="wsd-post-meta"><span>'+esc(r.event_name||"")+'</span><span>'+esc(r.race_date||"")+'</span>'+
         (r.rank?'<span>第 '+Number(r.rank)+' 名</span>':"")+'</div>':
         '<small>摄影／来源：'+esc(r.image_credit||"")+' · '+esc(r.image_license||"")+'</small>';
-      return '<article class="wsd-post">'+(image?'<img loading="lazy" referrerpolicy="no-referrer" class="wsd-post-photo" src="'+esc(image)+'" alt="'+esc(r.athlete_name)+' 投稿照片">':"")+
-       '<div class="wsd-post-body"><div class="wsd-post-type">'+(r.kind==="photo"?"PHOTO / 跑友照片":"RACE / 跑友成绩")+'</div>'+
+      return '<article class="wsd-post">'+
+       (image?'<a class="wsd-post-image-link" href="'+esc(image)+'" target="_blank" rel="noopener noreferrer" title="打开完整原图">'+
+         '<img loading="lazy" referrerpolicy="no-referrer" class="wsd-post-photo" src="'+esc(image)+'" style="object-position:'+photoFocus(r)+'" alt="'+esc(r.athlete_name)+' 投稿照片"></a>':"")+
+       '<div class="wsd-post-body"><div class="wsd-post-type">'+(r.kind==="photo"?"PHOTO / 跑友照片":"RACE / 跑友成绩")+
+       (isCover?' <span class="wsd-cover-label">选手头像</span>':"")+'</div>'+
        '<h4>'+esc(r.athlete_name)+'</h4>'+metadata+
        (r.notes?'<p>'+esc(r.notes)+'</p>':"")+
        '<small>投稿者：'+esc(r.display_name)+' · '+new Date(r.created_at).toLocaleString("zh-CN")+'</small>'+
+       (r.kind==="photo"?photoActions(r,isCover,false):"")+
        '<footer>'+sourceLink(r.source_url,"资料来源")+
        (user?'<button data-wsd-report="'+esc(r.id)+'" type="button">举报</button>':'<small>登录后可举报</small>')+
        (user&&(admin||ownPostIds.has(r.id))?'<button class="wsd-community-delete" data-wsd-delete="'+esc(r.id)+'" type="button">'+(admin&&!ownPostIds.has(r.id)?'管理员删除':'删除我的投稿')+'</button>':"")+
@@ -179,7 +208,7 @@
   }
   async function refresh(){
     const {data,error}=await sb.from(TABLE).select(
-      "id,kind,athlete_name,display_name,event_name,race_date,result_time,rank,notes,source_url,image_path,image_credit,image_license,created_at,status"
+      "id,kind,athlete_name,display_name,event_name,race_date,result_time,rank,notes,source_url,image_path,image_credit,image_license,created_at,status,is_primary,focal_x,focal_y"
     ).eq("status","published").order("created_at",{ascending:false}).limit(1000);
     if(error){note("读取社区资料失败："+error.message,true);return;}
     posts=data||[];
@@ -190,43 +219,63 @@
   function decorateRoster(){
     const list=$("rosterBody");
     if(!list)return;
-    const images=new Map();
-    for(const r of posts){const n=resolveAthleteName(r.athlete_name);if(r.kind==="photo"&&!images.has(n))images.set(n,r);}
+    const covers=new Map();
+    for(const r of posts.filter(x=>x.kind==="photo")){
+      const name=resolveAthleteName(r.athlete_name);
+      if(!covers.has(name))covers.set(name,coverPhoto(name));
+    }
     list.querySelectorAll(".playercell").forEach(cell=>{
       const name=cell.querySelector("[data-player]")?.getAttribute("data-player");
       if(!name)return;
-      const data=images.get(name);
+      const data=covers.get(name);
       const icon=cell.querySelector(".playericon");
       const current=cell.querySelector("img.wsd-community-avatar");
       const url=data?postImage(data):"";
       if(!url){
         if(current){
           const placeholder=document.createElement("div");
-          placeholder.className="playericon";placeholder.textContent="W";
+          placeholder.className="playericon";
+          placeholder.textContent="W";
           current.replaceWith(placeholder);
         }
         return;
       }
-      if(current){if(current.getAttribute("src")!==url)current.src=url;return;}
+      if(current){
+        if(current.getAttribute("src")!==url)current.src=url;
+        current.style.objectPosition=photoFocus(data);
+        return;
+      }
       if(!icon)return;
       const img=document.createElement("img");
       img.src=url;img.loading="lazy";img.referrerPolicy="no-referrer";
-      img.alt=name+" · 跑友分享的照片";img.className="wsd-community-avatar";
+      img.alt=name+" · 跑友分享的头像";img.className="wsd-community-avatar";
+      img.style.objectPosition=photoFocus(data);
       icon.replaceWith(img);
     });
   }
   function photoCardsFor(name){
-    const all=posts.filter(r=>resolveAthleteName(r.athlete_name)===name&&r.kind==="photo").slice(0,16);
-    const cards=all.map(r=>{
+    const photos=athletePhotos(name);
+    const cover=photos.find(r=>r.is_primary===true)||photos[0]||null;
+    const gallery=photos.filter(r=>r.id!==cover?.id).slice(0,24);
+    const renderTile=r=>{
       const url=postImage(r);
-      return url?'<div class="wsd-athlete-photo-tile"><a target="_blank" rel="noopener noreferrer" href="'+esc(url)+'" title="摄影：'+esc(r.image_credit||"")+'">'+
-         '<img loading="lazy" referrerpolicy="no-referrer" alt="'+esc(name)+' 跑友分享照片" src="'+esc(url)+'">'+
+      return url?'<div class="wsd-athlete-photo-tile"><a target="_blank" rel="noopener noreferrer" href="'+esc(url)+'" title="摄影：'+esc(r.image_credit||"")+'；点击打开完整图片">'+
+         '<img loading="lazy" referrerpolicy="no-referrer" alt="'+esc(name)+' 跑友分享照片" src="'+esc(url)+'" style="object-position:'+photoFocus(r)+'">'+
          '<span>摄影：'+esc(r.image_credit||"")+'</span></a>'+
-         (user&&(admin||ownPostIds.has(r.id))?'<button class="wsd-photo-tile-delete" type="button" data-wsd-delete="'+esc(r.id)+'">删除照片</button>':"")+
-         '</div>':"";
-    }).join("");
-    return {count:all.length,ids:all.map(r=>r.id+":"+(admin?"admin":ownPostIds.has(r.id)?"owner":"visitor")).join(","),
-      html:cards||'<div class="wsd-no-athlete-photos"><span aria-hidden="true">▧</span><strong>暂无公开照片</strong><small>欢迎上传你有权分享的选手照片</small></div>'};
+         photoActions(r,false,true)+'</div>':"";
+    };
+    const coverURL=cover?postImage(cover):"";
+    const coverHTML=coverURL?'<div class="wsd-athlete-photo-hero">'+
+      '<a href="'+esc(coverURL)+'" target="_blank" rel="noopener noreferrer" title="打开完整头像照片">'+
+      '<img class="wsd-athlete-main-photo" loading="lazy" referrerpolicy="no-referrer" src="'+esc(coverURL)+'" alt="'+esc(name)+' 当前头像" style="object-position:'+photoFocus(cover)+'"></a>'+
+      '<div class="wsd-athlete-cover-meta"><strong>选手头像</strong><span>摄影：'+esc(cover.image_credit||"")+'</span>'+
+      (cover.is_primary?'<small>已指定为头像</small>':'<small>默认使用最早上传的照片</small>')+
+      photoActions(cover,true,true)+'</div></div>':
+      '<div class="wsd-no-athlete-photos"><span aria-hidden="true">▧</span><strong>暂无公开照片</strong><small>上传第一张照片后，它会自动成为选手头像</small></div>';
+    const ids=photos.map(r=>r.id+":"+r.is_primary+":"+r.focal_x+":"+r.focal_y+":"+(admin?"admin":ownPostIds.has(r.id)?"owner":"visitor")).join(",");
+    return {count:photos.length,ids,
+      coverHTML,html:gallery.map(renderTile).join("")||
+       (cover?'<p class="wsd-gallery-empty">还没有其他照片。继续上传的照片会进入这里。</p>':"")};
   }
   function athleteUploader(name){
     if(!user){
@@ -272,6 +321,8 @@
       section.dataset.wsdAthlete=name;
       section.innerHTML='<div class="wsd-athlete-photo-heading"><h4>选手照片 · ATHLETE PHOTOS</h4>'+
         '<span data-wsd-photo-count>0 张</span></div>'+
+        '<div class="wsd-athlete-photo-cover" data-wsd-photo-cover></div>'+
+        '<h5 class="wsd-gallery-subheading">其他照片 · PHOTO GALLERY</h5>'+
         '<div class="wsd-athlete-photo-collection" data-wsd-photo-cards></div>'+
         '<div data-wsd-uploader></div>'+
         '<div class="wsd-athlete-race-extras" data-wsd-athlete-races></div>';
@@ -279,7 +330,9 @@
     }
     const result=photoCardsFor(name);
     const cards=section.querySelector("[data-wsd-photo-cards]");
+    const coverSlot=section.querySelector("[data-wsd-photo-cover]");
     if(cards.dataset.photoIds!==result.ids){
+      coverSlot.innerHTML=result.coverHTML;
       cards.innerHTML=result.html;
       cards.dataset.photoIds=result.ids;
     }
