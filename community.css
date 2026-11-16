@@ -212,3 +212,40 @@
 .wsd-career-record-foot button{border:none;background:transparent;cursor:pointer;text-decoration:underline}
 .wsd-career-add{margin-top:14px;width:100%;white-space:normal;text-align:center}
 @media(max-width:520px){.wsd-career-history{padding:12px}.wsd-career-record{padding:11px 9px}.wsd-career-year>summary{padding:11px 9px}}
+
+
+/* Community-authored athlete introductions and race media archive. */
+.wsd-athlete-bio{margin-top:14px;background:linear-gradient(170deg,#fff,#fff9fc)}
+.wsd-editorial-empty{border:1px dashed #e7cad7;background:#fff;border-radius:11px;color:#936e81;font-size:11px;line-height:1.8;padding:17px 13px}
+.wsd-editorial-entry{margin:11px 0;padding:13px 14px;background:#fff;border:1px solid #e9dbe2;border-radius:11px;min-width:0;display:flex;flex-direction:column;gap:9px}
+.wsd-editorial-entry-head{display:flex;justify-content:space-between;align-items:center;gap:9px;flex-wrap:wrap}
+.wsd-editorial-entry-head small{font-size:10px;color:#9a7d8d}
+.wsd-editorial-tag{font-size:10px;font-weight:800;border-radius:999px;background:#f7e6ef;padding:4px 8px;color:#813c5e}
+.wsd-editorial-entry>strong{font-size:13px;color:#57253c;overflow-wrap:anywhere;line-height:1.5}
+.wsd-editorial-body{font-size:11px;line-height:1.85;color:#6c5260;white-space:pre-wrap;overflow-wrap:anywhere;margin:0}
+.wsd-editorial-entry>a{display:inline-flex;align-self:flex-start;font-size:11px;color:#8d4160;text-decoration:underline;text-underline-offset:3px;overflow-wrap:anywhere;word-break:break-word}
+.wsd-editorial-delete{align-self:flex-start;border:1px solid #efd7e0;background:#fff7fa;color:#b03860;font-size:10px;font-weight:700;padding:6px 9px;border-radius:7px;cursor:pointer}
+.wsd-editorial-actions{display:flex;align-items:center;gap:10px;margin:12px 0 5px;flex-wrap:wrap}
+.wsd-editorial-add{border:1px solid #d9b1c4;background:#f7e8ef;color:#7e3b59;border-radius:9px;padding:8px 12px;font-size:11px;font-weight:750;cursor:pointer;min-height:34px}
+.wsd-editorial-add:hover,.wsd-editorial-delete:hover{background:#efd9e4}
+.wsd-editorial-guest{font-size:10px;color:#9a7d8d}
+.wsd-editorial-disclaimer{display:block;color:#987b88;font-size:10px;line-height:1.7;margin-top:13px}
+.wsd-editorial-form-slot{min-width:0}
+.wsd-editorial-form{display:grid;gap:11px;padding:13px;margin-top:11px;background:#fff;border:1px solid #e4c7d5;border-radius:12px;min-width:0}
+.wsd-editorial-form label{display:grid;gap:5px;color:#6e4258;font-weight:700;font-size:11px}
+.wsd-editorial-form input,.wsd-editorial-form textarea,.wsd-editorial-form select{width:100%;max-width:100%;box-sizing:border-box;border:1px solid #dec6d1;border-radius:8px;padding:10px;color:#452a3a;background:#fff;font:inherit;font-size:12px;line-height:1.5}
+.wsd-editorial-form textarea{min-height:110px;resize:vertical}
+.wsd-editorial-form input:focus,.wsd-editorial-form textarea:focus,.wsd-editorial-form select:focus{outline:2px solid #cda2b6;outline-offset:2px}
+.wsd-editorial-form-controls{display:flex;flex-wrap:wrap;gap:8px}
+.wsd-editorial-form-controls button{flex:1;min-width:90px;white-space:normal}
+.wsd-editorial-hint{font-size:10px;color:#8a6f7c;line-height:1.7;margin:0}
+.wsd-editorial-form-status{min-height:17px;color:#b03860;font-size:11px;overflow-wrap:anywhere}
+.wsd-race-editorial-slot{margin-top:12px;padding:11px;background:#fff9fc;border-radius:10px;border:1px solid #f0dfe6;min-width:0}
+.wsd-race-editorial-head{display:flex;justify-content:space-between;align-items:center;gap:9px;margin-bottom:6px}
+.wsd-race-editorial-head strong{font-size:11px;font-weight:800;color:#743750}
+.wsd-race-editorial-head span{font-size:10px;color:#9b7f8d}
+.wsd-race-editorial-slot .wsd-editorial-entry{padding:10px;margin:8px 0}
+.wsd-race-editorial-slot .wsd-editorial-add{padding:7px 10px}
+.wsd-career-record .wsd-race-editorial-slot{width:100%;margin-top:5px}
+.wsd-community-mini-races .wsd-race-editorial-slot{margin-top:8px}
+@media(max-width:600px){.wsd-athlete-bio{padding:13px}.wsd-editorial-entry{padding:11px}.wsd-editorial-form{padding:11px}.wsd-race-editorial-slot{padding:9px}}
