@@ -1,0 +1,50 @@
+/* Waseda Running Lab community, instant submissions */
+.wsd-community-intro{background:linear-gradient(120deg,#541b33,#873e60);padding:28px 31px;border-radius:20px;color:#fff}
+.wsd-community-intro h2{font-size:29px;margin:9px 0}.wsd-community-intro p{font-size:12px;color:#f1dce6;line-height:1.8;max-width:700px}
+.wsd-community-intro .eyebrow{color:#e5b4c9}
+.wsd-community-grid{display:grid;grid-template-columns:minmax(245px,360px) 1fr;gap:18px;margin:20px 0}
+.wsd-community-panel{background:white;border:1px solid #e9dfe4;border-radius:15px;padding:20px;min-width:0}
+.wsd-community-panel h3{font-size:17px;color:#582039;margin:0 0 9px}
+.wsd-community-panel p,.wsd-community-help{color:#897681;font-size:11px;line-height:1.8}
+.wsd-community-form{display:grid;gap:11px}
+.wsd-community-form label{display:grid;gap:6px;font-size:11px;color:#705063;font-weight:650}
+.wsd-community-form input,.wsd-community-form select,.wsd-community-form textarea,
+.wsd-community-top select{width:100%;border:1px solid #e4d3dc;background:#fff;padding:10px 11px;border-radius:9px;color:#35202c;font:inherit;font-size:12px;max-width:100%}
+.wsd-community-form textarea{min-height:78px;resize:vertical}
+.wsd-community-form input:focus,.wsd-community-form select:focus,.wsd-community-form textarea:focus{outline:2px solid #cc9caf;outline-offset:1px}
+.wsd-community-tick{display:flex!important;align-items:flex-start;gap:8px;font-weight:400!important;line-height:1.6}
+.wsd-community-tick input{width:auto;margin-top:3px}
+.wsd-community-alert{border-left:3px solid #a94b6c;padding:13px 16px;margin-top:14px;background:#fff1f5;color:#803a58;border-radius:7px;font-size:12px;line-height:1.75}
+.wsd-community-status{font-size:11px;padding:8px 0;min-height:25px;color:#87516a}
+.wsd-community-top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:15px}
+.wsd-community-top select{width:auto;min-width:150px}
+.wsd-community-feed{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.wsd-post{background:white;border:1px solid #e9dbe3;border-radius:13px;overflow:hidden;min-width:0}
+.wsd-post-photo{width:100%;height:175px;object-fit:cover;display:block;background:#f5edf0}
+.wsd-post-body{padding:15px}
+.wsd-post .wsd-post-type{color:#95506d;font-size:10px;font-weight:800;letter-spacing:.7px}
+.wsd-post h4{font-size:16px;color:#51213a;margin:8px 0}
+.wsd-post strong{font:800 22px Georgia,serif;color:#631f3d}
+.wsd-post small{display:block;font-size:10px;color:#9a848e;line-height:1.8}
+.wsd-post p{font-size:11px;color:#715c67;line-height:1.7;overflow-wrap:anywhere;white-space:pre-wrap}
+.wsd-post footer{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px solid #f0e8ed}
+.wsd-post footer a,.wsd-post footer button{background:none;border:0;color:#853d5d;text-decoration:underline;font-size:10px;cursor:pointer;padding:3px}
+.wsd-post-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:8px 0}
+.wsd-post-meta span{background:#f5e8ef;padding:4px 7px;border-radius:6px;font-size:10px;color:#814a61}
+.wsd-community-skeleton{padding:30px 10px;text-align:center;color:#9a8490;font-size:12px}
+.wsd-community-auth-line{display:flex;gap:7px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:12px;font-size:11px}
+.wsd-community-auth-line .btn{max-width:max-content}
+.wsd-admin-indicator{font-size:10px;color:#8a4b62}
+.wsd-auth-mode{background:#faf5f8;padding:11px;border-radius:9px;margin-bottom:12px}
+.wsd-community-avatar{width:31px;height:36px;object-fit:cover;border-radius:5px;border:1px solid #eedce6}
+.wsd-community-gallery{border:1px solid #ead9e2;border-radius:12px;padding:13px;margin:15px 0;background:#fffbfd}
+.wsd-community-gallery h4{font-size:14px;color:#632643;margin:0 0 9px}
+.wsd-community-gallery-items{display:flex;gap:10px;flex-wrap:wrap}
+.wsd-community-gallery-items a{display:grid;gap:5px;max-width:115px;font-size:10px;text-decoration:none;color:#8c6276}
+.wsd-community-gallery-items img{width:115px;height:115px;object-fit:cover;border-radius:9px}
+.wsd-community-mini-races{margin-top:10px;font-size:11px;color:#7d536b}
+.wsd-community-mini-races>div{padding:6px 0;border-top:1px solid #f1e8ed}
+.wsd-photo-credit{font-size:10px;color:#987988}
+.wsd-community-admin-post{color:#b33256!important}
+@media(max-width:850px){.wsd-community-grid{grid-template-columns:1fr}.wsd-community-feed{grid-template-columns:1fr}}
+@media(max-width:650px){.wsd-community-intro{padding:23px}.wsd-community-intro h2{font-size:24px}.wsd-community-panel{padding:15px}}
