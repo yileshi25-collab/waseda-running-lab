@@ -318,7 +318,7 @@
   }
   function careerHistoryFor(name){
     const schoolPosts=posts.filter(r=>r.kind==="race"&&resolveAthleteName(r.athlete_name)===name&&
-      (String(r.race_date||"").slice(0,4)<"2026"||r.career_stage!=="university"));
+      (String(r.race_date||"").slice(0,4)!=="2026"||r.career_stage!=="university"));
     // Only historical 2025 rows already present in the site's archive.
     // We never assume a race was from a specific school stage without evidence.
     const static2025=(Array.isArray(window.WSD_2025_ARCHIVE_ROWS)?window.WSD_2025_ARCHIVE_ROWS:[])
@@ -372,11 +372,11 @@
             '<button class="wsd-community-delete" type="button" data-wsd-delete="'+esc(r.communityId)+'">删除我的补充</button>':"")+
         '</div></div>').join("")+'</details>'
     ).join("");
-    section.innerHTML='<div class="wsd-athlete-photo-heading"><h4>往年／中学成绩 · CAREER HISTORY</h4>'+
+    section.innerHTML='<div class="wsd-athlete-photo-heading"><h4>历年／中学成绩 · CAREER HISTORY</h4>'+
       '<span>'+rows.length+' 条</span></div>'+
       '<p class="wsd-career-intro">按比赛年份归档，可补充大学、初中及高中成绩。原始资料与社区补充会明确区分；未经核实的投稿不会修改个人 PB。</p>'+
-      (histories||'<p class="wsd-career-empty">暂无关联的往年或中学成绩，欢迎补录。</p>')+
-      '<button class="btn btn-small wsd-career-add" type="button" data-wsd-add-history="'+esc(name)+'">＋ 为 '+esc(name)+' 补充往年／中学成绩</button>';
+      (histories||'<p class="wsd-career-empty">暂无关联的历年或中学成绩，欢迎补录。</p>')+
+      '<button class="btn btn-small wsd-career-add" type="button" data-wsd-add-history="'+esc(name)+'">＋ 为 '+esc(name)+' 补充历年／中学成绩</button>';
     section.dataset.historyKey=visibleKey;
   }
   function decorateDetails(){
