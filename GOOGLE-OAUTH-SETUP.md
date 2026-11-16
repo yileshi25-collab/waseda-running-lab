@@ -72,8 +72,10 @@ Supabase Redirect URL 文档：https://supabase.com/docs/guides/auth/redirect-ur
 ## 多人协作权限的边界
 
 - 分享网址后，其他人可以登录后**新增**照片和赛事成绩；目前的社区投稿会立即公开。
-- 其他人**不能直接修改现有 2025/2026 官方赛果、PB 或他人的投稿**。这是刻意的权限隔离，避免误操作或恶意覆盖。
-- 如果未来希望允许修改，建议先实现“作者可修改自己的社区投稿，管理员能更正和撤下”，并在数据库 RLS 中单独授予权限，而非开放所有人修改所有记录。
+- 其他人可以在 **2026 年度成绩** 中修正原始记录的比赛日期。修正保存为**独立、可撤销的社区记录**并标记未经官方核实；原始 Word/CSV 成绩、PB 不被覆盖。
+- 新发布的 2025/2026 比赛成绩会并入相应年度及选手资料页；新增姓名如果不在官方名单，会标记“社区新增选手／待核实”。
+- 投稿者可以永久删除自己的社区赛事、照片及日期修订；管理员可以删除任何人的投稿或修订。所有权限由数据库 RLS 验证，不依赖网页按钮。
+- 如需新部署日期修订功能，执行 `supabase/community-date-corrections.sql`；当前线上 Supabase 项目已完成部署。
 - Google OAuth 的 In production 登录对外开放，不等于仅限“拥有链接的人”；公开网址也可能被其他人发现。
 
 Google 官方 OAuth 应用状态说明：https://developers.google.com/identity/protocols/oauth2/production-readiness/overview
