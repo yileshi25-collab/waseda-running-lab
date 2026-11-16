@@ -31,17 +31,14 @@
   };
   const note = (s,bad=false) => { const x=$("wsdCommunityStatus"); if(x){x.textContent=s;x.style.color=bad?"#b33659":"#755163";} };
   root.innerHTML = '<div class="wsd-community-grid">'+
-    '<section class="wsd-community-panel"><h3>发布比赛成绩或照片</h3><p>访客可以直接浏览。登录邮箱后即可投稿，发布后自动公开。投稿不会自动覆盖官方成绩或 PB。</p>'+
+    '<section class="wsd-community-panel"><h3>发布比赛成绩或照片</h3><p>访客可以直接浏览。使用 Google 登录后即可投稿，发布后自动公开。投稿不会自动覆盖官方成绩或 PB。</p>'+
       '<div id="wsdSetup" class="wsd-community-alert" hidden></div>'+
       '<div id="wsdAuth" hidden>'+
         '<div class="wsd-community-auth-line"><strong id="wsdAuthName">未登录</strong><button class="btn btn-small" type="button" id="wsdSignOut" hidden>退出登录</button></div>'+
-        '<div id="wsdLogin" class="wsd-auth-mode"><form id="wsdLoginForm" class="wsd-community-form">'+
-          '<label>邮箱地址<input id="wsdEmail" type="email" maxlength="150" autocomplete="email" required placeholder="your@email.com"></label>'+
-          '<div id="wsdTurnstile"></div><button class="btn btn-primary" type="submit" id="wsdLoginButton">发送六位邮箱验证码</button></form>'+
-          '<form id="wsdOtpForm" class="wsd-community-form wsd-otp-form" hidden>'+
-            '<label>邮件中的 6 位验证码<input id="wsdOtp" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" placeholder="请输入 6 位数字" required></label>'+
-            '<button class="btn btn-primary" type="submit" id="wsdVerifyOtp">验证并登录</button></form>'+
-          '<p>收到验证码后在这里输入，不需要再点击邮件链接。若邮件只有登录链接，请先在 Supabase 的 Magic Link 邮件模板中启用数字验证码。</p></div>'+
+        '<div id="wsdLogin" class="wsd-auth-mode">'+
+          '<button id="wsdGoogleSignIn" type="button" class="btn btn-primary wsd-google-button"><span class="wsd-google-symbol" aria-hidden="true">G</span> 使用 Google 账号登录</button>'+
+          '<p>使用 Google 账号验证身份。登录后自动返回此网站，上传成绩与有权分享的照片。首次使用前，网站管理员须在 Supabase 启用 Google Provider。</p>'+
+          '<p><a href="https://github.com/yileshi25-collab/waseda-running-lab/blob/main/GOOGLE-OAUTH-SETUP.md" target="_blank" rel="noopener noreferrer">Google 登录启用指南 ↗</a></p></div>'+
         '<form id="wsdSubmitForm" class="wsd-community-form" hidden>'+
           '<label>投稿类型<select id="wsdKind"><option value="race">比赛成绩</option><option value="photo">选手照片</option></select></label>'+
           '<label>投稿署名<input id="wsdDisplayName" maxlength="30" minlength="2" required value="早稻田跑友"></label>'+
@@ -63,7 +60,7 @@
         '</form>'+
       '</div>'+
       '<div class="wsd-community-status" id="wsdCommunityStatus" role="status" aria-live="polite"></div>'+
-      '<p class="wsd-community-help">登录需要验证码；每个账号限 1 条/分钟、6 条/小时、20 条/天。图片限制大小并重新编码以清除位置元数据。违规内容可以举报并由管理员撤下。</p>'+
+      '<p class="wsd-community-help">Google 账号登录；每个账号限 1 条/分钟、6 条/小时、20 条/天。图片限制大小并重新编码以清除位置元数据。违规内容可以举报并由管理员撤下。</p>'+
     '</section><section class="wsd-community-panel"><div class="wsd-community-top">'+
     '<h3>跑友实时投稿</h3><select id="wsdFeedKind" aria-label="筛选投稿"><option value="all">所有投稿</option><option value="race">比赛成绩</option><option value="photo">人物照片</option></select></div>'+
     '<div class="wsd-community-feed" id="wsdFeed"><div class="wsd-community-skeleton">正在准备投稿列表…</div></div>'+
@@ -71,8 +68,7 @@
     '<div id="wsdAdminSummary" class="wsd-admin-indicator"></div>'+
     '</section></div>';
   const setup = $("wsdSetup");
-  if (!(cfg.enabled===true && https(cfg.url) && safePublicKey(cfg.publishableKey) &&
-        typeof cfg.turnstileSiteKey==="string" && cfg.turnstileSiteKey.length>8)) {
+  if (!(cfg.enabled===true && https(cfg.url) && safePublicKey(cfg.publishableKey))) {
     setup.hidden=false;
     setup.innerHTML = '协作上传尚未开启：需要先安装数据库并填写 Supabase 公共配置。<a href="https://github.com/yileshi25-collab/waseda-running-lab/blob/main/COMMUNITY-SETUP.md" target="_blank" rel="noopener noreferrer">启用步骤 ↗</a>';
     $("wsdFeed").innerHTML='<div class="wsd-community-skeleton">未配置后端。原有网站和赛果仍可正常使用。</div>';
@@ -82,12 +78,23 @@
   try { ({createClient} = await import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm")); }
   catch { note("数据库组件加载失败，请检查网络连接。",true);return; }
   const sb=createClient(cfg.url,cfg.publishableKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
-  let user=null,admin=false,posts=[],active="all",captchaToken="",captchaWidget=null;
-  const pendingEmailKey="wsd-pending-login-email";
-  let pendingEmail="";
-  try{pendingEmail=sessionStorage.getItem(pendingEmailKey)||"";}catch(e){}
-  if(pendingEmail){$("wsdEmail").value=pendingEmail;$("wsdOtpForm").hidden=false;}
-  function clearPendingEmail(){pendingEmail="";try{sessionStorage.removeItem(pendingEmailKey);}catch(e){}}
+  let user=null,admin=false,posts=[],active="all";
+  const oauthPendingKey="wsd-google-signin-pending";
+  function navigateCommunity(){
+    const btn=document.querySelector('[data-go="community"]');
+    if(btn){btn.click();return;}
+    location.hash="community";
+  }
+  function shouldReturnCommunity(){
+    try{
+      if(sessionStorage.getItem(oauthPendingKey)==="1"){
+        sessionStorage.removeItem(oauthPendingKey);
+        return true;
+      }
+    }catch(e){}
+    return location.search.includes("code=") ||
+       location.hash.includes("access_token=");
+  }
   const roster=Array.isArray(window.WSD_ATHLETE_NAMES)?window.WSD_ATHLETE_NAMES:[];
   $("wsdAthleteNames").innerHTML=roster.map(n=>'<option value="'+esc(n)+'"></option>').join("");
   $("wsdAuth").hidden=false;
@@ -173,10 +180,7 @@
     $("wsdSubmitForm").hidden=!u;
     $("wsdSignOut").hidden=!u;
     $("wsdAuthName").textContent=u?"已登录："+u.email:"未登录 · 访客仅可浏览";
-    if(u){
-      clearPendingEmail();$("wsdOtpForm").hidden=true;$("wsdOtp").value="";
-      if(typeof show==="function"&&location.hash!=="#community")show("community");
-    }
+    if(u&&shouldReturnCommunity())navigateCommunity();
     if(u){
       const {data}=await sb.rpc("wsd_is_community_admin");
       admin=data===true;
@@ -184,58 +188,27 @@
     }else{admin=false;$("wsdAdminSummary").textContent="";}
     drawFeed();
   }
-  async function loadTurnstile(){
-    if(window.turnstile) {captchaWidget=window.turnstile.render("#wsdTurnstile",{
-      sitekey:cfg.turnstileSiteKey,callback:t=>{captchaToken=t;},
-      "expired-callback":()=>{captchaToken="";},
-      "error-callback":()=>{captchaToken="";}
-    });return;}
-    const script=document.createElement("script");
-    script.src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
-    script.async=true;script.defer=true;
-    script.onload=()=>loadTurnstile();
-    script.onerror=()=>note("验证码无法加载；登录已关闭以防止滥用。",true);
-    document.head.appendChild(script);
-  }
-  $("wsdLoginForm").onsubmit=async e=>{
-    e.preventDefault();
-    if(!captchaToken){note("请先通过验证码验证。",true);return;}
-    const btn=$("wsdLoginButton");btn.disabled=true;
+  $("wsdGoogleSignIn").onclick=async()=>{
+    const button=$("wsdGoogleSignIn");
+    button.disabled=true;
+    note("正在连接 Google 登录…");
     try{
-      // Supabase may return tokens in URL fragments: use a clean callback URL.
-      const redirect=location.origin+location.pathname;
-      const {error}=await sb.auth.signInWithOtp({
-        email:$("wsdEmail").value.trim(),
-        options:{emailRedirectTo:redirect,captchaToken}
+      // OAuth callback is handled by Supabase Auth first. Never use
+      // #community here, since tokens can arrive in the URL fragment.
+      const redirectTo=location.origin+location.pathname;
+      try{sessionStorage.setItem(oauthPendingKey,"1");}catch(e){}
+      const {error}=await sb.auth.signInWithOAuth({
+        provider:"google",
+        options:{redirectTo}
       });
       if(error)throw error;
-      pendingEmail=$("wsdEmail").value.trim();
-      try{sessionStorage.setItem(pendingEmailKey,pendingEmail);}catch(e){}
-      $("wsdOtpForm").hidden=false;
-      note("登录邮件已发送，请输入邮件中的六位验证码。如果邮件只有链接，请先更改 Supabase 邮件模板。");
-      $("wsdOtp").focus();
-    }catch(err){note("发送登录邮件失败："+err.message,true);}
-    finally{
-      btn.disabled=false;captchaToken="";
-      if(window.turnstile&&captchaWidget!==null)window.turnstile.reset(captchaWidget);
-    }
-  };
-  $("wsdOtpForm").onsubmit=async e=>{
-    e.preventDefault();
-    const email=(pendingEmail||$("wsdEmail").value).trim();
-    const token=$("wsdOtp").value.trim();
-    if(!/^[0-9]{6}$/.test(token)||!email){note("请输入邮件中的六位验证码。",true);return;}
-    const btn=$("wsdVerifyOtp");btn.disabled=true;btn.textContent="验证中…";
-    try{
-      const {data,error}=await sb.auth.verifyOtp({email,token,type:"email"});
-      if(error)throw error;
-      if(!data?.session)throw new Error("验证码已接受，但登录会话尚未建立");
-      await setAuth();
-      if(typeof show==="function")show("community");
-      note("邮箱验证成功，现在可以上传照片或比赛成绩。");
+      // The browser normally leaves this page here for Google's consent flow.
     }catch(err){
-      note("验证码无效或已失效："+(err?.message||String(err))+"。请检查最新邮件中的验证码。",true);
-    }finally{btn.disabled=false;btn.textContent="验证并登录";}
+      try{sessionStorage.removeItem(oauthPendingKey);}catch(e){}
+      button.disabled=false;
+      note("Google 登录未能启动："+(err?.message||String(err))+
+        "。请检查 Supabase Authentication → Sign In / Providers → Google 是否开启。",true);
+    }
   };
   $("wsdSignOut").onclick=async()=>{await sb.auth.signOut();await setAuth();};
   $("wsdKind").onchange=()=>{
@@ -377,12 +350,16 @@
   await setAuth();await refresh();
   const callbackParams=new URLSearchParams(location.search);
   const fragmentParams=new URLSearchParams(location.hash.startsWith("#")?location.hash.slice(1):"");
-  const callbackError=callbackParams.get("error_description")||fragmentParams.get("error_description");
+  const callbackError=callbackParams.get("error_description")||
+     fragmentParams.get("error_description")||
+     callbackParams.get("error");
   if(callbackError){
-    if(typeof show==="function")show("community");
-    note("邮件登录链接无法使用："+callbackError+"。建议使用邮件六位验证码登录。",true);
+    try{sessionStorage.removeItem(oauthPendingKey);}catch(e){}
+    navigateCommunity();
+    note("Google 登录没有完成："+callbackError+"。请确认已在 Supabase 启用 Google Provider，且 Google Cloud 的授权回调地址准确。",true);
+    // OAuth error details are no longer needed in the browser URL.
+    history.replaceState(null,"",location.origin+location.pathname+"#community");
   }
-  await loadTurnstile();
   sb.channel("wsd-community-public").on("postgres_changes",
     {event:"*",schema:"public",table:TABLE},()=>{refresh().catch(()=>{});}).subscribe();
   // Reconnect fallback and updates from other tabs, keeping public feed fresh.
