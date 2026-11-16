@@ -428,12 +428,22 @@ function renderRelays(){
  $a('arc25Races').innerHTML=Object.entries(RELAYS).map(([key,r])=>`<button class="arc25-race ${selected===key?'active':''}" data-arc25-race="${key}"><div class="nm">${htmlSafe(r.name)}</div><strong>第 ${r.rank} 名</strong><small>${r.date} · ${r.total} · ${r.legs.length} 区</small></button>`).join('');
  const r=RELAYS[selected];$a('arc25Legs').innerHTML=`<div class="hdr"><b>${r.name} · 逐区成绩</b><a style="font-size:11px;color:#823351;text-decoration:underline" href="${SRC[selected]}" target="_blank" rel="noopener">查看官方赛果 ↗</a></div><div class="arc25-legs"><table><thead><tr><th>区间</th><th>跑者</th><th>里程</th><th>区间成绩</th><th>区间名次</th></tr></thead><tbody>${r.legs.map(([name,km,time,rank],i)=>`<tr><td>${i+1} 区</td><td><strong>${htmlSafe(name)}</strong></td><td>${km} km</td><td style="font-variant-numeric:tabular-nums;font-weight:800">${time}</td><td>${rank===1?'🏅 ':''}${rank} 位</td></tr>`).join('')}</tbody></table></div>`;
 }
+function allArchiveRows(){
+ const community=(window.WSD_COMMUNITY_RACES||[])
+   .filter(r=>r.kind==="race"&&String(r.race_date||"").startsWith("2025-"))
+   .map(r=>({date:r.race_date,event:"跑友补充赛事",type:"社区投稿",
+     metric:r.event_name||"比赛成绩",name:r.athlete_name,grade:null,
+     time:r.result_time||"",rank:r.rank,note:r.notes||"",
+     source:r.source_url||"",communityId:r.id}));
+ return RESULTS.concat(community);
+}
 const index=new Map(RESULTS.map((x,i)=>[x,i]));
 function renderResults(){
  const q=$a('arc25Search').value.trim().toLowerCase(),type=$a('arc25Type').value,mon=$a('arc25Month').value,metric=$a('arc25Metric').value;
- const filtered=RESULTS.filter(x=>(type==='all'||x.type===type)&&(mon==='all'||x.date.slice(5,7)===mon)&&(metric==='all'||(metric==='other-ekiden'?x.type==='驿传':x.metric===metric))&&(!q||[x.name,x.event,x.metric,x.time,x.note].some(t=>t.toLowerCase().includes(q)))).sort((a,b)=>b.date.localeCompare(a.date)||index.get(a)-index.get(b));
- $a('arc25Count').textContent=`显示 ${filtered.length} / ${rowcount} 条 · ${new Set(filtered.map(x=>x.name)).size} 名选手`;
- $a('arc25List').innerHTML=filtered.length?filtered.map(x=>{const match=currentName(x.name),hasPB=x.note.includes('PB'),time=x.time;return `<article class="arc25-item"><div class="arc25-itemtop"><small>${x.date} · ${htmlSafe(x.event)}</small><span class="arc25-tag">${htmlSafe(x.type)}</span></div><div class="arc25-itemtop"><span class="arc25-name ${match?'player':''}" ${match?`data-player="${htmlSafe(match)}" title="打开当前选手档案" role="button" tabindex="0"`:''}>${htmlSafe(x.name)}</span><span class="arc25-time">${htmlSafe(time)}</span></div><div class="arc25-tags"><span class="arc25-tag">${htmlSafe(x.metric)}</span>${x.grade?`<span class="arc25-tag">当时 ${x.grade} 年级</span>`:''}${x.rank!=null?`<span class="arc25-tag">${x.rank} 位</span>`:''}${hasPB?'<span class="arc25-tag">PB</span>':''}</div>${x.note?`<div class="arc25-note2">${htmlSafe(x.note)}</div>`:''}<a href="${x.source}" target="_blank" rel="noopener noreferrer">官方记录 ↗</a></article>`;}).join(''):'<div class="arc25-empty">没有符合当前筛选的成绩，请重置筛选。</div>';
+ const allRecords=allArchiveRows();
+ const filtered=allRecords.filter(x=>(type==='all'||x.type===type)&&(mon==='all'||x.date.slice(5,7)===mon)&&(metric==='all'||(metric==='other-ekiden'?x.type==='驿传':x.metric===metric))&&(!q||[x.name,x.event,x.metric,x.time,x.note].some(t=>t.toLowerCase().includes(q)))).sort((a,b)=>b.date.localeCompare(a.date)||(index.get(a)??9999)-(index.get(b)??9999));
+ $a('arc25Count').textContent=`显示 ${filtered.length} / ${allRecords.length} 条 · ${new Set(filtered.map(x=>x.name)).size} 名选手`;
+ $a('arc25List').innerHTML=filtered.length?filtered.map(x=>{const match=currentName(x.name),hasPB=!x.communityId&&x.note.includes('PB'),time=x.time;return `<article class="arc25-item"><div class="arc25-itemtop"><small>${x.date} · ${htmlSafe(x.event)}</small><span class="arc25-tag">${htmlSafe(x.type)}</span></div><div class="arc25-itemtop"><span class="arc25-name ${match?'player':''}" ${match?`data-player="${htmlSafe(match)}" title="打开当前选手档案" role="button" tabindex="0"`:''}>${htmlSafe(x.name)}</span><span class="arc25-time">${htmlSafe(time)}</span></div><div class="arc25-tags"><span class="arc25-tag">${htmlSafe(x.metric)}</span>${x.grade?`<span class="arc25-tag">当时 ${x.grade} 年级</span>`:''}${x.rank!=null?`<span class="arc25-tag">${x.rank} 位</span>`:''}${hasPB?'<span class="arc25-tag">PB</span>':''}</div>${x.note?`<div class="arc25-note2">${htmlSafe(x.note)}</div>`:''}${x.communityId?'<span class="wsd-community-origin">社区投稿 · 尚未核实</span>':''}<a href="${x.source}" target="_blank" rel="noopener noreferrer">${x.communityId?'投稿来源':'官方记录'} ↗</a>${x.communityId&&(window.WSD_IS_ADMIN||(window.WSD_MY_POST_IDS||[]).includes(x.communityId))?'<button type="button" data-wsd-delete="'+htmlSafe(x.communityId)+'" class="wsd-community-delete">删除投稿</button>':''}</article>`;}).join(''):'<div class="arc25-empty">没有符合当前筛选的成绩，请重置筛选。</div>';
 }
 const sourceLabels={hak:'箱根驿传官方结果',izu:'出云驿传官方结果',zen:'全日本大学驿传官方结果',schedule:'2025 年度官方赛事日历',maru:'丸龟半马',tach:'立川半马',six:'东京六大学',indiv:'学生个人锦标赛',speed:'Tokyo Speed Race',kanto:'关东IC',ic:'日本IC',nation:'日本田径锦标赛',record:'早稻田校纪录',fisu:'世界大学生运动会',ageo:'上尾半马',nittai:'日体大记录赛',dec:'早大竞技会'};
 $a('arc25Sources').innerHTML=Object.entries(SRC).map(([id,url])=>`<a href="${url}" target="_blank" rel="noopener noreferrer">${htmlSafe(sourceLabels[id]||'官方记录')} ↗</a>`).join('');
@@ -441,9 +451,16 @@ $a('arc25Races').addEventListener('click',e=>{const t=e.target.closest('[data-ar
 ['arc25Search','arc25Type','arc25Month','arc25Metric'].forEach(id=>$a(id).addEventListener(id==='arc25Search'?'input':'change',renderResults));
 $a('arc25Reset').addEventListener('click',()=>{$a('arc25Search').value='';['arc25Type','arc25Month','arc25Metric'].forEach(id=>$a(id).value='all');renderResults();});
 $a('arc25Csv').addEventListener('click',()=>{
- const rows=RESULTS.map(r=>({date:r.date,event:r.event,type:r.type,metric:r.metric,athlete:r.name,grade_at_race:r.grade,time:r.time,rank:r.rank,notes:r.note,source:r.source}));
+ const rows=allArchiveRows().map(r=>({date:r.date,event:r.event,type:r.type,metric:r.metric,athlete:r.name,grade_at_race:r.grade,time:r.time,rank:r.rank,notes:(r.communityId?'[社区投稿] ':'')+r.note,source:r.source}));
  download('waseda_2025_verified_results.csv',csvExport(rows,['date','event','type','metric','athlete','grade_at_race','time','rank','notes','source']),'text/csv;charset=utf-8');
 });
+window.WSD_REFRESH_SHARED_VIEWS=function(){
+ if($('view-season')?.classList.contains('active'))renderSeason();
+ if($('view-athletes')?.classList.contains('active'))renderRoster();
+ if($('detailOverlay')?.classList.contains('active')&&currentDetail)refreshDetail(currentDetail);
+ if($('view-archive2025')?.classList.contains('active'))window.WSD_REFRESH_2025_ARCHIVE?.();
+};
+window.WSD_REFRESH_2025_ARCHIVE=renderResults;
 renderRelays();renderResults();
 if(location.hash==='#archive2025')show('archive2025');
 })();
