@@ -178,3 +178,13 @@
 .wsd-crop-buttons .btn{flex:1;min-width:110px}
 .wsd-crop-status{min-height:16px;color:#ad3b5d;font-size:11px;line-height:1.6;overflow-wrap:anywhere}
 @media(max-width:480px){.wsd-athlete-photo-collection{grid-template-columns:repeat(2,minmax(0,1fr))}.wsd-crop-dialog{padding:15px}.wsd-post-photo{height:235px}.wsd-crop-preview{height:235px}}
+
+
+/* Side-by-side previews: wide feed card and square player avatar. */
+.wsd-crop-preview-grid{display:grid;grid-template-columns:minmax(0,1fr) 108px;gap:10px;align-items:start}
+.wsd-crop-preview{min-width:0}
+.wsd-crop-preview>span{position:absolute;bottom:8px;left:8px;background:#3e243bce;color:white;border-radius:5px;padding:4px 7px;font-size:10px;pointer-events:none}
+.wsd-crop-avatar-preview{display:grid;gap:6px;justify-items:center;align-content:start;padding:7px;background:#faf2f6;border:1px solid #e7d3dc;border-radius:11px;min-width:0}
+.wsd-crop-avatar-preview img{display:block;width:90px;height:90px;max-width:100%;object-fit:cover;object-position:50% 20%;border-radius:10px;background:#eadfe5}
+.wsd-crop-avatar-preview span{font-size:10px;color:#73415b;font-weight:700}
+@media(max-width:480px){.wsd-crop-preview-grid{grid-template-columns:minmax(0,1fr) 90px;gap:7px}.wsd-crop-avatar-preview{padding:5px}.wsd-crop-avatar-preview img{width:78px;height:78px}}
