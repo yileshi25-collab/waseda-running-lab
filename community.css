@@ -188,3 +188,27 @@
 .wsd-crop-avatar-preview img{display:block;width:90px;height:90px;max-width:100%;object-fit:cover;object-position:50% 20%;border-radius:10px;background:#eadfe5}
 .wsd-crop-avatar-preview span{font-size:10px;color:#73415b;font-weight:700}
 @media(max-width:480px){.wsd-crop-preview-grid{grid-template-columns:minmax(0,1fr) 90px;gap:7px}.wsd-crop-avatar-preview{padding:5px}.wsd-crop-avatar-preview img{width:78px;height:78px}}
+
+
+/* Multi-year athlete career history. Includes source-labeled 2025 archive
+   and school-years/university submissions without overwriting original PBs. */
+.wsd-career-history{margin-top:15px;margin-bottom:17px}
+.wsd-career-intro{font-size:11px;line-height:1.8;color:#846879;margin:6px 0 13px}
+.wsd-career-empty{padding:15px 11px;border:1px dashed #dec5d0;background:#fff;border-radius:9px;font-size:11px;color:#8b7280}
+.wsd-career-year{margin:9px 0;border:1px solid #ecdee5;border-radius:10px;background:#fff;overflow:hidden}
+.wsd-career-year>summary{padding:12px 13px;cursor:pointer;font-size:12px;font-weight:800;color:#683651;background:#fcf5f9;list-style-position:inside}
+.wsd-career-year[open]>summary{border-bottom:1px solid #efdee6}
+.wsd-career-record{padding:12px 13px;border-bottom:1px solid #f0e7eb;display:grid;gap:7px}
+.wsd-career-record:last-child{border-bottom:0}
+.wsd-career-record-head,.wsd-career-record-result,.wsd-career-record-foot{display:flex;justify-content:space-between;align-items:center;gap:7px;flex-wrap:wrap}
+.wsd-career-record-head time{font-size:10px;font-weight:700;color:#927786}
+.wsd-career-stage{font-size:10px;font-weight:700;border-radius:999px;color:#773858;background:#f7e7ef;padding:4px 7px}
+.wsd-career-record-meet{font-size:12px;font-weight:750;color:#57263f;line-height:1.6}
+.wsd-career-record-result b{font-size:19px;color:#63213f;font-variant-numeric:tabular-nums}
+.wsd-career-record-result span{font-size:10px;color:#956a82}
+.wsd-career-record p{margin:0;font-size:11px;color:#806875;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere}
+.wsd-career-record>small{font-size:10px;color:#927486;line-height:1.6}
+.wsd-career-record-foot a,.wsd-career-record-foot button{font-size:10px;color:#84415f}
+.wsd-career-record-foot button{border:none;background:transparent;cursor:pointer;text-decoration:underline}
+.wsd-career-add{margin-top:14px;width:100%;white-space:normal;text-align:center}
+@media(max-width:520px){.wsd-career-history{padding:12px}.wsd-career-record{padding:11px 9px}.wsd-career-year>summary{padding:11px 9px}}
