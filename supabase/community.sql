@@ -124,6 +124,9 @@ grant insert (author_id, display_name, kind, athlete_name, event_name,
   race_date, result_time, rank, notes, source_url, image_path,
   image_credit, image_license) on public.wsd_community_submissions to authenticated;
 grant update (status) on public.wsd_community_submissions to authenticated;
+-- Only authenticated authors and admins may permanently delete submissions.
+grant delete on public.wsd_community_submissions to authenticated;
+revoke delete on public.wsd_community_submissions from anon;
 drop policy if exists "wsd_public_read_posted" on public.wsd_community_submissions;
 create policy "wsd_public_read_posted" on public.wsd_community_submissions
   for select to anon, authenticated
@@ -137,6 +140,14 @@ create policy "wsd_only_admin_hide" on public.wsd_community_submissions
   for update to authenticated
   using ((select public.wsd_is_community_admin()))
   with check ((select public.wsd_is_community_admin()));
+
+drop policy if exists "wsd_owner_or_admin_delete" on public.wsd_community_submissions;
+create policy "wsd_owner_or_admin_delete" on public.wsd_community_submissions
+  for delete to authenticated
+  using (
+    author_id = (select auth.uid())
+    or (select public.wsd_is_community_admin())
+  );
 
 create table if not exists public.wsd_community_reports (
   id uuid primary key default gen_random_uuid(),
@@ -239,6 +250,8 @@ end $$;
 -- insert into public.wsd_community_admins (user_id)
 -- values ('YOUR-USER-UUID-HERE') on conflict do nothing;
 --
--- Admin can hide published entries. To actually remove an inappropriate
--- PUBLIC image, also delete its file in Storage (the link otherwise
--- remains accessible to anyone who knows its URL).
+-- Authors may delete their own posts; admins may delete any post.
+-- After deleting a photo's submission DB row, use Storage.remove() to
+-- delete its public object. If cleanup fails, remove the orphaned
+-- image manually in Supabase Storage; deleting a row alone does not
+-- revoke a previously shared image URL.
