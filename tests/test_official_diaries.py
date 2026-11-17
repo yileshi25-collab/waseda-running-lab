@@ -31,13 +31,23 @@ class ImportTests(unittest.TestCase):
     def test_import_snapshot_integrity_and_coverage(self):
         data=json.loads((ROOT/'data/official-diaries-2026.json').read_text())
         rows=data['entries']
-        self.assertEqual(data['total'],319)
+        self.assertEqual(data['total'],97)
+        self.assertTrue(data['long_distance_only'])
+        self.assertEqual(data['source_archive_total'],319)
+        self.assertEqual(data['excluded_other_groups'],222)
+        self.assertNotIn('official-diary-1684',{r['id'] for r in rows})
+        self.assertNotIn('official-diary-1194',{r['id'] for r in rows})
+        self.assertIn('official-diary-1248',{r['id'] for r in rows})
+        roster=json.loads((ROOT/'data/official-diary-eligible-authors-2026.json').read_text())
+        allowed={diaries.normalize_author(n) for n in roster['current']+roster['graduates_2026']}
+        self.assertEqual(set(data['allowed_authors']),set(roster['current']+roster['graduates_2026']))
+        self.assertTrue(all(diaries.normalize_author(r['author']) in allowed for r in rows))
         self.assertEqual(len(rows),len({r['source_url'] for r in rows}))
         self.assertEqual(len(rows),len({r['id'] for r in rows}))
-        self.assertEqual(len({r['author'] for r in rows}),147)
-        self.assertEqual(data['author_count'],145)
+        self.assertEqual(len({r['author'] for r in rows}),45)
+        self.assertEqual(data['author_count'],44)
         self.assertEqual(rows[0]['published_at'],'2026-11-17')
-        self.assertEqual(rows[-1]['published_at'],'2026-01-01')
+        self.assertEqual(rows[-1]['published_at'],'2026-01-04')
         self.assertEqual(rows,sorted(rows,key=lambda r:(r['published_at'],int(r['id'].rsplit('-',1)[1])),reverse=True))
         for row in rows:
             self.assertRegex(row['source_url'],r'^https://waseda-ac\.jp/diary/detail/\d+$')
