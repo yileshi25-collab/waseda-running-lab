@@ -289,7 +289,7 @@
     const feed=$("wsdFeed");
     const expanded=new Set([...feed.querySelectorAll("details[data-wsd-feed-category][open]")].map(el=>el.dataset.wsdFeedCategory));
     const renderPost=r=>{
-      if(r.kind==="editorial")return '<article class="wsd-post wsd-editorial-entry"><div class="wsd-post-body"><div class="wsd-post-type">ARTICLE / '+esc(editorialCategories[r.category]||"文字资料")+'</div><h4>'+esc(r.title)+'</h4><p>选手：'+esc(r.athlete_name)+'</p>'+(r.body?'<p>'+esc(r.body)+'</p>':"")+'<small>投稿者：'+esc(r.display_name)+' · '+new Date(r.created_at).toLocaleString("zh-CN")+'</small><footer>'+sourceLink(r.source_url,"阅读原文")+'</footer></div></article>';
+      if(r.kind==="editorial")return '<article class="wsd-post wsd-editorial-entry"><div class="wsd-post-body"><div class="wsd-post-type">ARTICLE / '+esc(editorialCategories[r.category]||"文字资料")+'</div><h4>'+esc(r.title)+'</h4><p>选手：'+esc(r.athlete_name)+'</p>'+(r.body?'<p>'+esc(r.body)+'</p>':"")+'<small>投稿者：'+esc(r.display_name)+' · '+new Date(r.created_at).toLocaleString("zh-CN")+'</small><footer>'+sourceLink(r.source_url,"阅读原文")+(admin?'<button type="button" data-wsd-editorial-edit="'+esc(r.id)+'">管理员编辑</button> <button type="button" data-wsd-editorial-delete="'+esc(r.id)+'">管理员删除</button>':"")+'</footer></div></article>';
       const image=r.kind==="photo"?postImage(r):"";
       const chosen=r.kind==="photo"?coverPhoto(resolveAthleteName(r.athlete_name)):null;
       const isCover=chosen?.id===r.id;
