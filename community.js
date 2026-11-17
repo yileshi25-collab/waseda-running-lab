@@ -1601,11 +1601,20 @@
 
   sb.auth.onAuthStateChange(()=>{setTimeout(()=>{setAuth().catch(()=>{});},0);});
   const officialIndex=await window.WSD_OFFICIAL_DIARIES_READY;
-  if(officialIndex?.entries)officialEditorial=officialIndex.entries.map(row=>({
-    ...row,athlete_name:resolveAthleteName(row.author),related_athletes:[],scope:"bio",race_ref:null,
-    category:"diary",body:"官方日志索引；正文请在早稻田大学竞走部官网阅读。",display_name:"官方原文 · "+row.author,
-    is_official:true
-  }));
+  function syncOfficialDiaries(){
+    const entries=Array.isArray(window.WSD_OFFICIAL_DIARIES_VISIBLE)
+      ?window.WSD_OFFICIAL_DIARIES_VISIBLE:(officialIndex?.entries||[]);
+    officialEditorial=entries.map(row=>({
+      ...row,athlete_name:resolveAthleteName(row.author),related_athletes:[],scope:"bio",race_ref:null,
+      category:"diary",body:"官方日志索引；正文请在早稻田大学竞走部官网阅读。",display_name:"官方原文 · "+row.author,
+      is_official:true
+    }));
+    const head=$("detailBody")?.querySelector(".detail-head");
+    const name=head?.querySelector("h2")?.textContent?.trim();
+    if(name)decorateBio(name,head);
+  }
+  window.addEventListener("wsd-official-diaries-updated",syncOfficialDiaries);
+  syncOfficialDiaries();
   await setAuth();await Promise.all([refresh(),refreshCorrections(),refreshEditorial()]);
   const callbackParams=new URLSearchParams(location.search);
   const fragmentParams=new URLSearchParams(location.hash.startsWith("#")?location.hash.slice(1):"");
