@@ -18,7 +18,7 @@ function renderResults(rows){
  '<div class="hist24-row"><small>'+safe(r.date)+' · '+safe(r.meet)+'</small><span class="hist24-label">'+(r.status==='OB'?'OB · 毕业后':'在校成绩')+'</span></div>'+
  '<div class="hist24-row"><strong>'+safe(r.name)+'</strong><b class="hist24-time">'+safe(r.time)+'</b></div>'+
  '<div class="hist24-tags"><span>'+safe(r.event)+'</span>'+(r.grade?'<span>当时'+safe(r.grade)+'年级</span>':'')+(r.rank?'<span>第'+safe(r.rank)+'名</span>':'')+(r.stage?'<span>'+safe(r.stage)+'</span>':'')+'</div>'+
- '<div class="hist24-row"><small>朋友整理的历史记录 · 待逐项复核</small>'+sourceLink(r.link)+'</div></article>').join('')||'<p class="hist24-empty">暂无符合筛选条件的成绩。</p>';
+ '<div class="hist24-row"><small>朋友整理的历史记录 · 待逐项复核</small>'+sourceLink(r.link)+(r.status==='OB'?'<button type="button" class="btn btn-small" data-open-alumni="'+safe(r.name)+'">个人完整履历 ↗</button>':'')+'</div></article>').join('')||'<p class="hist24-empty">暂无符合筛选条件的成绩。</p>';
 }
 function exportRows(rows,filename){
  const heads=['year','athlete','grade_at_race','meet','event','date','time','rank','identity_at_race','source_url','stage'];
@@ -172,6 +172,10 @@ function refreshOB(){
  if(currentOb&&!names.includes(currentOb)){currentOb='';$('histObDetail').innerHTML='';}
 }
 $('histObSearch').addEventListener('input',refreshOB);
+document.addEventListener('click',e=>{
+ const link=e.target.closest('[data-open-alumni]');if(!link)return;
+ e.preventDefault();openAlumniProfile(link.dataset.openAlumni);
+});
 $('histObNames').addEventListener('click',e=>{
  const btn=e.target.closest('[data-ob-name]');if(!btn)return;
  openAlumniProfile(btn.dataset.obName);
