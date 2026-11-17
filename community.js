@@ -148,12 +148,18 @@
     const entries=publicEditorialEntries("bio",name,null);
     const sig=entries.map(x=>x.id).join(",")+"|"+[...ownEditorialIds].join(",")+"|"+admin+"|"+!!user;
     if(panel.dataset.wsdEditorialSignature===sig||panel.querySelector("[data-wsd-editorial-form]"))return;
-    panel.innerHTML='<div class="wsd-athlete-photo-heading"><h4>选手简介 · ATHLETE BIO</h4>'+
+    const groups=[["bio","选手介绍"],["diary","部员日志"],["interview","选手采访"],["summary","赛后总结"],["article","相关文章"],["analysis","赛事分析"],["other","其他补充"]];
+    panel.innerHTML='<div class="wsd-athlete-photo-heading"><h4>选手资料 · ATHLETE LIBRARY</h4>'+
       '<span>'+entries.length+' 条资料</span></div>'+
-      (entries.length?entries.map(editorialEntryHTML).join(""):'<div class="wsd-editorial-empty">暂无公开简介。可以补充选手经历、特点及相关采访资料。</div>')+
-      '<div class="wsd-editorial-actions">'+editorialAddButton("bio",name,null,"＋ 添加选手简介")+'</div>'+
+      groups.map(([category,label],i)=>{
+        const list=entries.filter(x=>x.category===category);
+        return '<details class="wsd-athlete-editorial-group" data-wsd-editorial-group="'+category+'" '+(i===0?'open':"")+' style="border-top:1px solid #eee1e6;padding:9px 0">'+
+          '<summary style="cursor:pointer;font-weight:700;padding:5px 0">'+esc(label)+' · '+list.length+' 条</summary>'+
+          (list.length?list.map(editorialEntryHTML).join(""):'<p class="wsd-editorial-empty">暂无此类资料。</p>')+'</details>';
+      }).join("")+
+      '<div class="wsd-editorial-actions">'+editorialAddButton("bio",name,null,"＋ 添加选手资料")+'</div>'+
       '<div class="wsd-editorial-form-slot"></div>'+
-      '<small class="wsd-editorial-disclaimer">简介由跑友补充，不代表官方认证；请勿发布私人联系方式等敏感信息。</small>';
+      '<small class="wsd-editorial-disclaimer">资料由跑友补充，不代表官方认证；请注明来源，勿发布私人联系方式等敏感信息。</small>';
     panel.dataset.wsdEditorialSignature=sig;
   }
   function decorateEditorialSlots(){
@@ -1023,11 +1029,12 @@
     }finally{photoActionBusy=false;set.disabled=false;}
   });
   function editorialFormHTML(scope,name,raceRef){
-    const choices=scope==="race"?
+    const choices=
       '<label>资料类型<select name="category" required>'+
-      '<option value="interview">采访</option><option value="summary">赛后总结</option><option value="diary">部员日志</option>'+
+      (scope==="bio"?'<option value="bio">选手介绍</option>':"")+
+      '<option value="interview">选手采访</option><option value="summary">赛后总结</option><option value="diary">部员日志</option>'+
       '<option value="article">相关文章</option><option value="analysis">赛事分析</option>'+
-      '<option value="other">其他补充</option></select></label>':"";
+      '<option value="other">其他补充</option></select></label>';
     return '<form class="wsd-editorial-form" data-wsd-editorial-form data-scope="'+esc(scope)+'"'+
       ' data-wsd-athlete="'+esc(name)+'"'+
       (raceRef?' data-wsd-race-ref="'+esc(raceRef)+'"':"")+'>'+
@@ -1101,7 +1108,7 @@
     const body=form.elements.namedItem("body").value.trim();
     const url=form.elements.namedItem("source_url").value.trim();
     const displayName=form.elements.namedItem("display_name").value.trim();
-    const category=scope==="bio"?"bio":form.elements.namedItem("category")?.value;
+    const category=form.elements.namedItem("category")?.value;
     if(!["bio","race"].includes(scope)||name.length<2||name.length>75){fail("选手姓名无效。");return;}
     if(scope==="race"&&!editorialRaceRefValid(raceRef)){fail("关联赛事编号无效。");return;}
     if(!["bio","interview","summary","diary","article","analysis","other"].includes(category)||(scope==="race"&&category==="bio")){fail("资料类型无效。");return;}
