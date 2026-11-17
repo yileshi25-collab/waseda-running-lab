@@ -973,7 +973,7 @@ const view=`<style id="wsd-athlete-fold-css">.arc25-athlete-fold{border:1px soli
  <div class="sectionhead"><div><div class="eyebrow">BIG THREE · 2025</div><h2>三大驿传 · 逐区成绩</h2><p>点击赛事卡片切换每一区跑者、用时及区间排名</p></div></div>
  <div class="arc25-races" id="arc25Races"></div><div class="arc25-legtable" id="arc25Legs"></div>
  <div class="sectionhead" style="margin-top:30px"><div><div class="eyebrow">2025 RACE LOG</div><h2>年度成绩检索</h2><p>官方赛果与历史 Excel 合并 · 可按选手、赛事、月份及项目筛选</p></div><button class="btn btn-small" id="arc25Csv">导出 2025 CSV ↓</button></div>
- <div class="arc25-filter"><input class="input" type="search" id="arc25Search" placeholder="搜索选手 / 赛事 / 成绩 / PB"><select class="select" id="arc25Type"><option value="all">全部类别</option><option value="场地">场地赛</option><option value="路跑">路跑</option><option value="驿传">驿传</option></select><select class="select" id="arc25Month"><option value="all">全年月份</option>${Array.from({length:12},(_,i)=>`<option value="${String(i+1).padStart(2,'0')}">${i+1} 月</option>`).join('')}</select><select class="select" id="arc25Metric"><option value="all">全部项目</option></select><select class="select" id="arc25Meet"><option value="all">全部赛事</option></select><button class="btn btn-small" id="arc25Reset">重置</button></div>
+ <div class="arc25-filter"><input class="input" type="search" id="arc25Search" placeholder="搜索选手 / 赛事 / 成绩 / PB"><select class="select" id="arc25Type"><option value="all">全部类别</option><option value="场地">场地赛</option><option value="路跑">路跑</option><option value="驿传">驿传</option></select><select class="select" id="arc25Month"><option value="all">全年月份</option>${Array.from({length:12},(_,i)=>`<option value="${String(i+1).padStart(2,'0')}">${i+1} 月</option>`).join('')}</select><select class="select" id="arc25Metric"><option value="all">全部赛事分类</option></select><select class="select" id="arc25Meet"><option value="all">全部赛事</option></select><button class="btn btn-small" id="arc25Reset">重置</button></div>
  <div class="meta-row"><p id="arc25Count" class="keyline" style="margin:0"></p><span class="tag">2025.01—12 · 官方记录＋朋友补录</span></div>
  <div class="arc25-note"><b>数据范围：</b>这是一份持续补录的 <b>2025 年重要赛事成绩档案</b>，目前已核对多场官方赛果，同时收录补充的历史成绩，但<b>不是全队所有出赛的完整清单</b>。未收录不代表没有参赛。年级以比赛当时的官方记载为准；某些跨多日比赛用最后一天作为日期，7 月世界大学生运动会只标月份。PB 仅在该场官方结果明确标注时显示，不会擅自认定为赛季最佳。</div>
  <div class="arc25-list" id="arc25List"></div><div class="hist24-loadrow" style="text-align:center;margin:20px 0"><button class="btn btn-small" id="arc25More" type="button" style="display:none">加载更多成绩 ↓</button></div>
@@ -986,8 +986,8 @@ navItems.splice(3,0,['archive2025','2025 全年','◷']);
 setupNav();
 const $a=id=>document.getElementById(id);
 $a('arc25Metrics').innerHTML=[['官方精选成绩',rowcount,'条'],['涉及参赛选手',people,'人'],['赛事类别',meets,'项赛事'],['三大驿传','4 / 2 / 5','箱根 / 出云 / 全日本']].map(([lab,val,sub])=>`<div class="arc25-metric"><small>${htmlSafe(lab)}</small><b>${htmlSafe(val)}</b><small>${htmlSafe(sub)}</small></div>`).join('');
-const events=[...new Set(RESULTS.map(x=>x.metric))].sort((a,b)=>a.localeCompare(b,'zh'));
-$a('arc25Metric').innerHTML+='<option value="other-ekiden">驿传各区</option>'+events.filter(x=>!x.includes('区')).map(x=>`<option value="${htmlSafe(x)}">${htmlSafe(x)}</option>`).join('');
+const raceGroup2025=r=>{const t=String(r.event||'')+' '+String(r.metric||'');if(/箱根|hakone/i.test(t))return 'hakone';if(/出雲|出云|izumo/i.test(t))return 'izumo';if(/全日本大学駅伝|全日本大学驿传|全日本大学駅傳|all.japan.*ekiden/i.test(t))return 'alljapan';if(r.type==='驿传'||/駅伝|驿传/.test(t))return 'other-relay';if(r.type==='场地')return 'track';if(r.type==='路跑')return 'road';return 'other';};
+$a('arc25Metric').innerHTML='<option value="all">全部赛事分类</option><option value="hakone">箱根驿传</option><option value="izumo">出云驿传</option><option value="alljapan">全日本大学驿传</option><option value="other-relay">其他驿传</option><option value="track">场地赛</option><option value="road">路跑</option><option value="other">其他赛事</option>';
 let selected='hak';
 function renderRelays(){
 
@@ -1024,13 +1024,8 @@ function renderResults(reset=false){
   if(knownMeets.has(name))continue;
   const opt=document.createElement('option');opt.value=name;opt.textContent=name;meetSel.appendChild(opt);knownMeets.add(name);
  }
- const metricSel=$a('arc25Metric');
- const knownMetrics=new Set([...metricSel.options].map(o=>o.value));
- for(const name of [...new Set(allRecords.map(r=>r.metric).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ja'))){
-  if(knownMetrics.has(name))continue;
-  const opt=document.createElement('option');opt.value=name;opt.textContent=name;metricSel.appendChild(opt);knownMetrics.add(name);
- }
- const filtered=allRecords.filter(x=>(type==='all'||x.type===type)&&(mon==='all'||x.date.slice(5,7)===mon)&&(meet==='all'||x.event===meet)&&(metric==='all'||(metric==='other-ekiden'?x.type==='驿传':x.metric===metric))&&(!q||[x.name,x.event,x.metric,x.time,x.note].some(t=>String(t||'').toLowerCase().includes(q)))).sort((a,b)=>b.date.localeCompare(a.date)||(index.get(a)??9999)-(index.get(b)??9999));
+
+ const filtered=allRecords.filter(x=>(type==='all'||x.type===type)&&(mon==='all'||x.date.slice(5,7)===mon)&&(meet==='all'||x.event===meet)&&(metric==='all'||raceGroup2025(x)===metric)&&(!q||[x.name,x.event,x.metric,x.time,x.note].some(t=>String(t||'').toLowerCase().includes(q)))).sort((a,b)=>b.date.localeCompare(a.date)||(index.get(a)??9999)-(index.get(b)??9999));
  $a('arc25Count').textContent=`已展示 ${Math.min(archive2025Limit,filtered.length)} / ${filtered.length} 条符合条件的成绩 · 共 ${allRecords.length} 条 · ${new Set(filtered.map(x=>x.name)).size} 名选手`;
  $a('arc25More').style.display=archive2025Limit<filtered.length?'inline-flex':'none';
  const grouped2025=new Map();for(const row of filtered.slice(0,archive2025Limit)){if(!grouped2025.has(row.name))grouped2025.set(row.name,[]);grouped2025.get(row.name).push(row);}
