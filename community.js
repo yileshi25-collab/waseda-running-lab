@@ -125,7 +125,7 @@
       '<strong>'+esc(row.title)+'</strong>'+
       (row.body?'<p class="wsd-editorial-body">'+esc(row.body)+'</p>':"")+
       (https(row.source_url||"")?'<a href="'+esc(row.source_url)+'" rel="noopener noreferrer nofollow" target="_blank">阅读采访／原文链接 ↗</a>':"")+
-      (admin?'<button type="button" class="wsd-editorial-edit" data-wsd-editorial-edit="'+esc(row.id)+'">管理员编辑</button>':"")+
+      (canDeleteEditorial(row)?'<button type="button" class="wsd-editorial-edit" data-wsd-editorial-edit="'+esc(row.id)+'">编辑投稿</button>':"")+
       (canDeleteEditorial(row)?'<button type="button" class="wsd-editorial-delete" data-wsd-editorial-delete="'+esc(row.id)+'">删除这条补充</button>':"")+
       '</article>';
   }
@@ -289,7 +289,7 @@
     const feed=$("wsdFeed");
     const expanded=new Set([...feed.querySelectorAll("details[data-wsd-feed-category][open]")].map(el=>el.dataset.wsdFeedCategory));
     const renderPost=r=>{
-      if(r.kind==="editorial")return '<article class="wsd-post wsd-editorial-entry"><div class="wsd-post-body"><div class="wsd-post-type">ARTICLE / '+esc(editorialCategories[r.category]||"文字资料")+'</div><h4>'+esc(r.title)+'</h4><p>选手：'+esc(r.athlete_name)+'</p>'+(r.body?'<p>'+esc(r.body)+'</p>':"")+'<small>投稿者：'+esc(r.display_name)+' · '+new Date(r.created_at).toLocaleString("zh-CN")+'</small><footer>'+sourceLink(r.source_url,"阅读原文")+(admin?'<button type="button" data-wsd-editorial-edit="'+esc(r.id)+'">管理员编辑</button> <button type="button" data-wsd-editorial-delete="'+esc(r.id)+'">管理员删除</button>':"")+'</footer></div></article>';
+      if(r.kind==="editorial")return '<article class="wsd-post wsd-editorial-entry"><div class="wsd-post-body"><div class="wsd-post-type">ARTICLE / '+esc(editorialCategories[r.category]||"文字资料")+'</div><h4>'+esc(r.title)+'</h4><p>选手：'+esc(r.athlete_name)+'</p>'+(r.body?'<p>'+esc(r.body)+'</p>':"")+'<small>投稿者：'+esc(r.display_name)+' · '+new Date(r.created_at).toLocaleString("zh-CN")+'</small><footer>'+sourceLink(r.source_url,"阅读原文")+(user&&(admin||ownEditorialIds.has(r.id))?'<button type="button" data-wsd-editorial-edit="'+esc(r.id)+'">编辑投稿</button> <button type="button" data-wsd-editorial-delete="'+esc(r.id)+'">删除投稿</button>':"")+'</footer></div></article>';
       const image=r.kind==="photo"?postImage(r):"";
       const chosen=r.kind==="photo"?coverPhoto(resolveAthleteName(r.athlete_name)):null;
       const isCover=chosen?.id===r.id;
@@ -312,7 +312,7 @@
          '<div class="wsd-race-editorial-slot" data-wsd-race-attach data-wsd-race-ref="community-'+esc(r.id)+'" data-wsd-athlete="'+esc(resolveAthleteName(r.athlete_name))+'"></div>')+
        '<footer>'+sourceLink(r.source_url,"资料来源")+
        (user?'<button data-wsd-report="'+esc(r.id)+'" type="button">举报</button>':'<small>登录后可举报</small>')+
-       (admin?'<button type="button" data-wsd-post-edit="'+esc(r.id)+'">管理员编辑</button>':"")+
+       (user&&(admin||ownPostIds.has(r.id))?'<button type="button" data-wsd-post-edit="'+esc(r.id)+'">编辑投稿</button>':"")+
        (user&&(admin||ownPostIds.has(r.id))?'<button class="wsd-community-delete" data-wsd-delete="'+esc(r.id)+'" type="button">'+(admin&&!ownPostIds.has(r.id)?'管理员删除':'删除我的投稿')+'</button>':"")+
        '</footer></div></article>';
     };
@@ -932,9 +932,9 @@
       ).join("")||'<p>暂无举报</p>');
   }
   document.addEventListener("click",e=>{
-    const btn=e.target.closest("[data-wsd-post-edit]");if(!btn||!admin||!user)return;
+    const btn=e.target.closest("[data-wsd-post-edit]");if(!btn||!user)return;
     e.preventDefault();
-    const row=posts.find(x=>x.id===btn.dataset.wsdPostEdit);if(!row)return;
+    const row=posts.find(x=>x.id===btn.dataset.wsdPostEdit);if(!row||(!admin&&!ownPostIds.has(row.id)))return;
     const card=btn.closest(".wsd-post");if(!card)return;
     const old=card.querySelector(".wsd-post-admin-form");if(old){old.remove();return;}
     const form=document.createElement("form");form.className="wsd-post-admin-form";
@@ -951,7 +951,7 @@
     const save=document.createElement("button");save.type="submit";save.className="btn btn-primary btn-small";save.textContent="保存修改";form.append(save);
     const status=document.createElement("p");status.setAttribute("role","status");form.append(status);
     form.onsubmit=async event=>{
-      event.preventDefault();if(!admin||!user)return;
+      event.preventDefault();if(!user||(!admin&&!ownPostIds.has(row.id)))return;
       const payload=Object.fromEntries(fields.map(([key])=>[key,form.elements.namedItem(key).value.trim()]));
       if(!payload.athlete_name||payload.athlete_name.length<2){status.textContent="请填写有效选手姓名";return;}
       if(payload.source_url&&!https(payload.source_url)){status.textContent="来源链接必须为 HTTPS";return;}
@@ -1211,9 +1211,9 @@
     }
     const edit=e.target.closest("[data-wsd-editorial-edit]");
     if(edit){
-      e.preventDefault();if(!admin||!user)return;
+      e.preventDefault();if(!user)return;
       const row=editorial.find(x=>x.id===edit.dataset.wsdEditorialEdit);
-      if(!row)return;
+      if(!row||(!admin&&!ownEditorialIds.has(row.id)))return;
       const card=edit.closest(".wsd-editorial-entry");
       if(!card)return;
       const old=card.querySelector(".wsd-editorial-admin-form");if(old){old.remove();return;}
@@ -1233,7 +1233,7 @@
       const save=document.createElement("button");save.type="submit";save.className="btn btn-primary btn-small";save.textContent="保存修改";form.append(save);
       const status=document.createElement("p");status.setAttribute("role","status");form.append(status);
       form.onsubmit=async event=>{
-        event.preventDefault();if(!admin||!user)return;
+        event.preventDefault();if(!user||(!admin&&!ownEditorialIds.has(row.id)))return;
         const payload={category:category.value,title:form.elements.namedItem("title").value.trim(),body:form.elements.namedItem("body").value.trim(),source_url:form.elements.namedItem("source_url").value.trim()||null,display_name:form.elements.namedItem("display_name").value.trim()};
         if(!payload.title||payload.title.length<2||!payload.display_name||payload.display_name.length<2||(!payload.body&&!payload.source_url)){status.textContent="标题、署名和正文／链接需要填写完整";return;}
         if(payload.source_url&&!https(payload.source_url)){status.textContent="来源链接须使用 HTTPS";return;}
