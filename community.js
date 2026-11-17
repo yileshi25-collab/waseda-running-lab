@@ -125,6 +125,7 @@
       '<strong>'+esc(row.title)+'</strong>'+
       (row.body?'<p class="wsd-editorial-body">'+esc(row.body)+'</p>':"")+
       (https(row.source_url||"")?'<a href="'+esc(row.source_url)+'" rel="noopener noreferrer nofollow" target="_blank">阅读采访／原文链接 ↗</a>':"")+
+      (admin?'<button type="button" class="wsd-editorial-edit" data-wsd-editorial-edit="'+esc(row.id)+'">管理员编辑</button>':"")+
       (canDeleteEditorial(row)?'<button type="button" class="wsd-editorial-delete" data-wsd-editorial-delete="'+esc(row.id)+'">删除这条补充</button>':"")+
       '</article>';
   }
@@ -1168,6 +1169,42 @@
       e.preventDefault();
       cancel.closest(".wsd-editorial-form-slot")?.replaceChildren();
       return;
+    }
+    const edit=e.target.closest("[data-wsd-editorial-edit]");
+    if(edit){
+      e.preventDefault();if(!admin||!user)return;
+      const row=editorial.find(x=>x.id===edit.dataset.wsdEditorialEdit);
+      if(!row)return;
+      const card=edit.closest(".wsd-editorial-entry");
+      if(!card)return;
+      const old=card.querySelector(".wsd-editorial-admin-form");if(old){old.remove();return;}
+      const form=document.createElement("form");form.className="wsd-editorial-admin-form";
+      form.style.cssText="margin-top:12px;padding:12px;border:1px solid #e1ccd4;border-radius:8px;display:grid;gap:8px";
+      const fields=[["title","标题",row.title,100],["body","正文",row.body,4000],["source_url","来源链接",row.source_url||"",400],["display_name","署名",row.display_name,30]];
+      const category=document.createElement("select");category.name="category";
+      for(const [key,label] of Object.entries(editorialCategories)){const option=document.createElement("option");option.value=key;option.textContent=label;option.selected=row.category===key;category.append(option);}
+      const categoryLabel=document.createElement("label");categoryLabel.textContent="资料分类 ";categoryLabel.append(category);form.append(categoryLabel);
+      for(const [key,label,value,max] of fields){
+        const wrap=document.createElement("label");wrap.textContent=label+" ";
+        const input=key==="body"?document.createElement("textarea"):document.createElement("input");
+        input.name=key;input.maxLength=max;input.value=value||"";
+        if(key==="body")input.rows=5;
+        input.style.cssText="display:block;width:100%;margin-top:4px";wrap.append(input);form.append(wrap);
+      }
+      const save=document.createElement("button");save.type="submit";save.className="btn btn-primary btn-small";save.textContent="保存修改";form.append(save);
+      const status=document.createElement("p");status.setAttribute("role","status");form.append(status);
+      form.onsubmit=async event=>{
+        event.preventDefault();if(!admin||!user)return;
+        const payload={category:category.value,title:form.elements.namedItem("title").value.trim(),body:form.elements.namedItem("body").value.trim(),source_url:form.elements.namedItem("source_url").value.trim()||null,display_name:form.elements.namedItem("display_name").value.trim()};
+        if(!payload.title||payload.title.length<2||!payload.display_name||payload.display_name.length<2||(!payload.body&&!payload.source_url)){status.textContent="标题、署名和正文／链接需要填写完整";return;}
+        if(payload.source_url&&!https(payload.source_url)){status.textContent="来源链接须使用 HTTPS";return;}
+        if(["summary","analysis"].includes(payload.category)&&row.scope!=="race"){status.textContent="赛后总结／赛事分析需要关联具体比赛";return;}
+        save.disabled=true;
+        const {data,error}=await sb.from(EDITORIAL).update(payload).eq("id",row.id).select("id");
+        if(error||!data?.length){status.textContent="修改失败："+(error?.message||"未获数据库更新权限");save.disabled=false;return;}
+        await refreshEditorial();note("资料已修改并保存。");
+      };
+      card.append(form);return;
     }
     const del=e.target.closest("[data-wsd-editorial-delete]");
     if(del){
