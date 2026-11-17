@@ -956,8 +956,8 @@
       if(!payload.athlete_name||payload.athlete_name.length<2){status.textContent="请填写有效选手姓名";return;}
       if(payload.source_url&&!https(payload.source_url)){status.textContent="来源链接必须为 HTTPS";return;}
       if(row.kind==="race"){
-        if(!payload.meet_name||!payload.event_name||!payload.race_date||!/^\\d{1,2}(:\\d{2}){1,2}(\\.\\d{1,2})?$/.test(payload.result_time)){status.textContent="赛事、项目、日期或成绩格式不正确";return;}
-        if(payload.rank&&!/^\\d+$/.test(payload.rank)){status.textContent="名次须为正整数";return;}
+        if(!payload.meet_name||!payload.event_name||!payload.race_date||!/^\d{1,2}(:\d{2}){1,2}(\.\d{1,2})?$/.test(payload.result_time)){status.textContent="赛事、项目、日期或成绩格式不正确";return;}
+        if(payload.rank&&!/^\d+$/.test(payload.rank)){status.textContent="名次须为正整数";return;}
         payload.rank=payload.rank?Number(payload.rank):null;
       }
       if(row.kind==="photo"&&!payload.image_credit){status.textContent="请填写照片署名";return;}
