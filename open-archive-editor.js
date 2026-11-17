@@ -146,6 +146,22 @@ document.addEventListener("click",e=>{
 const add=e.target.closest("[data-wsd-new]");if(add){e.preventDefault();open(add.dataset.wsdNew);return;}
 const edit=e.target.closest("[data-wsd-edit]");if(edit){e.preventDefault();open(edit.dataset.wsdEdit,edit.dataset.wsdKey);}
 });
+// Public recovery list: soft-deleted rows stay accessible for restoration.
+const recovery=document.createElement("section");
+recovery.id="wsdArchiveRecovery";
+recovery.className="wsd-edit-recovery";
+recovery.innerHTML='<details><summary>最近删除的资料 · 恢复入口</summary><div id="wsdArchiveRecoveryList"></div></details>';
+const targetSection=document.getElementById("view-obarchive");
+if(targetSection)targetSection.appendChild(recovery);
+const recoveryStyle=document.createElement("style");
+recoveryStyle.textContent=".wsd-edit-recovery{border:1px solid #e6d8df;border-radius:10px;padding:12px;margin:25px 0;background:#fff}.wsd-edit-recovery summary{cursor:pointer;font-size:12px;font-weight:750;color:#7b3654}.wsd-edit-recovery p{font-size:11px;color:#876e7c}.wsd-recovery-item{display:flex;align-items:center;justify-content:space-between;gap:9px;border-bottom:1px solid #eee5e9;padding:8px 0;font-size:11px;flex-wrap:wrap}";
+document.head.appendChild(recoveryStyle);
+function refreshRecovery(){
+const list=$("wsdArchiveRecoveryList");if(!list)return;
+const deleted=edits.filter(x=>x.is_deleted).sort((a,b)=>String(b.updated_at).localeCompare(String(a.updated_at))).slice(0,80);
+list.innerHTML=deleted.length?deleted.map(x=>'<div class="wsd-recovery-item"><span>'+esc(names[x.entity_type])+' · '+esc(String(x.record_key).slice(0,65))+'</span><button type="button" class="wsd-open-btn" data-wsd-edit="'+esc(x.entity_type)+'" data-wsd-key="'+esc(x.record_key)+'">查看／恢复</button></div>').join(""):'<p>暂无删除记录。</p>';
+}
+window.addEventListener("wsd-open-archive-change",refreshRecovery);
 try{await reload();}catch(e){console.error("Archive editor data unavailable",e);}
 window.addEventListener("focus",()=>{if(ready)reload().catch(()=>{});});
 setInterval(()=>{if(ready&&!document.hidden)reload().catch(()=>{});},90000);
