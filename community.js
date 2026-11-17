@@ -1239,7 +1239,7 @@
     const date=n("ranking_date");
     if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(date)||date>new Date(Date.now()+7*86400000).toISOString().slice(0,10))throw Error('请填写正确的官方排名发布日期。');
     const source=n("source_url");
-    if(!https(source)||!/^https:\\/\\/(www\\.)?worldathletics\\.org\\//i.test(source))throw Error('请使用 World Athletics 官方 HTTPS 链接。');
+    if(!https(source)||!source.toLowerCase().startsWith('https://worldathletics.org/')&&!source.toLowerCase().startsWith('https://www.worldathletics.org/'))throw Error('请使用 World Athletics 官方 HTTPS 链接。');
     const athlete=n("athlete_name");
     if(!(typeof getAthletes==='function'&&getAthletes().some(a=>a.name===athlete&&!a.communityOnly)))throw Error('请选择现有选手名单中的姓名。');
     const event=n("event_name");
