@@ -275,3 +275,15 @@
   .wsd-photo-actions button,.wsd-news-manage button,.wsd-news-toggle{min-height:44px}
   .wsd-news-tools>*{max-width:100%;min-width:0}
 }
+/* Official diary metadata, kept separate from community submissions. */
+.wsd-official-diaries{margin-top:20px;overflow-wrap:anywhere}
+.wsd-official-diaries>p,.wsd-official-diary-card p{font-size:12px;line-height:1.8;color:#806875}
+.wsd-diary-tools{display:flex;gap:12px;flex-wrap:wrap;margin:16px 0}
+.wsd-diary-tools label{display:grid;gap:6px;font-size:12px;color:#705063;min-width:0}
+.wsd-diary-tools label:first-child{flex:1;min-width:180px}
+.wsd-diary-tools input,.wsd-diary-tools select{box-sizing:border-box;max-width:100%;width:100%}
+.wsd-official-diary-card{padding:15px 0;border-top:1px solid #eadde3}
+.wsd-official-diary-card h3{font-size:15px;line-height:1.6;margin:6px 0;color:#632643}
+.wsd-official-diary-card small{font-size:11px;color:#927984}
+.wsd-official-diary-card a{font-size:12px;color:#81314f}
+@media(max-width:600px){.wsd-diary-tools input,.wsd-diary-tools select{font-size:16px}.wsd-official-diaries button{min-height:44px}}
