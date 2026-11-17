@@ -532,8 +532,10 @@
       section.innerHTML='<div class="wsd-athlete-photo-heading"><h4>选手照片 · ATHLETE PHOTOS</h4>'+
         '<span data-wsd-photo-count>0 张</span></div>'+
         '<div class="wsd-athlete-photo-cover" data-wsd-photo-cover></div>'+
-        '<h5 class="wsd-gallery-subheading">其他照片 · PHOTO GALLERY</h5>'+
-        '<div class="wsd-athlete-photo-collection" data-wsd-photo-cards></div>'+
+        '<details class="wsd-photo-gallery-fold" data-wsd-photo-gallery-fold>'+
+          '<summary class="wsd-gallery-subheading">其他照片 · PHOTO GALLERY <span data-wsd-gallery-count></span></summary>'+
+          '<div class="wsd-athlete-photo-collection" data-wsd-photo-cards></div>'+
+        '</details>'+
         '<div data-wsd-uploader></div>'+
         '<div class="wsd-athlete-race-extras" data-wsd-athlete-races></div>';
       head.after(section);
@@ -558,6 +560,7 @@
       cards.dataset.photoIds=result.ids;
     }
     section.querySelector("[data-wsd-photo-count]").textContent=result.count+" 张社区照片";
+    section.querySelector("[data-wsd-gallery-count]").textContent="（"+Math.max(0,result.count-1)+" 张）";
     const upload=section.querySelector("[data-wsd-uploader]");
     const authState=user?"signed":"guest";
     if(upload.dataset.authState!==authState){
