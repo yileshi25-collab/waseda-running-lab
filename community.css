@@ -249,3 +249,17 @@
 .wsd-career-record .wsd-race-editorial-slot{width:100%;margin-top:5px}
 .wsd-community-mini-races .wsd-race-editorial-slot{margin-top:8px}
 @media(max-width:600px){.wsd-athlete-bio{padding:13px}.wsd-editorial-entry{padding:11px}.wsd-editorial-form{padding:11px}.wsd-race-editorial-slot{padding:9px}}
+
+
+/* Clearly tappable, collapsible athlete photo gallery */
+.wsd-photo-gallery-fold{margin:20px 0 16px;border:1.5px solid #d9b0c1;border-radius:14px;background:#fff8fb;overflow:hidden}
+.wsd-photo-gallery-fold > summary.wsd-gallery-subheading{display:flex;align-items:center;gap:10px;cursor:pointer;list-style:none;padding:15px 17px;margin:0;color:#762b4b;font-weight:800;font-size:clamp(14px,3.8vw,18px);line-height:1.45;min-height:54px;box-sizing:border-box}
+.wsd-photo-gallery-fold > summary::-webkit-details-marker{display:none}
+.wsd-photo-gallery-fold > summary::before{content:"＋";display:grid;place-items:center;flex:0 0 27px;width:27px;height:27px;border-radius:50%;background:#8a2049;color:white;font-size:19px;font-weight:700}
+.wsd-photo-gallery-fold[open] > summary::before{content:"−"}
+.wsd-photo-gallery-fold > summary::after{content:"点击展开";margin-left:auto;font-size:12px;font-weight:650;color:#8a2049;white-space:nowrap}
+.wsd-photo-gallery-fold[open] > summary::after{content:"点击收起"}
+.wsd-photo-gallery-fold > summary:focus-visible{outline:3px solid #1459bd;outline-offset:-4px}
+.wsd-photo-gallery-fold[open] > summary{border-bottom:1px solid #e7cbd6;background:#fcebf2}
+.wsd-photo-gallery-fold .wsd-athlete-photo-collection{padding:15px}
+@media(max-width:480px){.wsd-photo-gallery-fold > summary.wsd-gallery-subheading{padding:13px 11px;gap:6px;font-size:13px}.wsd-photo-gallery-fold > summary::before{flex-basis:23px;width:23px;height:23px;font-size:16px}.wsd-photo-gallery-fold > summary::after{font-size:11px}.wsd-photo-gallery-fold .wsd-athlete-photo-collection{padding:10px}}
