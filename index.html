@@ -478,6 +478,7 @@ function getAthletes(){
 }
 function getAthlete(name){return getAthletes().find(a=>a.name===name);}
 function getCurrentAthletes(){return getAthletes().filter(a=>!a.historical);}
+window.WSD_GET_CURRENT_ATHLETE_NAMES=()=>getCurrentAthletes().map(a=>a.name);
 function currentPBStats(metric,gender){return getCurrentAthletes().filter(a=>(a.gender||"男")===gender&&a[metric]).sort((a,b)=>seconds(a[metric])-seconds(b[metric]));}
 function updateCurrentMetrics(){const a=currentPBStats("pb10000","男"),best=a.slice(0,10);if(!best.length)return;const avg=best.reduce((sum,x)=>sum+seconds(x.pb10000),0)/best.length;const m=Math.floor(avg/60),sec=(avg%60).toFixed(2).padStart(5,"0");$("live10000Avg").textContent=m+":"+sec;$("live10000Note").textContent="现役男子10000m PB收录 "+a.length+"人（毕业选手不参与）";}
 window.WSD_COMMUNITY_RACES=[];window.WSD_DATE_CORRECTIONS=[];
@@ -1044,4 +1045,4 @@ renderRelays();renderResults();
 if(location.hash==='#archive2025')show('archive2025');
 })();
 
-</script><script src="archive-2024-2025-data.js?v=20261117-friend1" defer></script><script src="archive-views.js?v=20261117-athlete-fold-2024-v2" defer></script><script src="waseda-records-data.js?v=20261117-record-v2" defer></script><script src="records-views.js?v=20261117-open-record1" defer></script><script src="community-config.js?v=20261116-google1" defer></script><script src="open-archive-editor.js?v=20261117-google-auth3" defer></script><script src="community.js?v=20261117-editorial2" defer></script></body></html>
+</script><script src="archive-2024-2025-data.js?v=20261117-friend1" defer></script><script src="archive-views.js?v=20261117-ob-dedup-v1" defer></script><script src="waseda-records-data.js?v=20261117-record-v2" defer></script><script src="records-views.js?v=20261117-open-record1" defer></script><script src="community-config.js?v=20261116-google1" defer></script><script src="open-archive-editor.js?v=20261117-google-auth3" defer></script><script src="community.js?v=20261117-editorial2" defer></script></body></html>
