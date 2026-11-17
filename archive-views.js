@@ -77,15 +77,22 @@ const css=String.raw`
 `;
 const st=document.createElement('style');st.textContent=css+"\n.hist24-profile-heading{display:flex;justify-content:space-between;align-items:start;gap:12px;flex-wrap:wrap}\n.hist24-profile-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:15px 0 19px}\n.hist24-profile-stats>div{padding:12px;background:#f9f3f6;border-radius:9px;display:flex;flex-direction:column;gap:5px}\n.hist24-profile-stats b{font-size:21px;color:#76334f;font-variant-numeric:tabular-nums}\n.hist24-profile-stats small{font-size:10px;color:#87727d}\n.hist24-year-group{border:1px solid #ebdfe4;border-radius:11px;margin:13px 0;overflow:hidden}\n.hist24-year-group>summary{list-style:none;display:flex;justify-content:space-between;gap:12px;align-items:center;cursor:pointer;background:#faf5f7;padding:14px 16px}\n.hist24-year-group>summary::-webkit-details-marker{display:none}\n.hist24-year-group>summary b{color:#63283e;font-size:15px}\n.hist24-year-group>summary span{color:#85717b;font-size:11px}\n.hist24-year-group:not([open])>summary span:last-child{transform:rotate(-90deg)}\n.hist24-year-content{padding:9px 16px 14px}\n.hist24-stage-head{font-size:12px;font-weight:750;color:#71384e;border-bottom:1px solid #e8dbe1;padding:13px 0 8px;margin:6px 0}\n.hist24-timeline-row{padding:11px 0;border-bottom:1px solid #f1e8ec}\n.hist24-timeline-main{display:grid;grid-template-columns:115px minmax(105px,1fr) auto;gap:10px;align-items:center}\n.hist24-timeline-date{font-size:11px;color:#9a8790;font-variant-numeric:tabular-nums}\n.hist24-timeline-main b{color:#523241;font-size:12px}\n.hist24-timeline-main strong{color:#712849;font-size:14px;font-variant-numeric:tabular-nums}\n.hist24-timeline-extra{font-size:11px;color:#8f7c85;line-height:1.7;padding-left:125px;margin-top:4px}\n.hist24-timeline-extra a{color:#892f54;text-decoration:underline}\n@media(max-width:570px){.hist24-timeline-main{grid-template-columns:1fr auto}.hist24-timeline-date{grid-column:1/-1}.hist24-timeline-extra{padding-left:0}.hist24-profile-stats{gap:5px}}\n";document.head.appendChild(st);
 const data2024=records.filter(r=>r.year===2024);
-const obNames=[...new Map(records.map(r=>[normalizeName(r.name),r.name])).values()].sort((a,b)=>a.localeCompare(b,'ja'));
-const obNameKeys=new Set(records.filter(r=>r.status==='OB').map(r=>normalizeName(r.name)));
+const GRADUATES_2026=[
+ {name:'山口 智規',schoolYear:2026,source:'https://www.waseda.jp/top/news/117621'},
+ {name:'間瀬田 純平',schoolYear:2026,source:'https://www.waseda.jp/top/news/117621'},
+ {name:'宮岡 凛太',schoolYear:2026,source:'https://www.waseda.jp/top/news/117621'},
+ {name:'伊藤 幸太郎',schoolYear:2026,source:'https://www.waseda.jp/top/news/117621'}
+];
+const grad2026Keys=new Set(GRADUATES_2026.map(x=>normalizeName(x.name)));
+const obNames=[...new Map([...records.map(r=>r.name),...GRADUATES_2026.map(r=>r.name)].map(n=>[normalizeName(n),n])).values()].sort((a,b)=>a.localeCompare(b,'ja'));
+const obNameKeys=new Set([...records.filter(r=>r.status==='OB').map(r=>normalizeName(r.name)),...grad2026Keys]);
 const page2024=panel('archive2024','2024 · HISTORICAL RACE DATABASE','2024 全年成绩','2024自然年 · 在校及OB毕业后比赛成绩',
  '<div class="hist24-note">共209条成绩，按自然年及比赛时身份归档。资料如需修改，可在跑友共建提交补充，管理员可查验。</div>'+
  '<div class="hist24-toolbar"><input id="hist24Search" type="search" placeholder="搜索姓名、比赛或项目"><select id="hist24Status"><option value="all">在校与OB</option><option value="student">在校成绩</option><option value="OB">OB毕业后</option></select><select id="hist24Event"><option value="all">全部项目</option></select><select id="hist24Month"><option value="all">全年月份</option>'+Array.from({length:12},(_,i)=>'<option value="'+String(i+1).padStart(2,'0')+'">'+(i+1)+'月</option>').join('')+'</select><button id="hist24Export" class="btn btn-small">导出CSV ↓</button></div>'+
  '<p id="hist24Count" class="hist24-summary"></p><div id="hist24List" class="hist24-grid"></div>');
-const obPage=panel('obarchive','WASEDA ATHLETE HISTORY · ALUMNI','选手历史档案 / OB','一人一档 · 合并2024—2025年比赛成绩 · 在校与毕业后分阶段展示',
- '<div class="hist24-note">共'+obNames.length+'位选手的合并档案，其中'+obNameKeys.size+'位收录毕业后成绩；一人一份完整比赛履历，不会参与2026现役选手统计。资料如需修改，可在跑友共建提交补充，管理员可查验。</div>'+ 
- '<div class="hist24-toolbar"><input id="histObSearch" type="search" placeholder="搜索选手姓名"><select id="histObScope"><option value="all">全部历史选手</option><option value="ob">仅OB毕业选手</option></select><button class="btn btn-small" id="histObExport">导出OB成绩 ↓</button></div>'+ 
+const obPage=panel('obarchive','WASEDA ATHLETE HISTORY · ALUMNI','选手历史档案 / OB','一人一档 · 合并历史成绩 · 2026届毕业选手已加入',
+ '<div class="hist24-note">共'+obNames.length+'位历史选手档案，其中包括2026年3月毕业的4位长距离队伍主要选手。2026届不等于2026年每条比赛都发生在毕业后；可提交修改，管理员可查验。</div>'+ 
+ '<div class="hist24-toolbar"><input id="histObSearch" type="search" placeholder="搜索选手姓名"><select id="histObScope"><option value="all">全部历史选手</option><option value="ob">仅OB毕业选手</option><option value="2026">2026届毕业选手</option></select><button class="btn btn-small" id="histObExport">导出OB成绩 ↓</button></div>'+ 
  '<div id="histObCount" class="hist24-summary"></div><div id="histObNames" class="hist24-ob-list"></div><div id="histObDetail" class="hist24-ob-detail"></div>');
 host.insertAdjacentHTML('beforebegin',page2024+obPage);
 const index2025=navItems.findIndex(x=>x[0]==='archive2025');
@@ -111,10 +118,22 @@ function athleteTimeline(name){
  const legacy=(window.WSD_2025_ARCHIVE_ROWS||[])
    .filter(r=>normalizeName(r.name)===key)
    .map((r,i)=>({id:'verified2025-'+i,year:2025,name:r.name,grade:r.grade,meet:r.event,event:r.metric,date:r.date,time:r.time,rank:r.rank,status:'student',link:r.source,stage:r.note,verifiedOriginal:true}));
+ const recent=[];
+ if(grad2026Keys.has(key)){
+  // Only actual 2026 Hakone participants; January 2026 was BEFORE graduation.
+  const hak=(typeof RACES!=='undefined'?RACES.hak:null);
+  (hak?.legs||[]).forEach((leg,index)=>{
+   if(normalizeName(leg[0])!==key)return;
+   const legNum=index+1;
+   recent.push({id:'hakone2026-'+legNum,year:2026,name,grade:4,meet:'第102回箱根駅伝',event:'箱根駅伝 '+legNum+'区',date:legNum<=5?'2026-01-02':'2026-01-03',
+    time:leg[2],rank:leg[3],status:'student',link:hak.source||'https://waseda-ac.jp/competition/detail/747',
+    stage:leg[1]+'km · 2025学年度四年级，毕业前',verifiedOriginal:true});
+  });
+ }
  const seen=new Set();
  const unique=[];
  // Prefer existing official archive to friend-supplied records when identical.
- for(const r of [...legacy,...wb]){
+ for(const r of [...recent,...legacy,...wb]){
   const uniq=[normalizeName(r.name),String(r.date).slice(0,10),normalizeName(r.time),normalizeName(r.event)].join('|');
   if(seen.has(uniq))continue;
   seen.add(uniq);unique.push(r);
@@ -138,16 +157,18 @@ function renderAlumniTimeline(name){
  }
  const years=[...byYear.keys()].sort((a,b)=>b.localeCompare(a));
  const wbOB=records.filter(r=>normalizeName(r.name)===normalizeName(name)&&r.status==='OB').length;
+ const isGrad26=grad2026Keys.has(normalizeName(name));
  const school=all.filter(r=>r.status!=='OB').length;
  $('histObDetail').innerHTML='<div class="panel panel-pad hist24-athlete-profile">'+
- '<div class="hist24-profile-heading"><div><div class="eyebrow">ONE ATHLETE · COMPLETE RACE LOG</div><h3>'+safe(name)+'</h3><p class="hist24-summary">合并展示2024—2025年已收录的比赛纪录，优先保留原网站的官方赛事记录。按年份分组，并区分在校和OB身份。</p></div><button type="button" class="btn btn-small" id="histObProfileExport">导出此人全部成绩 ↓</button></div>'+
+ '<div class="hist24-profile-heading"><div><div class="eyebrow">ONE ATHLETE · COMPLETE RACE LOG</div><h3>'+safe(name)+(isGrad26?' <span class="hist24-label">2026届毕业</span>':'')+'</h3><p class="hist24-summary">合并展示已收录的各年比赛纪录，优先保留原网站的赛事记录。按年份及参赛时身份分组。</p></div><button type="button" class="btn btn-small" id="histObProfileExport">导出此人全部成绩 ↓</button></div>'+
+ (isGrad26?'<p class="hist24-summary">毕业年份：2026年3月 · 2026年1月箱根驿传仍属于在校期间。<a href="https://www.waseda.jp/top/news/117621" target="_blank" rel="noopener noreferrer">早稻田大学毕业专题 ↗</a></p>':'')+
  '<div class="hist24-profile-stats"><div><b>'+all.length+'</b><small>已合并成绩</small></div><div><b>'+wbOB+'</b><small>毕业后成绩</small></div><div><b>'+school+'</b><small>在校成绩及原档案</small></div></div>'+
  years.map((year,i)=>{
   const rows=byYear.get(year),ob=rows.filter(r=>r.status==='OB'),student=rows.filter(r=>r.status!=='OB');
   const block=(items,label)=>items.length?'<div class="hist24-stage-head">'+label+' · '+items.length+' 条</div>'+items.map(alumniRowHTML).join(''):'';
   return '<details class="hist24-year-group" '+(i===0?'open':'')+'><summary><b>'+safe(year)+' 年</b><span>'+rows.length+' 条 · OB '+ob.length+' / 在校 '+student.length+'</span><span aria-hidden="true">⌄</span></summary><div class="hist24-year-content">'+block(ob,'毕业后 / OB')+block(student,'在校期间 / 原有档案')+'</div></details>';
  }).join('')+
- '<div class="hist24-note">每位选手只对应一个人物档案。2024和2025年度页仍可按日期查找；同一场比赛不会在本人物档案里重复列出。如发现成绩或身份信息有误，可在跑友共建提交修改资料，由管理员查验。</div></div>';
+ '<div class="hist24-note">每位选手只对应一个人物档案；同一场比赛不会重复列出。2026届毕业生在现有来源中尚无毕业后赛事记录时，不会虚构OB比赛。成绩如需修改，可在跑友共建提交，管理员可查验。</div></div>';
  $('histObProfileExport').onclick=()=>exportRows(all,'waseda_'+name.replace(/[\\/:*?"<>|]/g,'_')+'_all_results.csv');
 }
 function openAlumniProfile(name,scroll=true){
@@ -165,8 +186,8 @@ function openAlumniProfile(name,scroll=true){
 window.WSD_OPEN_ALUMNI_PROFILE=openAlumniProfile;
 function refreshOB(){
  const q=$('histObSearch').value.trim().toLowerCase();
- const onlyOB=$('histObScope').value==='ob';
- const names=obNames.filter(n=>(!onlyOB||obNameKeys.has(normalizeName(n)))&&normalizeName(n).toLowerCase().includes(normalizeName(q).toLowerCase()));
+ const scope=$('histObScope').value;
+ const names=obNames.filter(n=>(scope==='all'||scope==='ob'&&obNameKeys.has(normalizeName(n))||scope==='2026'&&grad2026Keys.has(normalizeName(n)))&&normalizeName(n).toLowerCase().includes(normalizeName(q).toLowerCase()));
  $('histObCount').textContent='显示 '+names.length+' / '+obNames.length+' 位选手；点击姓名查看其合并后的个人比赛履历';
  $('histObNames').innerHTML=names.map(n=>{
   const obRows=records.filter(r=>r.status==='OB'&&normalizeName(r.name)===normalizeName(n));
