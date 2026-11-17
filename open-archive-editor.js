@@ -3,9 +3,8 @@
 "use strict";
 const cfg=window.WSD_COMMUNITY_CONFIG;
 if(!cfg?.url||!cfg?.publishableKey)return;
-let mod;try{mod=await import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm");}
+let db;try{db=await window.WSD_GET_SUPABASE();}
 catch(e){console.error("Editor SDK",e);return;}
-const db=mod.createClient(cfg.url,cfg.publishableKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
 const esc=x=>String(x??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const $=id=>document.getElementById(id);
 const names={ob_result:"OB／选手比赛成绩",ekiden:"驿传战绩",school_record:"学校纪录",alltime_rank:"历代排名"};
