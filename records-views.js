@@ -53,6 +53,7 @@ const viewH='<section class="view" id="view-racehistory"><div class="sectionhead
 '<div class="wrec-wrap"><h3>2024—2026 · 同区间最快（已收录范围）</h3><p class="wrec-keyline">仅比较2024、2025、2026三个已录入赛季的箱根区间，<strong>不是早稻田历代区间纪录</strong>、也不是大会区间纪录。不同赛道时期不可混排。</p><div class="wrec-leggrid" id="wrecLegBest"></div></div></section>';
 const viewS='<section class="view" id="view-schoolrecords"><div class="sectionhead"><div><div class="eyebrow">WASEDA · SCHOOL RECORDS</div><h2>田径学校纪录</h2><p>早稻田大学竞走部男子、女子各项目校纪录</p></div></div>'+
 '<div class="wrec-wrap"><p class="wrec-keyline">按官网纪录室逐项整理，可按性别、项目类别或选手姓名查询。校纪录与PB排行榜、区间赏不同。</p><div class="wrec-tools"><select id="wrecGender"><option value="all">男女全部</option><option value="男">男子</option><option value="女">女子</option></select><select id="wrecCategory"><option value="all">全部项目</option><option value="长跑">中长跑／路跑</option><option value="短跑">短跑</option><option value="跨栏">跨栏／障碍</option><option value="竞走">竞走</option><option value="接力">接力</option><option value="田赛">田赛／全能</option></select><input id="wrecRecordSearch" type="search" placeholder="搜选手／项目，如5000m"></div><p class="wrec-keyline" id="wrecRecordCount"></p><div id="wrecRecordList" class="wrec-records"></div></div>'+
+'<div class="wrec-wrap"><h3>各项目历代成绩排名</h3><p class="wrec-keyline">官方历代榜单按性别和项目查询；如果某个名次存在并列或官网排版无法判断，则保留可核实条目，不自行推定排名。</p><div class="wrec-tools"><select id="wrecRankGender"><option value="男">男子</option><option value="女">女子</option></select><select id="wrecRankEvent"><option value="">选择比赛项目</option></select></div><p class="wrec-keyline" id="wrecRankSummary"></p><div class="wrec-tablewrap" id="wrecRankList"></div></div>'+
 '<div class="wrec-wrap"><h3>历代Top 10 · 官网完整榜单</h3><p class="wrec-keyline">目前本站优先录入各项目校纪录。历代Top 10尚未全部结构化完成，可通过官网核对。</p><div class="wrec-source-links"><a href="https://waseda-ac.jp/record/detail/2" target="_blank" rel="noopener noreferrer">男子历代排行榜 ↗</a><a href="https://waseda-ac.jp/record/detail/3" target="_blank" rel="noopener noreferrer">女子历代排行榜 ↗</a><a href="https://waseda-ac.jp/record/" target="_blank" rel="noopener noreferrer">官网纪录室 ↗</a></div></div></section>';
 host.insertAdjacentHTML('beforebegin',viewH+viewS);
 navItems.push(['racehistory','历年驿传战绩','◫'],['schoolrecords','学校纪录','✦']);
@@ -100,11 +101,29 @@ function renderSchool(){
  $('wrecRecordCount').textContent='展示 '+rows.length+' / '+D.school.length+' 条学校纪录';
  $('wrecRecordList').innerHTML=rows.map(r=>'<article class="wrec-record"><small>'+esc(r.gender)+'子 · '+esc(r.event)+'</small><b>'+esc(r.performance)+'</b><strong>'+esc(r.athlete)+'</strong><small>'+esc(r.date)+'</small>'+urlLink('https://waseda-ac.jp/record/')+'</article>').join('')||'<p class="wrec-keyline">没有匹配纪录。</p>';
 }
+
+function renderAlltimeRanking(){
+ const sex=$('wrecRankGender').value, list=D.rankings||[];
+ const events=[...new Set(list.filter(r=>r.gender===sex).map(r=>r.event))].sort((a,b)=>a.localeCompare(b,'ja'));
+ const select=$('wrecRankEvent'),previous=select.value;
+ select.innerHTML=events.map(e=>'<option value="'+esc(e)+'">'+esc(e)+'</option>').join('');
+ if(events.includes(previous))select.value=previous;
+ else{
+  const first=events.find(x=>x==='5000m')||events.find(x=>x==='1500m')||events[0];
+  if(first)select.value=first;
+ }
+ const event=select.value,rows=list.filter(r=>r.gender===sex&&r.event===event)
+  .sort((a,b)=>a.rank-b.rank||a.year-b.year);
+ $('wrecRankSummary').textContent=events.length?'已收录'+events.length+'个项目的历代排名；当前 '+(sex==='男'?'男子':'女子')+' '+event+' · '+rows.length+'条成绩':'历代排名列表尚未完成本地导入，请使用下方官方榜单链接。';
+ $('wrecRankList').innerHTML=rows.length?'<table class="wrec-table"><thead><tr><th>校内排名</th><th>选手</th><th>成绩</th><th>年份</th></tr></thead><tbody>'+rows.map(r=>'<tr><td>'+r.rank+'</td><td>'+esc(r.athlete)+'</td><td>'+esc(r.performance)+'</td><td>'+r.year+'</td></tr>').join('')+'</tbody></table>':'<p class="wrec-keyline">此筛选尚无已经核实的历代名次。</p>';
+}
 ['wrecRace','wrecDecade'].forEach(id=>$(id).addEventListener('change',renderHistory));
 $('wrecSearch').addEventListener('input',renderHistory);
 ['wrecGender','wrecCategory'].forEach(id=>$(id).addEventListener('change',renderSchool));
 $('wrecRecordSearch').addEventListener('input',renderSchool);
-renderHistory();renderLegBest();renderSchool();
+$('wrecRankGender').addEventListener('change',()=>{ $('wrecRankEvent').value='';renderAlltimeRanking(); });
+$('wrecRankEvent').addEventListener('change',renderAlltimeRanking);
+renderHistory();renderLegBest();renderSchool();renderAlltimeRanking();
 if(location.hash==='#racehistory')show('racehistory');
 if(location.hash==='#schoolrecords')show('schoolrecords');
 })();
