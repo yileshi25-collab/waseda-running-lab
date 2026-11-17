@@ -50,6 +50,11 @@ def fetch_page(detail_id: int) -> str:
 def parse_time(value: str) -> str | None:
     v = unicodedata.normalize("NFKC", value)
     v = re.sub(r"\s+", "", v)
+    # Three official pages print "11時間58分秒39" instead of
+    # "11時間58分39秒"; preserve the intended order and label it.
+    m = re.search(r"(\d{1,2})時間(\d{1,2})分秒(\d{1,2})", v)
+    if m:
+        return f"{int(m[1])}:{int(m[2]):02}:{int(m[3]):02}"
     m = re.search(r"(\d{1,2})時間(\d{1,2})分(\d{1,2})秒", v)
     if m:
         return f"{int(m[1])}:{int(m[2]):02}:{int(m[3]):02}"
@@ -72,6 +77,18 @@ def extract_one_page(detail_id: int, html: str) -> list[dict]:
     found = []
     for i, m in enumerate(matches):
         part = body[m.end():matches[i + 1].start()] if i + 1 < len(matches) else body[m.end():]
+        edition, year = int(m[1]), int(m[2])
+        if "不参加" in part[:160]:
+            # No team time exists for a year Waseda did not enter.
+            reason = re.search(r"不参加(?:\s*[\(（]([^\)）]{1,120})[\)）])?", part[:160])
+            found.append({
+                "year": year, "edition": edition, "rank": None,
+                "total": None, "out": None, "back": None,
+                "status": "not_participated",
+                "reason": "不参加" + ("（" + reason[1].strip() + "）" if reason and reason[1] else ""),
+                "source": SOURCE.format(detail_id), "legs": [],
+            })
+            continue
         parsed = {}
         for label, key in (("往路成績", "out"), ("復路成績", "back"), ("総合成績", "total")):
             result = TIME_RANK[label].search(part)
@@ -84,7 +101,6 @@ def extract_one_page(detail_id: int, html: str) -> list[dict]:
             parsed[key + "_rank"] = int(result[2])
         if len(parsed) != 6:
             continue
-        edition, year = int(m[1]), int(m[2])
         if not (1 <= edition <= 110 and 1920 <= year <= 2026):
             continue
         found.append({
@@ -98,6 +114,7 @@ def extract_one_page(detail_id: int, html: str) -> list[dict]:
             "back_rank": parsed["back_rank"],
             "source": SOURCE.format(detail_id),
             "legs": [],
+            **({"source_format_note": "官网总成绩数字存在「分秒」顺序排版问题，按时分秒规范化"} if "分秒" in TIME_RANK["総合成績"].search(part)[1] else {}),
         })
     return found
 
@@ -129,19 +146,22 @@ def main() -> None:
                 failures.append((detail_id, f"Duplicate year {year}, different edition"))
             results[year] = row
     # Never overwrite the deployed website with a partial archive.
-    if failures or len(results) < 90 or min(results, default=3000) > 1920 or max(results, default=0) < 2026:
+    if failures or len(results) < 102 or min(results, default=3000) > 1920 or max(results, default=0) < 2026:
         raise RuntimeError(f"Refusing incomplete import: {len(results)} years; failures={failures}")
     # Existing, manually sourced 2024-2026 leg results are retained.
     for year, row in results.items():
         if old_by_year.get(year, {}).get("legs"):
             row["legs"] = old_by_year[year]["legs"]
+    nonparticipants = sum(1 for r in results.values() if r.get("status") == "not_participated")
+    if nonparticipants != 7:
+        raise RuntimeError(f"Expected 7 documented Waseda non-participations, got {nonparticipants}")
     old["hakone"] = sorted(results.values(), key=lambda r: r["year"])
     old.setdefault("meta", {})["completeHakone"] = True
     old["meta"]["fetched"] = datetime.now(timezone.utc).date().isoformat()
     old["meta"]["source"] = "https://waseda-ac.jp/record/"
     text = "/* Official Waseda records, imported from publicly available record-room pages. */\n" + HEAD + json.dumps(old, ensure_ascii=False, separators=(",", ":")) + ";\n"
     TARGET.write_text(text, "utf-8")
-    print(f"Updated {TARGET.name} with {len(results)} Hakone editions; preserved verified individual leg records.")
+    print(f"Updated {TARGET.name}: {len(results)} total editions, {len(results)-nonparticipants} team results, {nonparticipants} non-participations.")
 
 
 if __name__ == "__main__":
