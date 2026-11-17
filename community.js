@@ -670,6 +670,7 @@
     drawFeed();
     syncSharedViews();
     await refreshEditorial();
+    renderRankContribution();
   }
   $("wsdGoogleSignIn").onclick=async()=>{
     const button=$("wsdGoogleSignIn");
@@ -1199,6 +1200,106 @@
     e.preventDefault();
     saveSharedDateCorrection(form).catch(err=>note("提交修订失败："+err.message,true));
   });
+
+  // Collaborative international rankings: signed-in friends suggest values;
+  // only existing community admins publish verified snapshots.
+  const rankMount=$("rankContributionMount");
+  function renderRankContribution(){
+    if(!rankMount)return;
+    if(!user){
+      rankMount.innerHTML='<details><summary>＋ 参与维护世界／亚洲排名</summary><p class="int-rank-help">请先在「跑友社区」使用 Google 登录。登录后可以提交选手排名和官方来源，管理员核实后才会出现在正式榜单。</p><div class="int-rank-editor-status"><button type="button" class="btn btn-small" data-wsd-rank-login>前往 Google 登录</button></div></details>';
+      return;
+    }
+    const names=(typeof getAthletes==='function'?getAthletes():[]).filter(a=>!a.communityOnly).map(a=>a.name);
+    rankMount.innerHTML='<details><summary>＋ '+(admin?'管理员：更新与审核国际排名':'跑友协作：提交世界／亚洲排名修正')+'</summary>'+
+      '<p class="int-rank-help">'+(admin?'管理员可以审核、发布跑友的排名提议。':'Google 登录后可提交排名提议，核实后发布；不会立即覆盖官方排名。')+'请填写 World Athletics 对应项目、榜单日期与官方来源。亚洲排名无法核实可留空。</p>'+
+      '<form id="wsdRankSuggestForm" class="int-rank-form">'+
+      '<label>选手姓名 <select name="athlete_name" required><option value="">选择选手</option>'+names.map(n=>'<option value="'+esc(n)+'">'+esc(n)+'</option>').join('')+'</select></label>'+
+      '<label>排名项目 <select name="event_name" required><option value="1500m">1500m</option><option value="3000m">3000m</option><option value="3000mSC">3000mSC</option><option value="5000m" selected>5000m</option><option value="10000m">10000m</option><option value="Half Marathon">Half Marathon</option><option value="Road Running">Road Running</option><option value="Marathon">Marathon</option></select></label>'+
+      '<label>世界排名 <input name="world_rank" type="number" min="1" max="100000" placeholder="可留空"></label>'+
+      '<label>亚洲排名 <input name="asia_rank" type="number" min="1" max="100000" placeholder="可留空"></label>'+
+      '<label>排名积分 <input name="ranking_points" type="number" step="0.01" min="0" max="999999" placeholder="可留空"></label>'+
+      '<label>官方榜单发布日期 <input name="ranking_date" type="date" min="2000-01-01" required></label>'+
+      '<label class="int-rank-full">World Athletics 官方来源（HTTPS）<input name="source_url" type="url" maxlength="500" placeholder="https://worldathletics.org/..." required></label>'+
+      '<button type="submit" class="btn btn-primary btn-small int-rank-submit">提交排名待审核</button>'+
+      '</form><div class="int-rank-editor-status" id="wsdRankEditStatus" role="status" aria-live="polite"></div>'+
+      (admin?'<div id="wsdRankReview" class="int-rank-review">审核队列读取中…</div>':'')+
+      '</details>';
+    if(admin)loadRankSuggestions().catch(err=>rankEditStatus('加载审核队列失败：'+err.message,true));
+  }
+  function rankEditStatus(message,bad=false){
+    const el=$("wsdRankEditStatus");if(el){el.textContent=message;el.style.color=bad?'#ad3459':'#725160';}
+  }
+  function rankValidate(form){
+    const fd=new FormData(form);
+    const n=name=>String(fd.get(name)||'').trim();
+    const world=n("world_rank"),asia=n("asia_rank"),points=n("ranking_points");
+    const rankOf=v=>v===''?null:Number(v);
+    if(world===''&&asia==='')throw Error('至少填写世界排名或亚洲排名。');
+    const date=n("ranking_date");
+    if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(date)||date>new Date(Date.now()+7*86400000).toISOString().slice(0,10))throw Error('请填写正确的官方排名发布日期。');
+    const source=n("source_url");
+    if(!https(source)||!/^https:\\/\\/(www\\.)?worldathletics\\.org\\//i.test(source))throw Error('请使用 World Athletics 官方 HTTPS 链接。');
+    const athlete=n("athlete_name");
+    if(!(typeof getAthletes==='function'&&getAthletes().some(a=>a.name===athlete&&!a.communityOnly)))throw Error('请选择现有选手名单中的姓名。');
+    const event=n("event_name");
+    const allowed=new Set(['1500m','3000m','3000mSC','5000m','10000m','Half Marathon','Road Running','Marathon']);
+    if(!allowed.has(event))throw Error('请选择有效的排名项目。');
+    return {athlete_name:athlete,event_name:event,world_rank:rankOf(world),asia_rank:rankOf(asia),ranking_points:rankOf(points),ranking_date:date,source_url:source};
+  }
+  async function loadRankSuggestions(){
+    const box=$("wsdRankReview");if(!box||!admin)return;
+    const {data,error}=await sb.from('wsd_rank_suggestions').select('id,athlete_name,event_name,world_rank,asia_rank,ranking_points,ranking_date,source_url,created_at').eq('status','pending').order('created_at',{ascending:true}).limit(60);
+    if(error)throw error;
+    box.innerHTML='<strong>待审核排名提议（'+data.length+'）</strong>'+(data.length?data.map(r=>
+      '<article class="int-rank-review-item"><b>'+esc(r.athlete_name)+' · '+esc(r.event_name)+'</b>'+
+      '<small>世界：'+(r.world_rank??'—')+' / 亚洲：'+(r.asia_rank??'—')+' / 积分：'+(r.ranking_points??'—')+' / 日期：'+esc(r.ranking_date)+'</small>'+
+      '<a href="'+esc(r.source_url)+'" target="_blank" rel="noopener noreferrer">核对官方来源 ↗</a>'+
+      '<div class="tools"><button type="button" class="btn btn-primary btn-small" data-rank-approve="'+esc(r.id)+'">核实并发布</button><button type="button" class="btn btn-small" data-rank-reject="'+esc(r.id)+'">驳回</button></div></article>').join(''):'<p class="int-rank-help">暂无待审核提议。</p>');
+  }
+  async function decideRankSuggestion(id,approve){
+    if(!admin)throw Error('只有管理员可以审核。');
+    const {data:found,error:readError}=await sb.from('wsd_rank_suggestions').select('id,athlete_name,event_name,world_rank,asia_rank,ranking_points,ranking_date,source_url,status').eq('id',id).eq('status','pending').single();
+    if(readError||!found)throw readError||Error('提议已处理。');
+    if(approve){
+      const {data:existing,error:exErr}=await sb.from('wsd_athlete_world_rankings').select('world_rank,asia_rank,ranking_points').eq('athlete_name',found.athlete_name).eq('event_name',found.event_name).eq('ranking_date',found.ranking_date).maybeSingle();
+      if(exErr)throw exErr;
+      const payload={athlete_name:found.athlete_name,event_name:found.event_name,ranking_date:found.ranking_date,source_url:found.source_url,
+        world_rank:found.world_rank??existing?.world_rank??null,
+        asia_rank:found.asia_rank??existing?.asia_rank??null,
+        ranking_points:found.ranking_points??existing?.ranking_points??null,rank_basis:'official'};
+      const {error:upErr}=await sb.from('wsd_athlete_world_rankings').upsert(payload,{onConflict:'athlete_name,event_name,ranking_date'});
+      if(upErr)throw upErr;
+    }
+    const {error:decErr}=await sb.from('wsd_rank_suggestions').update({status:approve?'approved':'rejected',decided_at:new Date().toISOString()}).eq('id',id);
+    if(decErr)throw decErr;
+    if(approve&&typeof refreshInternationalRankings==='function')await refreshInternationalRankings();
+    await loadRankSuggestions();
+    rankEditStatus(approve?'已发布经核实的排名。':'已驳回此提议。');
+  }
+  document.addEventListener('click',e=>{
+    if(e.target.closest('[data-wsd-rank-login]')){
+      e.preventDefault();navigateCommunity();return;
+    }
+    const approve=e.target.closest('[data-rank-approve]'),reject=e.target.closest('[data-rank-reject]');
+    if(approve||reject){
+      e.preventDefault();const btn=approve||reject;btn.disabled=true;
+      decideRankSuggestion(approve?.dataset.rankApprove||reject.dataset.rankReject,!!approve).catch(err=>{rankEditStatus('审核失败：'+err.message,true);btn.disabled=false;});
+    }
+  });
+  document.addEventListener('submit',e=>{
+    const form=e.target.closest('#wsdRankSuggestForm');if(!form)return;
+    e.preventDefault();
+    if(!user){rankEditStatus('请先登录。',true);return;}
+    let payload;try{payload=rankValidate(form);}catch(err){rankEditStatus(err.message,true);return;}
+    const submit=form.querySelector('[type="submit"]');submit.disabled=true;
+    sb.from('wsd_rank_suggestions').insert(payload).then(({error})=>{
+      if(error)throw error;
+      form.reset();rankEditStatus('排名提议已提交，管理员核对官方来源后会发布。');
+      if(admin)loadRankSuggestions().catch(()=>{});
+    }).catch(err=>rankEditStatus('提交失败：'+err.message,true)).finally(()=>{submit.disabled=false;});
+  });
+
   sb.auth.onAuthStateChange(()=>{Promise.resolve().then(setAuth).catch(()=>{});});
   await setAuth();await Promise.all([refresh(),refreshCorrections(),refreshEditorial()]);
   const callbackParams=new URLSearchParams(location.search);
