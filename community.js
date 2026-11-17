@@ -829,21 +829,21 @@
   const bulkHeaders=["athlete_name","meet_name","event_name","race_date","result_time","rank","source_url","career_stage","school_name","notes"];
   function parseBulkCsv(src){
     const rows=[];let row=[],field="",quoted=false;
-    src=src.replace(/^\\uFEFF/,"");
+    src=src.replace(/^\uFEFF/,"");
     for(let i=0;i<src.length;i++){const ch=src[i];
       if(quoted){if(ch==='"'&&src[i+1]==='"'){field+='"';i++;}else if(ch==='"')quoted=false;else field+=ch;}
       else if(ch==='"')quoted=true;else if(ch===","){row.push(field);field="";}
-      else if(ch==="\\n"){row.push(field.replace(/\\r$/,""));rows.push(row);row=[];field="";}
+      else if(ch==="\n"){row.push(field.replace(/\r$/,""));rows.push(row);row=[];field="";}
       else field+=ch;
     }
     if(quoted)throw Error("CSV 引号未闭合");
-    if(field||row.length){row.push(field.replace(/\\r$/,""));rows.push(row);}
+    if(field||row.length){row.push(field.replace(/\r$/,""));rows.push(row);}
     return rows;
   }
   const bulkKey=x=>[x.athlete_name,x.meet_name,x.event_name,x.race_date,x.result_time].map(v=>String(v||"").trim().toLowerCase()).join("|");
   $("wsdBulkTemplate").onclick=()=>{
-    const csv=bulkHeaders.join(",")+"\\r\\n"+["示例选手","示例大会","5000m","2026-11-01","13:45.12","","https://example.org/results","university","",""].join(",")+"\\r\\n";
-    const blob=new Blob(["\\uFEFF"+csv],{type:"text/csv;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="waseda-athlete-results-template.csv";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+    const csv=bulkHeaders.join(",")+"\r\n"+["示例选手","示例大会","5000m","2026-11-01","13:45.12","","https://example.org/results","university","",""].join(",")+"\r\n";
+    const blob=new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="waseda-athlete-results-template.csv";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
   };
   bulkFile.onchange=async()=>{
     bulkRows=[];bulkImport.disabled=true;bulkPreview.textContent="";bulkStatus.textContent="";
@@ -865,10 +865,10 @@
         const x=Object.fromEntries(bulkHeaders.map(k=>[k,(cells[headers.indexOf(k)]||"").trim()]));
         let err="";
         if(!x.athlete_name||!x.meet_name||!x.event_name||!x.race_date||!x.result_time||!x.source_url)err="必填字段缺失";
-        else if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(x.race_date)||Number.isNaN(Date.parse(x.race_date)))err="日期格式错误";
-        else if(!/^\\d{1,2}(:\\d{2}){1,2}(\\.\\d{1,2})?$/.test(x.result_time))err="成绩格式错误";
+        else if(!/^\d{4}-\d{2}-\d{2}$/.test(x.race_date)||Number.isNaN(Date.parse(x.race_date)))err="日期格式错误";
+        else if(!/^\d{1,2}(:\d{2}){1,2}(\.\d{1,2})?$/.test(x.result_time))err="成绩格式错误";
         else if(!https(x.source_url))err="来源须为 HTTPS 链接";
-        else if(x.rank&&(!/^\\d+$/.test(x.rank)||Number(x.rank)<1))err="名次须为正整数";
+        else if(x.rank&&(!/^\d+$/.test(x.rank)||Number(x.rank)<1))err="名次须为正整数";
         else if(x.athlete_name.length>100||x.meet_name.length>120||x.event_name.length>120||x.notes.length>1000)err="字段过长";
         else if(x.career_stage&&!["university","high_school","junior_high","elementary","other"].includes(x.career_stage))err="阶段不支持";
         else if(seen.has(bulkKey(x)))err="重复记录";
