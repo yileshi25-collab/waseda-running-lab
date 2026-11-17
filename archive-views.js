@@ -199,7 +199,7 @@ function renderAlumniTimeline(name){
  const isGrad26=grad2026Keys.has(normalizeName(name));
  const school=shown.filter(r=>r.status!=='OB').length;
  $('histObDetail').innerHTML='<div class="panel panel-pad hist24-athlete-profile">'+
- '<div class="wsd-open-controls"><button type="button" class="wsd-open-btn" data-wsd-new="ob_result">＋ 新增此人比赛成绩</button><small>公开编辑，修改留有版本记录</small></div><div class="hist24-profile-heading"><div><div class="eyebrow">ONE ATHLETE · COMPLETE RACE LOG</div><h3>'+safe(name)+(isGrad26?' <span class="hist24-label">2026届毕业</span>':'')+'</h3><p class="hist24-summary">合并展示已收录的各年比赛纪录，包括2026年有来源的OB比赛成绩；按年份及参赛时身份分组。</p></div><button type="button" class="btn btn-small" id="histObProfileExport">导出此人全部成绩 ↓</button></div>'+
+ '<div class="wsd-open-controls"><button type="button" class="wsd-open-btn" data-wsd-new="ob_result" data-wsd-name="'+safe(name)+'">＋ 新增此人比赛成绩</button><small>公开编辑，修改留有版本记录</small></div><div class="hist24-profile-heading"><div><div class="eyebrow">ONE ATHLETE · COMPLETE RACE LOG</div><h3>'+safe(name)+(isGrad26?' <span class="hist24-label">2026届毕业</span>':'')+'</h3><p class="hist24-summary">合并展示已收录的各年比赛纪录，包括2026年有来源的OB比赛成绩；按年份及参赛时身份分组。</p></div><button type="button" class="btn btn-small" id="histObProfileExport">导出此人全部成绩 ↓</button></div>'+
  (isGrad26?'<p class="hist24-summary">毕业年份：2026年3月 · 2026年1月箱根驿传仍属于在校期间。<a href="https://www.waseda.jp/top/news/117621" target="_blank" rel="noopener noreferrer">早稻田大学毕业专题 ↗</a></p>':'')+
  '<div class="hist24-profile-stats"><div><b>'+shown.length+'</b><small>'+(selectedYear==='all'?'已合并成绩':selectedYear+'年成绩')+'</small></div><div><b>'+wbOB+'</b><small>毕业后成绩</small></div><div><b>'+school+'</b><small>在校成绩及原档案</small></div></div>'+
  (years.length?years.map((year,i)=>{
@@ -226,6 +226,10 @@ function openAlumniProfile(name,scroll=true){
 window.WSD_OPEN_ALUMNI_PROFILE=openAlumniProfile;
 function refreshOB(){
  const all=allAthleteHistory();
+ const select=$('histObYear'),picked=select.value;
+ const years=[...new Set(all.map(r=>String(r.year||r.date?.slice(0,4)||'')).filter(x=>/^\d{4}$/.test(x)))].sort((a,b)=>b.localeCompare(a));
+ select.innerHTML='<option value="all">所有比赛年份</option>'+years.map(y=>'<option value="'+y+'">'+y+'年比赛</option>').join('');
+ if(years.includes(picked))select.value=picked;
  const allNames=[...new Map([...all.map(r=>r.name),...GRADUATES_2026.map(r=>r.name)].map(n=>[normalizeName(n),n])).values()].sort((a,b)=>a.localeCompare(b,'ja'));
  obNames.splice(0,obNames.length,...allNames);
  for(const r of all)if(r.status==='OB')obNameKeys.add(normalizeName(r.name));
