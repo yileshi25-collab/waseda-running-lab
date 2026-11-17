@@ -142,7 +142,8 @@
       panel=document.createElement("section");
       panel.className="wsd-community-gallery wsd-athlete-bio";
       panel.dataset.wsdAthlete=name;
-      head.after(panel);
+      const basicProfile=body.querySelector(".wsd-athlete-bio:not(.wsd-community-gallery)");
+      (basicProfile||head).after(panel);
     }
     const entries=publicEditorialEntries("bio",name,null);
     const sig=entries.map(x=>x.id).join(",")+"|"+[...ownEditorialIds].join(",")+"|"+admin+"|"+!!user;
