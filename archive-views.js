@@ -117,7 +117,7 @@ const page2024=panel('archive2024','2024 · HISTORICAL RACE DATABASE','2024 全�
  '<p id="hist24Count" class="hist24-summary"></p><div id="hist24List" class="hist24-grid"></div><div class="hist24-loadrow"><button type="button" id="hist24More" class="btn btn-small" hidden>加载更多成绩 ↓</button></div>');
 const obPage=panel('obarchive','WASEDA ATHLETE HISTORY · ALUMNI','选手历史档案 / OB','一人一档 · 合并历史成绩 · 2026届毕业选手已加入',
  '<div class="hist24-note">共'+obNames.length+'位历史选手档案，包括2026届毕业生及2026年有来源的OB赛果。2026年1月箱根属于毕业前成绩，4月后的职业比赛归入OB；可提交修改，管理员可查验。</div>'+ 
- '<div class="hist24-toolbar"><input id="histObSearch" type="search" placeholder="搜索选手姓名"><select id="histObScope"><option value="all">全部历史选手</option><option value="ob">仅OB毕业选手</option><option value="2026">2026届毕业选手</option></select><button class="btn btn-small" id="histObExport">导出OB成绩 ↓</button></div>'+ 
+ '<div class="hist24-toolbar"><input id="histObSearch" type="search" placeholder="搜索选手姓名"><select id="histObScope"><option value="all">全部历史选手</option><option value="ob">仅OB毕业选手</option><option value="2026">2026届毕业选手</option></select><select id="histObYear" aria-label="按比赛年份筛选"><option value="all">所有比赛年份</option><option value="2026">2026年比赛</option><option value="2025">2025年比赛</option><option value="2024">2024年比赛</option></select><button class="btn btn-small" id="histObExport">导出OB成绩 ↓</button></div>'+ 
  '<div id="histObCount" class="hist24-summary"></div><div id="histObNames" class="hist24-ob-list"></div><div id="histObDetail" class="hist24-ob-detail"></div>');
 host.insertAdjacentHTML('beforebegin',page2024+obPage);
 const index2025=navItems.findIndex(x=>x[0]==='archive2025');
@@ -181,25 +181,27 @@ function alumniRowHTML(r){
 }
 function renderAlumniTimeline(name){
  const all=athleteTimeline(name);
+ const selectedYear=$('histObYear')?.value||'all';
+ const shown=selectedYear==='all'?all:all.filter(r=>String(r.year||r.date?.slice(0,4)||'')===selectedYear);
  const byYear=new Map();
- for(const r of all){
+ for(const r of shown){
   const year=String(r.year||r.date?.slice(0,4)||'其他');
   if(!byYear.has(year))byYear.set(year,[]);
   byYear.get(year).push(r);
  }
  const years=[...byYear.keys()].sort((a,b)=>b.localeCompare(a));
- const wbOB=all.filter(r=>r.status==='OB').length;
+ const wbOB=shown.filter(r=>r.status==='OB').length;
  const isGrad26=grad2026Keys.has(normalizeName(name));
- const school=all.filter(r=>r.status!=='OB').length;
+ const school=shown.filter(r=>r.status!=='OB').length;
  $('histObDetail').innerHTML='<div class="panel panel-pad hist24-athlete-profile">'+
  '<div class="hist24-profile-heading"><div><div class="eyebrow">ONE ATHLETE · COMPLETE RACE LOG</div><h3>'+safe(name)+(isGrad26?' <span class="hist24-label">2026届毕业</span>':'')+'</h3><p class="hist24-summary">合并展示已收录的各年比赛纪录，包括2026年有来源的OB比赛成绩；按年份及参赛时身份分组。</p></div><button type="button" class="btn btn-small" id="histObProfileExport">导出此人全部成绩 ↓</button></div>'+
  (isGrad26?'<p class="hist24-summary">毕业年份：2026年3月 · 2026年1月箱根驿传仍属于在校期间。<a href="https://www.waseda.jp/top/news/117621" target="_blank" rel="noopener noreferrer">早稻田大学毕业专题 ↗</a></p>':'')+
- '<div class="hist24-profile-stats"><div><b>'+all.length+'</b><small>已合并成绩</small></div><div><b>'+wbOB+'</b><small>毕业后成绩</small></div><div><b>'+school+'</b><small>在校成绩及原档案</small></div></div>'+
- years.map((year,i)=>{
+ '<div class="hist24-profile-stats"><div><b>'+shown.length+'</b><small>'+(selectedYear==='all'?'已合并成绩':selectedYear+'年成绩')+'</small></div><div><b>'+wbOB+'</b><small>毕业后成绩</small></div><div><b>'+school+'</b><small>在校成绩及原档案</small></div></div>'+
+ (years.length?years.map((year,i)=>{
   const rows=byYear.get(year),ob=rows.filter(r=>r.status==='OB'),student=rows.filter(r=>r.status!=='OB');
   const block=(items,label)=>items.length?'<div class="hist24-stage-head">'+label+' · '+items.length+' 条</div>'+items.map(alumniRowHTML).join(''):'';
   return '<details class="hist24-year-group" '+(i===0?'open':'')+'><summary><b>'+safe(year)+' 年</b><span>'+rows.length+' 条 · OB '+ob.length+' / 在校 '+student.length+'</span><span aria-hidden="true">⌄</span></summary><div class="hist24-year-content">'+block(ob,'毕业后 / OB')+block(student,'在校期间 / 原有档案')+'</div></details>';
- }).join('')+
+ }).join(''):'<p class="hist24-empty">该年份暂无收录的比赛成绩，可切换「所有比赛年份」查看其他记录。</p>')+
  '<div class="hist24-note">每位选手只对应一个人物档案；同一场比赛不会重复列出。2026届毕业生在现有来源中尚无毕业后赛事记录时，不会虚构OB比赛。成绩如需修改，可在跑友共建提交，管理员可查验。</div></div>';
  $('histObProfileExport').onclick=()=>exportRows(all,'waseda_'+name.replace(/[\\/:*?"<>|]/g,'_')+'_all_results.csv');
 }
@@ -209,6 +211,7 @@ function openAlumniProfile(name,scroll=true){
  currentOb=found;
  $('histObSearch').value='';
  $('histObScope').value='all';
+ $('histObYear').value='all';
  refreshOB();
  renderAlumniTimeline(found);
  show('obarchive');
@@ -218,17 +221,20 @@ function openAlumniProfile(name,scroll=true){
 window.WSD_OPEN_ALUMNI_PROFILE=openAlumniProfile;
 function refreshOB(){
  const q=$('histObSearch').value.trim().toLowerCase();
- const scope=$('histObScope').value;
- const names=obNames.filter(n=>(scope==='all'||scope==='ob'&&obNameKeys.has(normalizeName(n))||scope==='2026'&&grad2026Keys.has(normalizeName(n)))&&normalizeName(n).toLowerCase().includes(normalizeName(q).toLowerCase()));
+ const scope=$('histObScope').value,year=$('histObYear').value;
+ const names=obNames.filter(n=>(scope==='all'||scope==='ob'&&obNameKeys.has(normalizeName(n))||scope==='2026'&&grad2026Keys.has(normalizeName(n)))&&
+  (year==='all'||athleteTimeline(n).some(r=>String(r.year||r.date?.slice(0,4)||'')===year))&&
+  normalizeName(n).toLowerCase().includes(normalizeName(q).toLowerCase()));
  $('histObCount').textContent='显示 '+names.length+' / '+obNames.length+' 位选手；点击姓名查看其合并后的个人比赛履历';
  $('histObNames').innerHTML=names.map(n=>{
   const obRows=records.filter(r=>r.status==='OB'&&normalizeName(r.name)===normalizeName(n));
-  return '<button type="button" data-ob-name="'+safe(n)+'" class="'+(currentOb===n?'active':'')+'"><strong>'+safe(n)+'</strong><small>'+(obRows.length?'毕业后 '+obRows.length+' 条':'在校期间档案')+' · 全部年份合并</small></button>';
+  return '<button type="button" data-ob-name="'+safe(n)+'" class="'+(currentOb===n?'active':'')+'"><strong>'+safe(n)+'</strong><small>'+(obRows.length?'毕业后 '+obRows.length+' 条':'在校期间档案')+' · '+(year==='all'?'全部年份':year+'年')+'</small></button>';
  }).join('')||'<div class="hist24-empty">未找到匹配的OB选手。</div>';
  if(currentOb&&!names.includes(currentOb)){currentOb='';$('histObDetail').innerHTML='';}
 }
 $('histObSearch').addEventListener('input',refreshOB);
 $('histObScope').addEventListener('change',refreshOB);
+$('histObYear').addEventListener('change',()=>{refreshOB();if(currentOb)renderAlumniTimeline(currentOb);});
 document.addEventListener('click',e=>{
  const link=e.target.closest('[data-open-alumni]');if(!link)return;
  e.preventDefault();openAlumniProfile(link.dataset.openAlumni);
