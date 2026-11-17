@@ -146,10 +146,10 @@ function refresh2024(reset=true){
  }
  const q=$('hist24Search').value.trim().toLowerCase(),status=$('hist24Status').value,ev=$('hist24Event').value,meet=$('hist24Meet').value,mon=$('hist24Month').value;
  filtered2024=active2024.filter(r=>(status==='all'||r.status===status)&&(ev==='all'||r.event===ev)&&(meet==='all'||r.meet===meet)&&(mon==='all'||r.date.slice(5,7)===mon)&&(!q||[r.name,r.meet,r.event,r.time].some(x=>String(x).toLowerCase().includes(q)))).sort((a,b)=>b.date.localeCompare(a.date)||a.name.localeCompare(b.name,'ja'));
- $('hist24Count').textContent='已展示 '+Math.min(visible2024,filtered2024.length)+' / '+filtered2024.length+' 条符合条件的成绩 · 共'+active2024.length+'条记录';
- const grouped=new Map();for(const row of filtered2024.slice(0,visible2024)){if(!grouped.has(row.name))grouped.set(row.name,[]);grouped.get(row.name).push(row);}
+ $('hist24Count').textContent='已按选手分组 '+filtered2024.length+' / '+filtered2024.length+' 条符合条件的成绩 · 共'+active2024.length+'条记录';
+ const grouped=new Map();for(const row of filtered2024){if(!grouped.has(row.name))grouped.set(row.name,[]);grouped.get(row.name).push(row);}
  $('hist24List').innerHTML=[...grouped].map(([name,rows])=>'<details class="hist24-athlete-fold"><summary><b>'+safe(name)+'</b><span>'+rows.length+' 条成绩 · 点击展开</span></summary><div class="hist24-grid">'+renderResults(rows)+'</div></details>').join('')||renderResults([]);
- const more=$('hist24More');more.hidden=visible2024>=filtered2024.length;
+ const more=$('hist24More');more.hidden=true;
 }
 ['hist24Search','hist24Status','hist24Meet','hist24Event','hist24Month'].forEach(id=>$(id).addEventListener(id==='hist24Search'?'input':'change',()=>refresh2024(true)));
 $('hist24More').onclick=()=>{visible2024+=24;refresh2024(false);};
