@@ -43,6 +43,9 @@ try{
  console.error('Historical archive import failed:',err);
  const info=document.createElement('div');info.className='panel panel-pad';info.textContent='2024—2025历史档案读取失败。原有数据没有受到影响。';host.before(info);return;
 }
+// 2026 post-graduation OB race results checked against organizer, team, or university sources.
+const OB_RESULTS_2026=[{"id":"ob2026-1","year":2026,"name":"山口 智規","grade":null,"meet":"金栗記念選抜陸上中長距離大会","event":"5000m","date":"2026-04-11","time":"13:16.38","rank":4,"status":"OB","link":"https://www.sg-hldgs.co.jp/trackfield/result/2026/result260411-1.html","stage":"PB · SGホールディングス","verifiedOriginal":true,"sourceType":"official_2026"},{"id":"ob2026-2","year":2026,"name":"山口 智規","grade":null,"meet":"セイコーゴールデングランプリ陸上2026東京","event":"1500m","date":"2026-05-17","time":"3:38.51","rank":4,"status":"OB","link":"https://www.sg-hldgs.co.jp/trackfield/result/2026/result260517-1.html","stage":"SGホールディングス","verifiedOriginal":true,"sourceType":"official_2026"},{"id":"ob2026-3","year":2026,"name":"山口 智規","grade":null,"meet":"トリーア国際競技会（ドイツ）","event":"3000m","date":"2026-09-02","time":"7:47.13","rank":6,"status":"OB","link":"https://www.rikujyokyogi.co.jp/archives/215447","stage":"PB · SGホールディングス","verifiedOriginal":true,"sourceType":"official_2026"},{"id":"ob2026-4","year":2026,"name":"山口 智規","grade":null,"meet":"愛知・名古屋2026アジア競技大会","event":"5000m","date":"2026-09-29","time":"13:31.43","rank":2,"status":"OB","link":"https://www.jaaf.or.jp/news/article/24151/?category=2","stage":"银牌 · SGホールディングス","verifiedOriginal":true,"sourceType":"official_2026"},{"id":"ob2026-5","year":2026,"name":"井川 龍人","grade":null,"meet":"セイコーゴールデングランプリ陸上2026東京","event":"3000m","date":"2026-05-17","time":"7:39.36","rank":2,"status":"OB","link":"https://www.asahi-kasei.com/jp/sports-event/track-field/schedule/2026/0517","stage":"日本纪录 · 旭化成","verifiedOriginal":true,"sourceType":"official_2026"},{"id":"ob2026-6","year":2026,"name":"井川 龍人","grade":null,"meet":"第110回日本陸上競技選手権大会","event":"5000m","date":"2026-06-12","time":"13:28.42","rank":4,"status":"OB","link":"https://waseda-ac.jp/news/detail/896","stage":"预赛第3组第4名 · 晋级","verifiedOriginal":true,"sourceType":"official_2026"},{"id":"ob2026-7","year":2026,"name":"伊藤 大志","grade":null,"meet":"第110回日本陸上競技選手権大会","event":"5000m","date":"2026-06-12","time":"13:38.89","rank":9,"status":"OB","link":"https://waseda-ac.jp/news/detail/896","stage":"预赛第3组第9名","verifiedOriginal":true,"sourceType":"official_2026"},{"id":"ob2026-8","year":2026,"name":"太田 直希","grade":null,"meet":"第110回日本陸上競技選手権大会","event":"5000m","date":"2026-06-12","time":"13:41.41","rank":12,"status":"OB","link":"https://waseda-ac.jp/news/detail/896","stage":"预赛第3组第12名","verifiedOriginal":true,"sourceType":"official_2026"}];
+records.push(...OB_RESULTS_2026);
 window.WSD_HISTORY_RECORDS=records;
 window.WSD_HISTORY_2025_SUPPLEMENT=records.filter(x=>x.year===2025).map(r=>({
  date:r.date,event:r.meet,type:classifyEvent(r.event),metric:r.event,name:r.name,grade:r.grade||null,time:r.time,rank:r.rank||null,
@@ -91,7 +94,7 @@ const page2024=panel('archive2024','2024 · HISTORICAL RACE DATABASE','2024 全�
  '<div class="hist24-toolbar"><input id="hist24Search" type="search" placeholder="搜索姓名、比赛或项目"><select id="hist24Status"><option value="all">在校与OB</option><option value="student">在校成绩</option><option value="OB">OB毕业后</option></select><select id="hist24Event"><option value="all">全部项目</option></select><select id="hist24Month"><option value="all">全年月份</option>'+Array.from({length:12},(_,i)=>'<option value="'+String(i+1).padStart(2,'0')+'">'+(i+1)+'月</option>').join('')+'</select><button id="hist24Export" class="btn btn-small">导出CSV ↓</button></div>'+
  '<p id="hist24Count" class="hist24-summary"></p><div id="hist24List" class="hist24-grid"></div>');
 const obPage=panel('obarchive','WASEDA ATHLETE HISTORY · ALUMNI','选手历史档案 / OB','一人一档 · 合并历史成绩 · 2026届毕业选手已加入',
- '<div class="hist24-note">共'+obNames.length+'位历史选手档案，其中包括2026年3月毕业的4位长距离队伍主要选手。2026届不等于2026年每条比赛都发生在毕业后；可提交修改，管理员可查验。</div>'+ 
+ '<div class="hist24-note">共'+obNames.length+'位历史选手档案，包括2026届毕业生及2026年有来源的OB赛果。2026年1月箱根属于毕业前成绩，4月后的职业比赛归入OB；可提交修改，管理员可查验。</div>'+ 
  '<div class="hist24-toolbar"><input id="histObSearch" type="search" placeholder="搜索选手姓名"><select id="histObScope"><option value="all">全部历史选手</option><option value="ob">仅OB毕业选手</option><option value="2026">2026届毕业选手</option></select><button class="btn btn-small" id="histObExport">导出OB成绩 ↓</button></div>'+ 
  '<div id="histObCount" class="hist24-summary"></div><div id="histObNames" class="hist24-ob-list"></div><div id="histObDetail" class="hist24-ob-detail"></div>');
 host.insertAdjacentHTML('beforebegin',page2024+obPage);
@@ -156,11 +159,11 @@ function renderAlumniTimeline(name){
   byYear.get(year).push(r);
  }
  const years=[...byYear.keys()].sort((a,b)=>b.localeCompare(a));
- const wbOB=records.filter(r=>normalizeName(r.name)===normalizeName(name)&&r.status==='OB').length;
+ const wbOB=all.filter(r=>r.status==='OB').length;
  const isGrad26=grad2026Keys.has(normalizeName(name));
  const school=all.filter(r=>r.status!=='OB').length;
  $('histObDetail').innerHTML='<div class="panel panel-pad hist24-athlete-profile">'+
- '<div class="hist24-profile-heading"><div><div class="eyebrow">ONE ATHLETE · COMPLETE RACE LOG</div><h3>'+safe(name)+(isGrad26?' <span class="hist24-label">2026届毕业</span>':'')+'</h3><p class="hist24-summary">合并展示已收录的各年比赛纪录，优先保留原网站的赛事记录。按年份及参赛时身份分组。</p></div><button type="button" class="btn btn-small" id="histObProfileExport">导出此人全部成绩 ↓</button></div>'+
+ '<div class="hist24-profile-heading"><div><div class="eyebrow">ONE ATHLETE · COMPLETE RACE LOG</div><h3>'+safe(name)+(isGrad26?' <span class="hist24-label">2026届毕业</span>':'')+'</h3><p class="hist24-summary">合并展示已收录的各年比赛纪录，包括2026年有来源的OB比赛成绩；按年份及参赛时身份分组。</p></div><button type="button" class="btn btn-small" id="histObProfileExport">导出此人全部成绩 ↓</button></div>'+
  (isGrad26?'<p class="hist24-summary">毕业年份：2026年3月 · 2026年1月箱根驿传仍属于在校期间。<a href="https://www.waseda.jp/top/news/117621" target="_blank" rel="noopener noreferrer">早稻田大学毕业专题 ↗</a></p>':'')+
  '<div class="hist24-profile-stats"><div><b>'+all.length+'</b><small>已合并成绩</small></div><div><b>'+wbOB+'</b><small>毕业后成绩</small></div><div><b>'+school+'</b><small>在校成绩及原档案</small></div></div>'+
  years.map((year,i)=>{
