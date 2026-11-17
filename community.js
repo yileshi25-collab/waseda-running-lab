@@ -273,7 +273,9 @@
       decorateRoster();decorateDetails();return;
     }
     const items=[...posts,...editorial.map(r=>({...r,kind:"editorial"}))].filter(r=>active==="all"||r.kind===active).sort((a,b)=>String(b.created_at||"").localeCompare(String(a.created_at||"")));
-    $("wsdFeed").innerHTML=items.length?items.map(r=>{
+    const feed=$("wsdFeed");
+    const expanded=new Set([...feed.querySelectorAll("details[data-wsd-feed-category][open]")].map(el=>el.dataset.wsdFeedCategory));
+    const renderPost=r=>{
       if(r.kind==="editorial")return '<article class="wsd-post"><div class="wsd-post-body"><div class="wsd-post-type">ARTICLE / '+esc(editorialCategories[r.category]||"文字资料")+'</div><h4>'+esc(r.title)+'</h4><p>选手：'+esc(r.athlete_name)+'</p>'+(r.body?'<p>'+esc(r.body)+'</p>':"")+'<small>投稿者：'+esc(r.display_name)+' · '+new Date(r.created_at).toLocaleString("zh-CN")+'</small><footer>'+sourceLink(r.source_url,"阅读原文")+'</footer></div></article>';
       const image=r.kind==="photo"?postImage(r):"";
       const chosen=r.kind==="photo"?coverPhoto(resolveAthleteName(r.athlete_name)):null;
@@ -299,7 +301,14 @@
        (user?'<button data-wsd-report="'+esc(r.id)+'" type="button">举报</button>':'<small>登录后可举报</small>')+
        (user&&(admin||ownPostIds.has(r.id))?'<button class="wsd-community-delete" data-wsd-delete="'+esc(r.id)+'" type="button">'+(admin&&!ownPostIds.has(r.id)?'管理员删除':'删除我的投稿')+'</button>':"")+
        '</footer></div></article>';
+    };
+    const categories=[["race","比赛成绩"],["photo","人物照片"],["editorial","采访／总结／日志"]];
+    feed.innerHTML=items.length?categories.map(([kind,label])=>{
+      const group=items.filter(r=>r.kind===kind);
+      if(active!=="all"&&active!==kind)return "";
+      return '<details class="wsd-feed-category" data-wsd-feed-category="'+kind+'" '+(expanded.has(kind)||(!feed.dataset.wsdGrouped&&kind==="race")?'open':"")+'><summary style="cursor:pointer;padding:12px 4px;font-weight:700">'+esc(label)+' · '+group.length+' 条</summary><div class="wsd-feed-category-content">'+(group.length?group.map(renderPost).join(""):'<p class="wsd-community-help">暂无此类投稿。</p>')+'</div></details>';
     }).join(""):'<div class="wsd-community-skeleton">暂无此类投稿。登录后可上传第一条。</div>';
+    feed.dataset.wsdGrouped="1";
     decorateRoster();
     decorateDetails();
   }
