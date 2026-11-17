@@ -18,7 +18,7 @@ function renderResults(rows){
  '<div class="hist24-row"><small>'+safe(r.date)+' · '+safe(r.meet)+'</small><span class="hist24-label">'+(r.status==='OB'?'OB · 毕业后':'在校成绩')+'</span></div>'+
  '<div class="hist24-row"><strong>'+safe(r.name)+'</strong><b class="hist24-time">'+safe(r.time)+'</b></div>'+
  '<div class="hist24-tags"><span>'+safe(r.event)+'</span>'+(r.grade?'<span>当时'+safe(r.grade)+'年级</span>':'')+(r.rank?'<span>第'+safe(r.rank)+'名</span>':'')+(r.stage?'<span>'+safe(r.stage)+'</span>':'')+'</div>'+
- '<div class="hist24-row"><small>朋友整理的历史记录 · 待逐项复核</small>'+sourceLink(r.link)+'<button type="button" class="btn btn-small" data-open-alumni="'+safe(r.name)+'">个人完整履历 ↗</button>'+'</div></article>').join('')||'<p class="hist24-empty">暂无符合筛选条件的成绩。</p>';
+ '<div class="hist24-row">'+sourceLink(r.link)+'<button type="button" class="btn btn-small" data-open-alumni="'+safe(r.name)+'">个人完整履历 ↗</button>'+'</div></article>').join('')||'<p class="hist24-empty">暂无符合筛选条件的成绩。</p>';
 }
 function exportRows(rows,filename){
  const heads=['year','athlete','grade_at_race','meet','event','date','time','rank','identity_at_race','source_url','stage'];
@@ -79,12 +79,12 @@ const st=document.createElement('style');st.textContent=css+"\n.hist24-profile-h
 const data2024=records.filter(r=>r.year===2024);
 const obNames=[...new Map(records.map(r=>[normalizeName(r.name),r.name])).values()].sort((a,b)=>a.localeCompare(b,'ja'));
 const obNameKeys=new Set(records.filter(r=>r.status==='OB').map(r=>normalizeName(r.name)));
-const page2024=panel('archive2024','2024 · HISTORICAL RACE DATABASE','2024 全年成绩','2024自然年 · 在校成绩与OB毕业后成绩分开标注 · 来自朋友整理表',
- '<div class="hist24-note">共209条原始成绩。按自然年归档；选手身份以比赛发生时的资料为准。来源链接来自朋友整理，尚未逐条独立核验，不能视为完整赛事清单。</div>'+
+const page2024=panel('archive2024','2024 · HISTORICAL RACE DATABASE','2024 全年成绩','2024自然年 · 在校及OB毕业后比赛成绩',
+ '<div class="hist24-note">共209条成绩，按自然年及比赛时身份归档。资料如需修改，可在跑友共建提交补充，管理员可查验。</div>'+
  '<div class="hist24-toolbar"><input id="hist24Search" type="search" placeholder="搜索姓名、比赛或项目"><select id="hist24Status"><option value="all">在校与OB</option><option value="student">在校成绩</option><option value="OB">OB毕业后</option></select><select id="hist24Event"><option value="all">全部项目</option></select><select id="hist24Month"><option value="all">全年月份</option>'+Array.from({length:12},(_,i)=>'<option value="'+String(i+1).padStart(2,'0')+'">'+(i+1)+'月</option>').join('')+'</select><button id="hist24Export" class="btn btn-small">导出CSV ↓</button></div>'+
  '<p id="hist24Count" class="hist24-summary"></p><div id="hist24List" class="hist24-grid"></div>');
 const obPage=panel('obarchive','WASEDA ATHLETE HISTORY · ALUMNI','选手历史档案 / OB','一人一档 · 合并2024—2025年比赛成绩 · 在校与毕业后分阶段展示',
- '<div class="hist24-note">共'+obNames.length+'位选手的合并档案，其中'+obNameKeys.size+'位收录毕业后成绩；一人一份完整比赛履历，不会参与2026现役选手统计。资料来自朋友整理，尚需逐项核验。</div>'+ 
+ '<div class="hist24-note">共'+obNames.length+'位选手的合并档案，其中'+obNameKeys.size+'位收录毕业后成绩；一人一份完整比赛履历，不会参与2026现役选手统计。资料如需修改，可在跑友共建提交补充，管理员可查验。</div>'+ 
  '<div class="hist24-toolbar"><input id="histObSearch" type="search" placeholder="搜索选手姓名"><select id="histObScope"><option value="all">全部历史选手</option><option value="ob">仅OB毕业选手</option></select><button class="btn btn-small" id="histObExport">导出OB成绩 ↓</button></div>'+ 
  '<div id="histObCount" class="hist24-summary"></div><div id="histObNames" class="hist24-ob-list"></div><div id="histObDetail" class="hist24-ob-detail"></div>');
 host.insertAdjacentHTML('beforebegin',page2024+obPage);
@@ -125,7 +125,7 @@ function alumniRowHTML(r){
  return '<div class="hist24-timeline-row"><div class="hist24-timeline-main"><span class="hist24-timeline-date">'+safe(r.date||'日期待核实')+'</span><b>'+safe(r.event)+'</b><strong>'+safe(r.time)+'</strong></div>'+
  '<div class="hist24-timeline-extra">'+safe(r.meet||'')+(r.rank?' · 第'+safe(r.rank)+'名':'')+
  (r.grade?' · 当时'+safe(r.grade)+'年级':'')+(r.stage?' · '+safe(r.stage):'')+
- (r.verifiedOriginal?' · 官方档案已收录':' · 朋友整理（待复核）')+
+ (r.verifiedOriginal?' · 既有年度档案':'')+
  (r.link?' · '+sourceLink(r.link):'')+'</div></div>';
 }
 function renderAlumniTimeline(name){
@@ -147,7 +147,7 @@ function renderAlumniTimeline(name){
   const block=(items,label)=>items.length?'<div class="hist24-stage-head">'+label+' · '+items.length+' 条</div>'+items.map(alumniRowHTML).join(''):'';
   return '<details class="hist24-year-group" '+(i===0?'open':'')+'><summary><b>'+safe(year)+' 年</b><span>'+rows.length+' 条 · OB '+ob.length+' / 在校 '+student.length+'</span><span aria-hidden="true">⌄</span></summary><div class="hist24-year-content">'+block(ob,'毕业后 / OB')+block(student,'在校期间 / 原有档案')+'</div></details>';
  }).join('')+
- '<div class="hist24-note">每位选手只对应一个人物档案。2024和2025年度页仍可按日期查找；同一场比赛不会在本人物档案里重复列出。原始Excel身份标记与官方档案可能存在差异，未核实记录均保留来源标注。</div></div>';
+ '<div class="hist24-note">每位选手只对应一个人物档案。2024和2025年度页仍可按日期查找；同一场比赛不会在本人物档案里重复列出。如发现成绩或身份信息有误，可在跑友共建提交修改资料，由管理员查验。</div></div>';
  $('histObProfileExport').onclick=()=>exportRows(all,'waseda_'+name.replace(/[\\/:*?"<>|]/g,'_')+'_all_results.csv');
 }
 function openAlumniProfile(name,scroll=true){
@@ -197,7 +197,7 @@ if(metric2025){
  }
  const title=$('arc25Count');
  const note=document.createElement('p');note.className='hist24-note';
- note.textContent='2025年另有82条朋友整理的原始记录参与补充；页面会与已有官方及社区赛果按选手、日期和成绩去重。朋友整理记录均标为待复核，且不修改现有官方记录。';
+ note.textContent='2025年补充82条历史成绩原始记录，并与已有成绩进行去重。成绩如需修改，可在跑友共建提交资料，管理员可查验。';
  title?.before(note);
 }
 window.WSD_REFRESH_2025_ARCHIVE?.();
