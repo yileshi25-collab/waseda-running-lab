@@ -4,10 +4,10 @@
  */
 (() => {
   'use strict';
-  const source = new URL('data/official-diaries-2026.json?v=20261117-diaries1', document.currentScript.src);
+  const source = new URL('data/official-diaries-2026.json?v=20261117-longdistance1', document.currentScript.src);
   const TABLE = 'wsd_official_diary_overrides';
   const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const key = value => String(value).normalize('NFKC').replace(/\s/g, '').toLowerCase();
+  const key = value => String(value).normalize('NFKC').replace(/\s/g, '').replace(/髙/g, '高').replace(/﨑/g, '崎').toLowerCase();
   const urlPattern = /^https:\/\/waseda-ac\.jp\/diary\/detail\/([0-9]{1,8})$/;
   const datePattern = /^2026-\d{2}-\d{2}$/;
   const numberOf = row => Number(String(row.id).replace('official-diary-', '')) || 0;
@@ -70,7 +70,7 @@
       description.textContent = '日志索引读取失败，请刷新重试：' + index.error;
       return;
     }
-    description.textContent = '收录 2026 年官网部员日志索引，也显示跑友补录的原文链接；两种来源分别标记，不转载全文。';
+    description.textContent = '仅收录现役长距离选手和2026年毕业长距离OB的官网日志与跑友补录；不转载全文。';
     const link = document.createElement('a');
     link.href = 'https://waseda-ac.jp/diary/category/1';
     link.target = '_blank';
@@ -90,7 +90,8 @@
     let db = null, admin = false, overrides = [], rows = [], hiddenRows = [];
     let communityRows = [], permissions = {admin:false,user:false,editableIds:[]};
     let limit = 24, busy = false;
-    const base = new Map(index.entries.map(row => [row.id, row]));
+    const allowedAuthors = new Set((index.allowed_authors || []).map(key));
+    const base = new Map(index.entries.filter(row => allowedAuthors.has(key(row.author))).map(row => [row.id, row]));
     const message = (text, bad = false) => {
       feedback.textContent = text;
       feedback.style.color = bad ? '#b33659' : '#386c54';
@@ -126,7 +127,7 @@
           id: override.diary_id, author: override.author, title: override.title,
           published_at: override.published_at, source_url: override.source_url
         };
-        if (!valid(row)) continue;
+        if (!valid(row) || !allowedAuthors.has(key(row.author))) continue;
         if (override.hidden) {
           all.delete(row.id);
           hiddenRows.push(row);
@@ -176,6 +177,7 @@
       if (author.length < 2 || author.length > 80 || title.length < 2 || title.length > 200)
         throw Error('请填写有效的作者和标题。');
       if (!match) throw Error('必须使用早稻田竞走部官网的部员日志链接。');
+      if (!allowedAuthors.has(key(author))) throw Error('只收录现役长距离选手及2026年毕业长距离OB。');
       if (!datePattern.test(published_at) ||
           Number.isNaN(Date.parse(published_at)) ||
           published_at > new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString().slice(0, 10))
@@ -197,6 +199,7 @@
       if(athlete_name.length<2||athlete_name.length>75||title.length<2||title.length>100||
          display_name.length<2||display_name.length>30||body.length>4000)throw Error('请检查选手、标题、署名或说明长度。');
       if(!urlPattern.test(source_url))throw Error('必须使用竞走部官网真实的部员日志链接。');
+      if(!allowedAuthors.has(key(athlete_name)))throw Error('只收录现役长距离选手及2026年毕业长距离OB。');
       if(!datePattern.test(published_at)||Number.isNaN(Date.parse(published_at))||
          published_at>new Date(Date.now()+9*60*60*1000).toISOString().slice(0,10))
         throw Error('请输入有效的 2026 年原文发布日期。');
@@ -250,13 +253,13 @@
     function syncCommunityDiaries() {
       permissions=window.WSD_COMMUNITY_DIARY_PERMISSIONS||{admin:false,user:false,editableIds:[]};
       communityRows=(window.WSD_COMMUNITY_DIARIES||[])
-        .filter(row=>datePattern.test(row.published_at||'')&&urlPattern.test(row.source_url||''))
+        .filter(row=>datePattern.test(row.published_at||'')&&urlPattern.test(row.source_url||'')&&allowedAuthors.has(key(row.athlete_name||'')))
         .map(row=>({...row,author:row.athlete_name,_community:true}));
       render();
     }
     window.addEventListener('wsd-community-diaries-updated',syncCommunityDiaries);
-    const suggestions=[...new Set([...index.entries.map(row=>row.author),
-      ...(typeof getAthletes==='function'?getAthletes().map(row=>row.name):[])])].sort((a,b)=>a.localeCompare(b,'ja'));
+    const suggestions=[...new Set([...index.entries.map(row=>row.author),...index.allowed_authors,
+      ...(typeof getAthletes==='function'?getAthletes().map(row=>row.name).filter(name=>allowedAuthors.has(key(name))):[])])].sort((a,b)=>a.localeCompare(b,'ja'));
     section.querySelector('#wsdDiaryAthleteNames').innerHTML=suggestions.map(name=>
       '<option value="'+esc(name)+'"></option>').join('');
     search.addEventListener('input', () => {limit = 24; render();});
