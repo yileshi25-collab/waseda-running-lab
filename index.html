@@ -168,6 +168,24 @@
 .int-profile-grid small{display:block;color:#917e86;font-size:10px}
 .int-profile-grid b{font-size:20px;color:#6c2944}
 .int-rank-chip{font-size:10px;color:#906f7e;background:#f3e9ee;padding:3px 6px;border-radius:5px}
+
+/* Collapsible per-event World Athletics rankings */
+.int-rank-fold>summary{list-style:none;cursor:pointer}
+.int-rank-fold>summary::-webkit-details-marker,.int-rank-event>summary::-webkit-details-marker{display:none}
+.int-rank-section-summary{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:48px}
+.int-rank-section-summary strong{display:block;font-size:16px;color:#592b40;margin:4px 0}
+.int-rank-section-summary small{display:block;font-size:11px;font-weight:400;color:#96868d;line-height:1.6}
+.int-rank-section-body{padding-top:18px}
+.int-rank-section-body .int-rank-head{margin-bottom:13px}
+.int-rank-chevron{display:inline-block;flex-shrink:0;color:#8a4d64;font-size:20px;transition:transform .2s ease}
+.int-rank-fold:not([open])>.int-rank-section-summary .int-rank-chevron,.int-rank-event:not([open])>summary .int-rank-chevron{transform:rotate(-90deg)}
+.int-rank-event{border:1px solid #ebdfe4;border-radius:11px;margin:10px 0;overflow:hidden;background:#fff}
+.int-rank-event>summary{list-style:none;display:flex;align-items:center;justify-content:space-between;padding:13px 16px;cursor:pointer;background:#faf6f8;gap:12px}
+.int-rank-event>summary:hover{background:#f5edf1}
+.int-rank-event-label{display:flex;align-items:center;gap:11px;flex-wrap:wrap;font-size:14px;color:#612c43}
+.int-rank-count{font-size:11px;color:#846f79;background:#f1e5eb;padding:3px 8px;border-radius:10px}
+.int-rank-event .int-rank-table{min-width:520px}
+.int-rank-event .tablewrap{margin:0}
 </style>
 <link rel="stylesheet" href="community.css?v=20261117-editorial1">
 </head>
@@ -193,11 +211,14 @@
 <section class="section"><div class="sectionhead"><div><div class="eyebrow">TEAM FORM</div><h2>历年三大驿传排名</h2><p>2023—2026 年的综合名次；名次数字越小越好</p></div><button class="btn btn-small" data-go="races">查看区间成绩 →</button></div><div class="panel panel-pad"><div class="trend-chart"><svg id="trendSvg" viewBox="0 0 900 250" width="100%" role="img" aria-label="2023至2026年早稻田大学出云、全日本、箱根驿传综合排名走势图"></svg></div><div class="legend"><span style="--c:#823351">出云驿传</span><span style="--c:#cf9b52">全日本大学驿传</span><span style="--c:#72949f">箱根驿传</span></div><p class="note">按赛事举行的公历年份归类；箱根为该年1月赛事，另外两项为秋季赛事。</p></div></section>
 </div>
 <div class="view" id="view-athletes"><div class="sectionhead"><div><div class="eyebrow">ATHLETE DATABASE / 2026</div><h2>长距离选手数据库</h2><p>默认仅显示2026学年度现役46人（女子4人）；另有2名已毕业的箱根历史参赛者可选查</p></div><button class="btn btn-small" id="csvExport">导出 CSV ↓</button></div><div class="latest26-inline"><span>2026 最新路跑实绩 · <b>吉倉 ナヤブ直希</b> · 11/15 荷兰 Seven Hills Run 15km · <strong>44:12 / 第 19 名</strong></span><button type="button" class="btn btn-small" data-player="吉倉 ナヤブ直希">查看个人档案 ↗</button></div><div class="filters"><input class="input" type="search" id="searchInput" placeholder="搜索选手姓名（支持日文原名）"><select class="select" id="genderFilter"><option value="all">全部性别</option><option value="男">男子</option><option value="女">女子</option></select><select class="select" id="gradeFilter"><option value="all">全部年级</option><option value="1">一年级</option><option value="2">二年级</option><option value="3">三年级</option><option value="4">四年级</option></select><select class="select" id="metricSort"><option value="pb5000">按 5000m PB 排序</option><option value="pb10000">按 10000m PB 排序</option><option value="pb1500">按 1500m PB 排序</option><option value="pbHalf">按半马 PB 排序</option><option value="grade">按年级排序</option><option value="name">按姓名排序</option></select><label style="font-size:11px;color:#8b7780;white-space:nowrap"><input type="checkbox" id="favoriteOnly"> 仅看收藏</label><label style="font-size:11px;color:#8b7780;white-space:nowrap"><input type="checkbox" id="includeAlumni"> 显示已毕业选手（历史档案）</label><span class="counter" id="rosterCount"></span></div>
-<div class="panel panel-pad int-rank-top">
- <div class="int-rank-head"><div><div class="eyebrow">WORLD ATHLETICS · MANUAL SNAPSHOTS</div><h3>国际排名 · World / Asia Rankings</h3><p>按官方公布日期手动录入。世界／亚洲排名与PB速度榜不同，未收录不代表选手未上榜。</p></div><button class="btn btn-small" id="rankInternationalRefresh" type="button">刷新排名 ↻</button></div>
- <div class="tablewrap"><table class="int-rank-table"><thead><tr><th>选手</th><th>项目</th><th>世界排名</th><th>亚洲排名</th><th>积分</th><th>排名日期</th><th>官方来源</th></tr></thead><tbody id="rankInternationalTable"><tr><td colspan="7">读取中…</td></tr></tbody></table></div>
- <p class="int-rank-note">数据为手动核实的官方排名快照，不是实时榜单。亚洲排名若无官方地区排名依据则留空，不以世界排名擅自推算。每条记录保留发布日期与来源链接；当前排行榜仅显示最新一条对应项目记录，历史快照仍存储在数据库中。</p>
-</div>
+<details class="panel panel-pad int-rank-top int-rank-fold" id="internationalRankingSection" open>
+ <summary class="int-rank-section-summary"><span><span class="eyebrow">WORLD ATHLETICS · RANKING SNAPSHOTS</span><strong>国际排名 · World / Asia Rankings</strong><small>按项目分类查看排名 · 点击标题可展开／收起整个区域</small></span><span class="int-rank-chevron" aria-hidden="true">⌄</span></summary>
+ <div class="int-rank-section-body">
+  <div class="int-rank-head"><p>排名按项目分组；点击各项目标题展开／收起。数据保留官方公布日期及来源。</p><button class="btn btn-small" id="rankInternationalRefresh" type="button">刷新排名 ↻</button></div>
+  <div id="rankInternationalGroups" aria-live="polite"><p class="int-rank-note">排名读取中…</p></div>
+  <p class="int-rank-note">官方排名快照不是实时榜单。亚洲地区名次若无可靠官方依据则留空；未收录不代表选手未上榜。每个项目仅展示选手最新一条记录，历史快照保留在数据库中。</p>
+ </div>
+</details>
 <div class="panel tablewrap"><table class="data-table"><thead><tr><th>选手 / PLAYER</th><th>组别</th><th>学年</th><th>1500m PB</th><th>5000m PB</th><th>10000m PB</th><th>半马 PB</th><th>2026 驿传</th><th>研究操作</th></tr></thead><tbody id="rosterBody"></tbody></table></div><p class="keyline mt20">— 代表数据源未收录，并不等于选手从未跑过。PB 为公开资料中收录的个人最佳记录，可能包含入学前成绩；本地自行导入的记录会标为「自定义」。</p><div class="panel panel-pad mt20"><div class="sectionhead" style="margin:0 0 10px"><div><h2 style="font-size:16px">导入你的后续比赛数据</h2><p>可补充新选手或覆盖同名记录，不修改网页源文件</p></div></div><div class="tools"><button class="btn btn-small" id="templateBtn">下载 CSV 模板</button><button class="btn btn-small" onclick="document.getElementById('csvImport').click()">导入 CSV ↥</button><button class="btn btn-small" id="clearCustom">清除自定义数据</button><input type="file" id="csvImport" accept=".csv,text/csv,text/plain" hidden></div><p class="keyline" style="margin-bottom:0">CSV 表头：name, grade, pb1500, pb5000, pb10000, pbHalf；格式例：13:35.33 或 1:02:26。导入资料仅在当前浏览器储存。</p></div></div>
 <div class="view" id="view-races"><div class="sectionhead"><div><div class="eyebrow">RACE BREAKDOWN</div><h2>2026 大学驿传区间数据</h2><p>逐区查看选手、距离、区间成绩、排名及大会／区间纪录</p></div><div class="pillrow" id="racePills"></div></div><div class="panel panel-pad"><div class="racesummary" id="raceSummary"></div><div class="hak26-summary" id="hak26Summary" style="display:none"></div><div class="panel-title" style="margin:24px 0 6px">逐区成绩与跑者</div><p class="panel-desc">每一区距离不同，单纯比较区间用时不能反映谁跑得更快</p><div class="mt20" id="raceRows"></div><div class="panel-title" style="margin-top:25px">各区名次（越低越好）</div><div id="raceBarChart"></div></div><div id="raceDeepAnalysis"></div>
 <section class="section hak27" id="hak27Simulator">
@@ -720,11 +741,28 @@ function internationalRankProfileHTML(name){
  '<div class="int-profile-grid"><div><small>World ranking</small><b>'+(r.world_rank?'#'+r.world_rank:'—')+'</b></div><div><small>Asia ranking</small><b>'+(r.asia_rank?'#'+r.asia_rank:'—')+'</b></div></div>'+
  '<span class="keyline">积分：'+(r.ranking_points??'—')+' · '+(r.rank_basis==='derived'?'根据注明规则筛选（非官方亚洲榜单）':'官方排名')+'</span> <a href="'+escapeHTML(r.source_url)+'" target="_blank" rel="noopener noreferrer" class="subtle-link">核对来源 ↗</a></div>').join('')+'</div>';
 }
+function internationalEventOrder(label){
+ const key=String(label).toLowerCase().replace(/\s+/g,'');
+ const sequence=['1500m','3000m','3000msc','5000m','10000m','halfmarathon','road running','marathon'];
+ const pos=sequence.indexOf(key);
+ return pos<0?999:pos;
+}
 function renderInternationalRankingTable(){
- const el=$('rankInternationalTable');if(!el)return;
- if(!currentInternationalRankings.length){el.innerHTML='<tr><td colspan="7"><div class="empty-mini">尚未录入国际排名；后续可按官方发布数据逐项添加。</div></td></tr>';return;}
+ const el=$('rankInternationalGroups');if(!el)return;
+ const openEvents=new Set([...el.querySelectorAll('details[data-rank-event][open]')].map(d=>d.dataset.rankEvent));
+ const hadGroups=el.querySelector('details[data-rank-event]')!==null;
  const known=new Set(getAthletes().map(a=>a.name));
- el.innerHTML=currentInternationalRankings.filter(r=>known.has(r.athlete_name)).map(r=>'<tr><td><span class="pname" tabindex="0" role="button" data-player="'+escapeHTML(r.athlete_name)+'">'+escapeHTML(r.athlete_name)+'</span></td><td>'+escapeHTML(r.event_name)+'</td><td class="rankvalue">'+(r.world_rank?'#'+r.world_rank:'—')+'</td><td class="rankvalue">'+(r.asia_rank?'#'+r.asia_rank:'—')+'</td><td>'+(r.ranking_points??'—')+'</td><td>'+escapeHTML(r.ranking_date)+'</td><td><a href="'+escapeHTML(r.source_url)+'" target="_blank" rel="noopener noreferrer">查看来源 ↗</a></td></tr>').join('')||'<tr><td colspan="7">当前选手名单暂无对应排名记录。</td></tr>';
+ const visible=currentInternationalRankings.filter(r=>known.has(r.athlete_name));
+ if(!visible.length){el.innerHTML='<p class="int-rank-note">目前暂无可展示的国际排名记录，后续可按官方发布数据逐项添加。</p>';return;}
+ const byEvent=new Map();
+ for(const r of visible){const key=r.event_name;if(!byEvent.has(key))byEvent.set(key,[]);byEvent.get(key).push(r);}
+ const events=[...byEvent.keys()].sort((a,b)=>internationalEventOrder(a)-internationalEventOrder(b)||a.localeCompare(b,'en'));
+ el.innerHTML=events.map((evt,i)=>{
+  const rows=byEvent.get(evt).slice().sort((a,b)=>(a.world_rank??Infinity)-(b.world_rank??Infinity)||(a.asia_rank??Infinity)-(b.asia_rank??Infinity)||a.athlete_name.localeCompare(b.athlete_name,'ja'));
+  const expanded=hadGroups?openEvents.has(evt):i===0;
+  return '<details class="int-rank-event" data-rank-event="'+escapeHTML(evt)+'" '+(expanded?'open':'')+'><summary><span class="int-rank-event-label"><b>'+escapeHTML(evt)+'</b><span class="int-rank-count">'+rows.length+' 名选手</span></span><span class="int-rank-chevron" aria-hidden="true">⌄</span></summary><div class="tablewrap"><table class="int-rank-table"><thead><tr><th>选手</th><th>世界排名</th><th>亚洲排名</th><th>积分</th><th>排名日期</th><th>官方来源</th></tr></thead><tbody>'+
+  rows.map(r=>'<tr><td><span class="pname" tabindex="0" role="button" data-player="'+escapeHTML(r.athlete_name)+'">'+escapeHTML(r.athlete_name)+'</span></td><td class="rankvalue">'+(r.world_rank?'#'+r.world_rank:'—')+'</td><td class="rankvalue">'+(r.asia_rank?'#'+r.asia_rank:'—')+'</td><td>'+(r.ranking_points??'—')+'</td><td>'+escapeHTML(r.ranking_date)+'</td><td><a href="'+escapeHTML(r.source_url)+'" target="_blank" rel="noopener noreferrer">查看来源 ↗</a></td></tr>').join('')+'</tbody></table></div></details>';
+ }).join('');
 }
 async function refreshInternationalRankings(){
  const btn=$('rankInternationalRefresh');if(btn)btn.disabled=true;
@@ -734,7 +772,7 @@ async function refreshInternationalRankings(){
   renderInternationalRankingTable();
   if(currentDetail){const a=getAthlete(currentDetail);if(a)refreshDetail(currentDetail);}
  }catch(err){
-  const el=$('rankInternationalTable');if(el)el.innerHTML='<tr><td colspan="7"><div class="empty-mini">排名读取失败，请稍后刷新。当前已有成绩资料不受影响。</div></td></tr>';
+  const el=$('rankInternationalGroups');if(el)el.innerHTML='<p class="int-rank-note">排名读取失败，请点击刷新排名重试。当前已有成绩资料不受影响。</p>';
  }finally{if(btn)btn.disabled=false;}
 }
 $('rankInternationalRefresh').addEventListener('click',refreshInternationalRankings);
