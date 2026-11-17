@@ -107,7 +107,7 @@
     if(error){ownEditorialIds=new Set();note("读取个人文字投稿权限失败："+error.message,true);return;}
     ownEditorialIds=new Set((data||[]).map(x=>x?.id).filter(Boolean));
   }
-  const editorialCategories={bio:"选手简介",interview:"采访",summary:"赛后总结",
+  const editorialCategories={bio:"选手简介",interview:"采访",summary:"赛后总结",diary:"部员日志",
     article:"相关文章",analysis:"赛事分析",other:"其他补充"};
   function canDeleteEditorial(row){
     return !!user&&(admin||ownEditorialIds.has(row.id));
@@ -1001,7 +1001,7 @@
   function editorialFormHTML(scope,name,raceRef){
     const choices=scope==="race"?
       '<label>资料类型<select name="category" required>'+
-      '<option value="interview">采访</option><option value="summary">赛后总结</option>'+
+      '<option value="interview">采访</option><option value="summary">赛后总结</option><option value="diary">部员日志</option>'+
       '<option value="article">相关文章</option><option value="analysis">赛事分析</option>'+
       '<option value="other">其他补充</option></select></label>':"";
     return '<form class="wsd-editorial-form" data-wsd-editorial-form data-scope="'+esc(scope)+'"'+
@@ -1080,7 +1080,7 @@
     const category=scope==="bio"?"bio":form.elements.namedItem("category")?.value;
     if(!["bio","race"].includes(scope)||name.length<2||name.length>75){fail("选手姓名无效。");return;}
     if(scope==="race"&&!editorialRaceRefValid(raceRef)){fail("关联赛事编号无效。");return;}
-    if(!["bio","interview","summary","article","analysis","other"].includes(category)||(scope==="race"&&category==="bio")){fail("资料类型无效。");return;}
+    if(!["bio","interview","summary","diary","article","analysis","other"].includes(category)||(scope==="race"&&category==="bio")){fail("资料类型无效。");return;}
     if(title.length<2||title.length>100||body.length>4000||displayName.length<2||displayName.length>30){fail("请检查标题、正文及署名长度。");return;}
     if(!body&&!url){fail("请填写文字内容或原文链接，至少填写一项。");return;}
     if(url&&!https(url)){fail("链接需要使用 HTTPS，且长度不超过 400 字。");return;}
