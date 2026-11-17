@@ -200,6 +200,25 @@
 .int-rank-review-item small{display:block;color:#876d79;margin:5px 0}
 .int-rank-review-item .tools{gap:7px;margin-top:8px}
 .int-rank-editor-status{font-size:11px;color:#725160;padding:0 14px 12px;white-space:pre-wrap}
+
+/* Categorized desktop sidebar and compact categorized mobile navigation */
+.nav .nav-home{margin-bottom:3px}
+.nav .nav-folder{border-radius:12px;margin:2px 0;border:1px solid transparent}
+.nav .nav-folder[open]{background:rgba(255,255,255,.035);border-color:rgba(255,255,255,.07);padding-bottom:5px}
+.nav .nav-folder>summary{list-style:none;display:flex;align-items:center;gap:10px;cursor:pointer;padding:13px 12px;color:#ead3dc;font-weight:750;font-size:12px;border-radius:10px}
+.nav .nav-folder>summary::-webkit-details-marker{display:none}
+.nav .nav-folder>summary:hover{background:#60263b;color:#fff}
+.nav .nav-folder .nav-folder-icon{font-size:16px;width:20px;text-align:center}
+.nav .nav-folder .nav-folder-arrow{font-size:15px;margin-left:auto;transition:transform .16s}
+.nav .nav-folder:not([open]) .nav-folder-arrow{transform:rotate(-90deg)}
+.nav .nav-children{margin-left:17px;padding-left:8px;border-left:1px solid #77435a;display:flex;flex-direction:column;gap:2px}
+.nav .nav-children button{font-size:12px;padding:10px 9px;gap:9px;white-space:nowrap}
+.nav .nav-item-icon{font-size:15px;width:18px;flex:0 0 18px;text-align:center}
+.mobile-category-nav{display:flex;align-items:center;gap:10px;width:100%;color:#f2dce5;font-size:11px}
+.mobile-category-nav>span{white-space:nowrap;font-weight:750}
+.mobile-category-nav select{appearance:auto;min-width:0;flex:1;max-width:100%;border:1px solid #97526d;border-radius:8px;padding:9px 11px;background:#6e2a44;color:white;font:inherit}
+.mobile-category-nav optgroup,.mobile-category-nav option{background:#fff;color:#401523}
+@media(min-width:901px){.mobile-category-nav{display:none}}
 </style>
 <link rel="stylesheet" href="community.css?v=20261117-editorial1">
 </head>
@@ -444,8 +463,38 @@ function toast(msg){const n=$('toast');n.textContent=msg;n.classList.add('show')
 function download(filename,text,mime){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type:mime}));a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000);}
 function csvCell(v){let s=String(v??'');return /[,"\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;}
 function csvExport(data,headers){return '\ufeff'+[headers.join(','),...data.map(a=>headers.map(h=>csvCell(a[h])).join(','))].join('\r\n');}
-function show(tab){navItems.forEach(([id])=>{$('view-'+id).classList.toggle('active',id===tab);document.querySelectorAll(`[data-nav="${id}"]`).forEach(el=>el.classList.toggle('active',id===tab));});$('breadCurrent').textContent=navItems.find(i=>i[0]===tab)?.[1]||'总览';history.replaceState(null,'','#'+tab);window.scrollTo({top:0,behavior:'smooth'});if(tab==='athletes')renderRoster();if(tab==='compare')renderCompare();if(tab==='notebook')renderNotebook();if(tab==='races')renderRace();if(tab==='season')renderSeason();}
-function setupNav(){for(const target of ['sideNav','mobileNav']){$(target).innerHTML=navItems.map(([id,title,icon])=>`<button type="button" data-nav="${id}" data-go="${id}" class="${id==='overview'?'active':''}"><span style="font-size:17px;width:20px;display:inline-block;text-align:center">${icon}</span>${title}</button>`).join('');}}
+function show(tab){navItems.forEach(([id])=>{$('view-'+id).classList.toggle('active',id===tab);document.querySelectorAll(`[data-nav="${id}"]`).forEach(el=>el.classList.toggle('active',id===tab));});$('breadCurrent').textContent=navItems.find(i=>i[0]===tab)?.[1]||'总览';history.replaceState(null,'','#'+tab);const parent=document.querySelector('#sideNav .nav-folder [data-nav="'+tab+'"]')?.closest('details.nav-folder');if(parent)parent.open=true;const mobileSelect=$('mobileNavSelect');if(mobileSelect)mobileSelect.value=tab;window.scrollTo({top:0,behavior:'smooth'});if(tab==='athletes')renderRoster();if(tab==='compare')renderCompare();if(tab==='notebook')renderNotebook();if(tab==='races')renderRace();if(tab==='season')renderSeason();}
+/* Categorized navigation: current athletes + alumni; archives organized by year. */
+const NAV_GROUPS=[
+ {id:'home',title:'首页',icon:'⌂',items:['overview']},
+ {id:'people',title:'选手数据',icon:'◈',items:['athletes','obarchive']},
+ {id:'years',title:'历年比赛成绩',icon:'◷',items:['season','archive2025','archive2024']},
+ {id:'analysis',title:'分析工具',icon:'⌁',items:['races','compare','notebook']},
+ {id:'more',title:'共建与资料',icon:'✎',items:['community','sources']}
+];
+const NAV_LABELS={athletes:'现役选手',obarchive:'OB / 历史选手',season:'2026 年度',archive2025:'2025 年度',archive2024:'2024 年度',races:'驿传战绩'};
+function setupNav(){
+ const lookup=new Map(navItems.map(v=>[v[0],v]));
+ const root=$('sideNav');
+ const prevOpen=new Set([...root.querySelectorAll('details.nav-folder[open]')].map(n=>n.dataset.navFolder));
+ const hasPrev=root.querySelector('details.nav-folder')!==null;
+ const current=location.hash.slice(1)||'overview';
+ const sectionButton=([id,title,icon])=>'<button type="button" data-nav="'+id+'" data-go="'+id+'" class="'+(current===id?'active':'')+'"><span aria-hidden="true" class="nav-item-icon">'+icon+'</span>'+escapeHTML(NAV_LABELS[id]||title)+'</button>';
+ root.innerHTML=NAV_GROUPS.map(group=>{
+  const items=group.items.map(id=>lookup.get(id)).filter(Boolean);
+  if(!items.length)return '';
+  if(group.id==='home')return '<div class="nav-home">'+items.map(sectionButton).join('')+'</div>';
+  const open=hasPrev?prevOpen.has(group.id):group.id==='people'||group.id==='years';
+  return '<details class="nav-folder" data-nav-folder="'+group.id+'" '+(open?'open':'')+'><summary><span class="nav-folder-icon" aria-hidden="true">'+group.icon+'</span><span>'+group.title+'</span><span class="nav-folder-arrow" aria-hidden="true">⌄</span></summary><div class="nav-children">'+items.map(sectionButton).join('')+'</div></details>';
+ }).join('');
+ const mobile=$('mobileNav');
+ mobile.innerHTML='<label class="mobile-category-nav"><span>浏览目录</span><select id="mobileNavSelect" aria-label="选择页面">'+NAV_GROUPS.map(group=>{
+  const items=group.items.map(id=>lookup.get(id)).filter(Boolean);
+  return items.length?'<optgroup label="'+group.title+'">'+items.map(([id,title])=>'<option value="'+id+'" '+(current===id?'selected':'')+'>'+escapeHTML(NAV_LABELS[id]||title)+'</option>').join('')+'</optgroup>':'';
+ }).join('')+'</select></label>';
+ mobile.querySelector('select').addEventListener('change',e=>show(e.target.value));
+}
+
 document.addEventListener('click',e=>{const go=e.target.closest('[data-go]');if(go)show(go.dataset.go);const n=e.target.closest('[data-player]');if(n)openDetail(n.dataset.player);const f=e.target.closest('[data-fav]');if(f){e.stopPropagation();toggleFav(f.dataset.fav);}const c=e.target.closest('[data-compare]');if(c){e.stopPropagation();toggleCompare(c.dataset.compare);}});
 let rankMetric='pb5000',rankGender='男';
 function renderRank(){
