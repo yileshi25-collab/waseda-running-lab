@@ -910,7 +910,7 @@ function allArchiveRows(){
      time:r.result_time||"",rank:r.rank,note:r.notes||"",
      source:r.source_url||"",communityId:r.id}));
  const base=RESULTS.concat(community);
- const normalized=v=>String(v||'').replace(/[\\s\\u3000]/g,'').toLowerCase();
+ const normalized=v=>String(v||'').replace(/[\s\u3000]/g,'').toLowerCase();
  const keys=new Set(base.map(r=>[normalized(r.name),r.date,normalized(r.time)].join('|')));
  const extra=(window.WSD_HISTORY_2025_SUPPLEMENT||[]).filter(r=>{
   const key=[normalized(r.name),r.date,normalized(r.time)].join('|');
