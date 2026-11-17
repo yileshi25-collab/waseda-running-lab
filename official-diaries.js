@@ -110,7 +110,8 @@
         (contributed?'<p>投稿者：'+esc(row.display_name)+'</p>':'') +
         '<a href="' + esc(row.source_url) + '" target="_blank" rel="noopener noreferrer">在官网阅读原文 ↗</a>' +
         (contributed?(canEdit?'<div class="wsd-diary-buttons"><button class="btn btn-small" type="button" data-wsd-editorial-edit="'+esc(row.id)+'">编辑投稿</button>'+
-          '<button class="btn btn-small wsd-diary-delete" type="button" data-wsd-editorial-delete="'+esc(row.id)+'">删除投稿</button></div>':''):(admin?editable(row):''))+'</article>';
+          '<button class="btn btn-small wsd-diary-delete" type="button" data-wsd-editorial-delete="'+esc(row.id)+'">删除投稿</button></div>':''):
+          '<div class="wsd-diary-buttons"><button class="btn btn-small" type="button" data-diary-suggest="'+esc(row.id)+'">补充／更正这篇日志</button></div>'+(admin?editable(row):''))+'</article>';
     };
 
     function publish() {
@@ -251,6 +252,20 @@
     month.addEventListener('change', () => {limit = 24; render();});
     more.addEventListener('click', () => {limit += 24; render();});
     section.addEventListener('click', async event => {
+      const suggest = event.target.closest('[data-diary-suggest]');
+      if (suggest) {
+        const row=rows.find(r=>r.id===suggest.dataset.diarySuggest);
+        if (!row) return;
+        addPanel.open=true;
+        const form=addPanel.querySelector('[data-diary-add-form]');
+        for(const name of ['title','published_at','source_url']){
+          form.elements.namedItem(name).value=row[name];
+        }
+        form.elements.namedItem('athlete_name').value=row.author;
+        addPanel.scrollIntoView({behavior:'smooth',block:'center'});
+        message('已带入官网原文信息。可以补充说明，提交后作为跑友修订发布到实时投稿。');
+        return;
+      }
       const edit = event.target.closest('[data-diary-edit]');
       const cancel = event.target.closest('[data-diary-cancel]');
       const remove = event.target.closest('[data-diary-delete]');
