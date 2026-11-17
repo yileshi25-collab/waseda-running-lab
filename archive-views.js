@@ -209,6 +209,8 @@ function renderAlumniTimeline(name){
   return '<details class="hist24-year-group" '+(i===0?'open':'')+'><summary><b>'+safe(year)+' 年</b><span>'+rows.length+' 条 · OB '+ob.length+' / 在校 '+student.length+'</span><span aria-hidden="true">⌄</span></summary><div class="hist24-year-content">'+block(ob,'毕业后 / OB')+block(student,'在校期间 / 原有档案')+'</div></details>';
  }).join(''):'<p class="hist24-empty">该年份暂无收录的比赛成绩，可切换「所有比赛年份」查看其他记录。</p>')+
  '<div class="hist24-note">每位选手只对应一个人物档案；同一场比赛不会重复列出。2026届毕业生在现有来源中尚无毕业后赛事记录时，不会虚构OB比赛。成绩如需修改，可在跑友共建提交，管理员可查验。</div></div>';
+ const yearList=$('histObDetail').querySelector('details.hist24-year-group');
+ if(yearList)yearList.insertAdjacentHTML('beforebegin','<div class="wsd-open-controls"><button type="button" class="wsd-open-btn" data-ob-bulk="open">展开全部年份</button><button type="button" class="wsd-open-btn" data-ob-bulk="close">收起全部年份</button></div>');
  $('histObProfileExport').onclick=()=>exportRows(all,'waseda_'+name.replace(/[\\/:*?"<>|]/g,'_')+'_all_results.csv');
 }
 function openAlumniProfile(name,scroll=true){
@@ -252,6 +254,11 @@ $('histObYear').addEventListener('change',()=>{refreshOB();if(currentOb)renderAl
 document.addEventListener('click',e=>{
  const link=e.target.closest('[data-open-alumni]');if(!link)return;
  e.preventDefault();openAlumniProfile(link.dataset.openAlumni);
+});
+$('histObDetail').addEventListener('click',e=>{
+ const control=e.target.closest('[data-ob-bulk]');
+ if(!control)return;
+ $('histObDetail').querySelectorAll('details.hist24-year-group').forEach(d=>{d.open=control.dataset.obBulk==='open';});
 });
 $('histObNames').addEventListener('click',e=>{
  const btn=e.target.closest('[data-ob-name]');if(!btn)return;
