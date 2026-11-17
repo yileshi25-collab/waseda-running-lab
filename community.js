@@ -65,7 +65,7 @@
         '</form>'+
       '</div>'+
       '<div class="wsd-community-status" id="wsdCommunityStatus" role="status" aria-live="polite"></div>'+
-      '<p class="wsd-community-help">Google 账号登录后可以连续上传照片和比赛成绩，不设每分钟、每小时或每天的投稿次数上限。图片限制大小并重新编码以清除位置元数据。作者可删除自己的投稿，管理员可删除任何投稿；违规内容也可举报。</p>'+
+      '<p class="wsd-community-help">Google 账号登录后可以连续上传照片和比赛成绩，照片上传受云端频率限制（每小时 4 张、每天 12 张）。图片限制大小并重新编码以清除位置元数据。作者可删除自己的投稿，管理员可删除任何投稿；违规内容也可举报。</p>'+
     '</section><section class="wsd-community-panel"><div class="wsd-community-top">'+
     '<h3>跑友实时投稿</h3><select id="wsdFeedKind" aria-label="筛选投稿"><option value="all">所有投稿</option><option value="race">比赛成绩</option><option value="photo">人物照片</option><option value="editorial">采访／总结／日志</option></select></div>'+
     '<div class="wsd-community-feed" id="wsdFeed"><div class="wsd-community-skeleton">正在准备投稿列表…</div></div>'+
@@ -80,10 +80,9 @@
     $("wsdFeed").innerHTML='<div class="wsd-community-skeleton">未配置后端。原有网站和赛果仍可正常使用。</div>';
     return;
   }
-  let createClient;
-  try { ({createClient} = await import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm")); }
+  let sb;
+  try { sb=await window.WSD_GET_SUPABASE(); }
   catch { note("数据库组件加载失败，请检查网络连接。",true);return; }
-  const sb=createClient(cfg.url,cfg.publishableKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
   let user=null,admin=false,posts=[],active="all";
   let ownPostIds=new Set(),ownCorrectionIds=new Set(),corrections=[],deleting=false;
   let editorial=[],ownEditorialIds=new Set();
@@ -337,6 +336,7 @@
       try{
         const {data,error}=await sb.from(TABLE).update(payload).eq("id",row.id).select("id");
         if(error||!data?.length)throw new Error(error?.message||"没有编辑权限");
+        form.remove();
         await refresh();
         note("照片信息已保存。");
       }catch(err){status.textContent="修改失败："+err.message;save.disabled=false;}
@@ -344,7 +344,7 @@
     card.append(form);
   });
   function drawFeed(){
-    if($("wsdFeed")?.querySelector("[data-wsd-editorial-form]")){
+    if($("wsdFeed")?.querySelector("[data-wsd-editorial-form], .wsd-photo-info-edit-form, .wsd-post-admin-form, .wsd-editorial-admin-form")){
       decorateRoster();decorateDetails();return;
     }
     const items=[...posts,...editorial.map(r=>({...r,kind:"editorial"}))].filter(r=>active==="all"||r.kind===active).sort((a,b)=>String(b.created_at||"").localeCompare(String(a.created_at||"")));
@@ -388,11 +388,11 @@
     decorateRoster();
     decorateDetails();
   }
-  async function refresh(){
+  async function refresh({throwOnError=false}={}){
     const {data,error}=await sb.from(TABLE).select(
       "id,kind,athlete_name,display_name,event_name,race_date,result_time,rank,notes,source_url,image_path,image_credit,image_license,created_at,status,is_primary,focal_x,focal_y,career_stage,school_name,meet_name"
     ).eq("status","published").order("created_at",{ascending:false}).limit(1000);
-    if(error){note("读取社区资料失败："+error.message,true);return;}
+    if(error){if(throwOnError)throw error;note("读取社区资料失败："+error.message,true);return;}
     posts=data||[];
     await loadOwnPostIds();
     drawFeed();
@@ -597,7 +597,7 @@
     const result=photoCardsFor(name);
     const cards=section.querySelector("[data-wsd-photo-cards]");
     const coverSlot=section.querySelector("[data-wsd-photo-cover]");
-    if(cards.dataset.photoIds!==result.ids){
+    if(cards.dataset.photoIds!==result.ids&&!section.querySelector(".wsd-photo-info-edit-form")){
       coverSlot.innerHTML=result.coverHTML;
       cards.innerHTML=result.html;
       cards.dataset.photoIds=result.ids;
@@ -671,6 +671,7 @@
       const form=e.target.closest("[data-wsd-photo-form]");
       if(!form)return;
       e.preventDefault();
+      if(form.dataset.submitting==="1")return;
       const status=form.querySelector("[data-wsd-photo-status]");
       const say=(message,bad=false)=>{
         status.textContent=message;
@@ -689,8 +690,9 @@
       if(source&&!https(source)){say("照片来源须使用 HTTPS 链接。",true);return;}
       if(!file||!form.elements.namedItem("rights").checked){say("请选择照片并确认公开权限。",true);return;}
       const button=form.querySelector('button[type="submit"]');
+      form.dataset.submitting="1";
       button.disabled=true;button.textContent="正在上传…";
-      let uploaded=null;
+      let uploaded=null,committed=false;
       try{
         const blob=await convertJpeg(file);
         const key=user.id+"/"+crypto.randomUUID()+".jpg";
@@ -710,25 +712,27 @@
           image_license:license
         });
         if(postError)throw postError;
+        committed=true;
         const feedback=detailEl.querySelector("[data-wsd-photo-feedback]");
         if(feedback){feedback.style.display="block";feedback.style.background="#e7f5ed";feedback.style.color="#17663e";feedback.textContent="照片已成功发布到 "+name+" 的资料页。";}
         form.reset();
         const preview=form.querySelector("[data-wsd-photo-preview]");
         preview.hidden=true;preview.removeAttribute("src");
         form.querySelector("[data-wsd-photo-instruction]").hidden=false;
-        await refresh();
+        await refresh({throwOnError:true});
         const galleryFold=detailEl.querySelector("[data-wsd-photo-gallery-fold]");
         if(galleryFold)galleryFold.open=true;
         const latest=detailEl.querySelector("[data-wsd-photo-feedback]");
-        if(latest){latest.style.display="block";latest.style.background="#e7f5ed";latest.style.color="#17663e";latest.textContent="照片上传成功！请展开或查看下方「其他照片」。";latest.scrollIntoView({behavior:"smooth",block:"center"});}
+        if(latest){latest.style.display="block";latest.style.background="#e7f5ed";latest.style.color="#17663e";latest.textContent="照片上传成功！第一张照片会显示为头像，其余照片在「其他照片」中。";latest.scrollIntoView({behavior:"smooth",block:"center"});}
         const visibleStatus=detailEl.querySelector("[data-wsd-photo-status]");
-        if(visibleStatus){visibleStatus.textContent="照片上传成功，已自动展开「其他照片」。请在下方查看新照片。";visibleStatus.style.color="#23714c";}
+        if(visibleStatus){visibleStatus.textContent="照片上传成功，可以继续上传。请在头像或「其他照片」中查看新照片。";visibleStatus.style.color="#23714c";}
       }catch(err){
-        if(uploaded)await sb.storage.from(BUCKET).remove([uploaded]);
+        if(uploaded&&!committed)await sb.storage.from(BUCKET).remove([uploaded]).catch(()=>{});
         const feedback=detailEl.querySelector("[data-wsd-photo-feedback]");
-        if(feedback){feedback.style.display="block";feedback.style.background="#fff0f0";feedback.style.color="#a92338";feedback.textContent="照片发布失败："+(err?.message||String(err));}
-        say("照片发布失败："+(err?.message||String(err)),true);
+        if(feedback){feedback.style.display="block";feedback.style.background="#fff0f0";feedback.style.color="#a92338";feedback.textContent=(committed?"照片已发布，但列表刷新失败，请刷新页面查看：":"照片发布失败：")+(err?.message||String(err));}
+        say((committed?"照片已发布，但列表刷新失败，请刷新页面查看：":"照片发布失败：")+(err?.message||String(err)),true);
       }finally{
+        delete form.dataset.submitting;
         button.disabled=false;button.textContent="发布这位选手的照片";
       }
     });
@@ -857,7 +861,7 @@
     const notes=$("wsdNotes").value.trim();
     if(/https?:\/\/|www\./i.test(notes)){note("链接请填在来源栏，说明栏不可加入网址。",true);return;}
     const button=$("wsdPublish");button.disabled=true;button.textContent="提交中…";
-    let uploaded=null;
+    let uploaded=null,committed=false;
     try{
       const item={author_id:user.id,display_name:who,kind,athlete_name:name,
         notes,source_url:source||null};
@@ -898,12 +902,13 @@
         if(kind==="race"&&error.code==="23505"){note("这条比赛成绩已存在，系统已阻止重复提交。",true);return;}
         throw error;
       }
+      committed=true;
       note("已公开发布，其他访客可以立即看到！");
-      $("wsdSubmitForm").reset();$("wsdKind").value="race";$("wsdKind").onchange();
-      await refresh();
+      $("wsdSubmitForm").reset();$("wsdKind").value=kind;$("wsdKind").onchange();
+      await refresh({throwOnError:true});
     }catch(err){
-      if(uploaded)await sb.storage.from(BUCKET).remove([uploaded]);
-      note("投稿失败："+(err?.message||String(err)),true);
+      if(uploaded&&!committed)await sb.storage.from(BUCKET).remove([uploaded]).catch(()=>{});
+      note((committed?"投稿已保存，但列表刷新失败，请刷新页面查看：":"投稿失败：")+(err?.message||String(err)),true);
     }finally{button.disabled=false;button.textContent="发布后立即公开";}
   };
 
@@ -1040,7 +1045,7 @@
       save.disabled=true;
       const {data,error}=await sb.from(TABLE).update(payload).eq("id",row.id).select("id");
       if(error||!data?.length){status.textContent="修改失败："+(error?.message||"没有权限");save.disabled=false;return;}
-      await refresh();note("投稿已修改。");
+      form.remove();await refresh();note("投稿已修改。");
     };
     card.append(form);
   });
@@ -1317,7 +1322,7 @@
         save.disabled=true;
         const {data,error}=await sb.from(EDITORIAL).update(payload).eq("id",row.id).select("id");
         if(error||!data?.length){status.textContent="修改失败："+(error?.message||"未获数据库更新权限");save.disabled=false;return;}
-        await refreshEditorial();status.textContent="保存成功";note("资料已修改并保存。");
+        form.remove();await refreshEditorial();status.textContent="保存成功";note("资料已修改并保存。");
       };
       card.append(form);return;
     }
@@ -1594,7 +1599,7 @@
     }).catch(err=>rankEditStatus('提交失败：'+err.message,true)).finally(()=>{submit.disabled=false;});
   });
 
-  sb.auth.onAuthStateChange(()=>{Promise.resolve().then(setAuth).catch(()=>{});});
+  sb.auth.onAuthStateChange(()=>{setTimeout(()=>{setAuth().catch(()=>{});},0);});
   await setAuth();await Promise.all([refresh(),refreshCorrections(),refreshEditorial()]);
   const callbackParams=new URLSearchParams(location.search);
   const fragmentParams=new URLSearchParams(location.hash.startsWith("#")?location.hash.slice(1):"");

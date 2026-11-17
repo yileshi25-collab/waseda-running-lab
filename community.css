@@ -263,3 +263,15 @@
 .wsd-photo-gallery-fold[open] > summary{border-bottom:1px solid #e7cbd6;background:#fcebf2}
 .wsd-photo-gallery-fold .wsd-athlete-photo-collection{padding:15px}
 @media(max-width:480px){.wsd-photo-gallery-fold > summary.wsd-gallery-subheading{padding:13px 11px;gap:6px;font-size:13px}.wsd-photo-gallery-fold > summary::before{flex-basis:23px;width:23px;height:23px;font-size:16px}.wsd-photo-gallery-fold > summary::after{font-size:11px}.wsd-photo-gallery-fold .wsd-athlete-photo-collection{padding:10px}}
+
+/* Keep long news and editing controls usable on narrow screens. */
+.wsd-news-card,.wsd-news-feedback,.wsd-news-status{overflow-wrap:anywhere}
+.wsd-news-manage{flex-wrap:wrap}
+.wsd-news-form select,.wsd-news-form textarea{max-width:100%;box-sizing:border-box}
+@media(max-width:600px){
+  .wsd-community-form input,.wsd-community-form select,.wsd-community-form textarea,
+  .wsd-editorial-form input,.wsd-editorial-form select,.wsd-editorial-form textarea,
+  .wsd-photo-info-edit-form input,.wsd-photo-info-edit-form textarea{font-size:16px}
+  .wsd-photo-actions button,.wsd-news-manage button,.wsd-news-toggle{min-height:44px}
+  .wsd-news-tools>*{max-width:100%;min-width:0}
+}
