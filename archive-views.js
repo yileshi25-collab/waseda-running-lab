@@ -119,8 +119,8 @@ const obPage=panel('obarchive','WASEDA ATHLETE HISTORY · ALUMNI','选手历史�
  '<div class="hist24-note">共'+obNames.length+'位历史选手档案，包括2026届毕业生及2026年有来源的OB赛果。2026年1月箱根属于毕业前成绩，4月后的职业比赛归入OB；可提交修改，管理员可查验。</div>'+ 
  '<div class="wsd-open-controls"><button type="button" class="wsd-open-btn" data-wsd-new="ob_result">＋ 新增OB比赛成绩</button></div>'+
  '<div class="hist24-toolbar"><input id="histObSearch" type="search" placeholder="搜索选手姓名"><select id="histObScope"><option value="all">全部历史选手</option><option value="ob">仅OB毕业选手</option><option value="2026">2026届毕业选手</option></select><select id="histObYear" aria-label="按比赛年份筛选"><option value="all">所有比赛年份</option><option value="2026">2026年比赛</option><option value="2025">2025年比赛</option><option value="2024">2024年比赛</option></select><button class="btn btn-small" id="histObExport">导出OB成绩 ↓</button></div>'+ 
- '<div id="histObCount" class="hist24-summary"></div><div id="histObNames" class="hist24-ob-list"></div><div id="histObDetail" class="hist24-ob-detail"></div>');
-host.insertAdjacentHTML('beforebegin',page2024+obPage);
+ '<div id="histObCount" class="hist24-summary"></div><details class="hist24-ob-fold"><summary>展开／收起 OB 选手名单（按年份筛选）</summary><div id="histObNames" class="hist24-ob-list"></div></details><div id="histObDetail" class="hist24-ob-detail"></div>');
+host.insertAdjacentHTML('beforebegin',page2024+obPage);\nconst foldStyle=document.createElement("style");foldStyle.textContent=".hist24-ob-fold{margin:14px 0;border:1px solid #e8dce1;border-radius:12px;background:#fff;padding:12px}.hist24-ob-fold>summary{cursor:pointer;font-weight:750;color:#74324e;padding:7px}.hist24-ob-fold[open]>summary{margin-bottom:12px}";document.head.appendChild(foldStyle);
 const index2025=navItems.findIndex(x=>x[0]==='archive2025');
 navItems.splice(Math.max(0,index2025),0,['archive2024','2024 全年','◷']);
 const indexSeason=navItems.findIndex(x=>x[0]==='season');
