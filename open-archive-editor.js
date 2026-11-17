@@ -80,11 +80,11 @@ if(type==="textarea")return '<label class="full">'+esc(label)+'<textarea name="'
 return '<label'+(type==="url"?' class="full"':'')+'>'+esc(label)+'<input name="'+key+'" type="'+(type==="number"||type==="url"||type==="date"?type:"text")+'" value="'+valueStr+'" maxlength="500"'+(type==="number"?' min="0" step="1"':'')+mark+'></label>';
 }
 function merged(kind,key){const e=get(kind,key);return e?{...base(kind,key),...e.payload}:base(kind,key);}
-function open(kind,key=""){
+function open(kind,key="",defaults={}){
 if(!fields[kind])return;
 active={kind,key};
 const obj=key?merged(kind,key):{};
-const values={...obj};
+const values={...obj,...defaults};
 if(kind==="ekiden")values.legs_text=(obj.legs||[]).map(x=>[x.leg,x.name,x.km??"",x.time,x.rank??""].join(" | ")).join("\n");
 $("wsdEditTitle").textContent=(key?"修改／恢复 ":"新增 ")+names[kind];
 $("wsdEditGrid").innerHTML=fields[kind].map(row=>fieldHtml(row,values[row[0]])).join("");
@@ -143,7 +143,7 @@ catch(err){$("wsdEditStatus").textContent="删除失败："+err.message;}};
 $("wsdRestore").onclick=async()=>{try{await save(active.kind,active.key,merged(active.kind,active.key),false);dlg.close();}catch(err){$("wsdEditStatus").textContent="恢复失败："+err.message;}};
 $("wsdClose").onclick=()=>dlg.close();
 document.addEventListener("click",e=>{
-const add=e.target.closest("[data-wsd-new]");if(add){e.preventDefault();open(add.dataset.wsdNew);return;}
+const add=e.target.closest("[data-wsd-new]");if(add){e.preventDefault();open(add.dataset.wsdNew,"",add.dataset.wsdName?{name:add.dataset.wsdName}:{});return;}
 const edit=e.target.closest("[data-wsd-edit]");if(edit){e.preventDefault();open(edit.dataset.wsdEdit,edit.dataset.wsdKey);}
 });
 // Public recovery list: soft-deleted rows stay accessible for restoration.
