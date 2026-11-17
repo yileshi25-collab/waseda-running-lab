@@ -28,7 +28,7 @@ const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
     assert.equal(await section.locator('[data-diary-archive]').getAttribute('open'),null);
     assert.ok(await section.evaluate(el=>el.scrollWidth<=el.clientWidth));
     assert.equal(await section.locator('[data-diary-edit],[data-diary-delete],[data-wsd-editorial-edit]').count(),0);
-    assert.equal(await section.locator('[data-diary-suggest]').count(),5);
+    assert.equal(await section.locator('[data-diary-list] [data-diary-suggest]').count(),5);
     assert.equal(await section.locator('[data-diary-add-panel]').count(),1);
     await section.locator('[data-diary-archive] summary').click();
     assert.equal(await section.locator('[data-diary-archive-list] .wsd-official-diary-card').count(),24);
