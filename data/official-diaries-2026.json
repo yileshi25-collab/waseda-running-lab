@@ -5,7 +5,7 @@
   "additional_source_index": "https://waseda-ac.jp/diary/year/2025",
   "source_category": "https://waseda-ac.jp/diary/category/1",
   "metadata_only": true,
-  "total": 319,
+  "total": 97,
   "pages": [
     {
       "source_year": 2026,
@@ -171,69 +171,6 @@
       "source_url": "https://waseda-ac.jp/diary/detail/1685"
     },
     {
-      "id": "official-diary-1684",
-      "author": "地案尚宏",
-      "title": "地案尚宏：南2局",
-      "published_at": "2026-11-15",
-      "source_url": "https://waseda-ac.jp/diary/detail/1684"
-    },
-    {
-      "id": "official-diary-1683",
-      "author": "鹿毛丈",
-      "title": "鹿毛丈：鍋の季節が近づいてます",
-      "published_at": "2026-11-14",
-      "source_url": "https://waseda-ac.jp/diary/detail/1683"
-    },
-    {
-      "id": "official-diary-1681",
-      "author": "荒木星哉",
-      "title": "荒木星哉：全てはタイミング",
-      "published_at": "2026-11-13",
-      "source_url": "https://waseda-ac.jp/diary/detail/1681"
-    },
-    {
-      "id": "official-diary-1679",
-      "author": "大辻樂",
-      "title": "大辻樂：理性の陸上",
-      "published_at": "2026-11-12",
-      "source_url": "https://waseda-ac.jp/diary/detail/1679"
-    },
-    {
-      "id": "official-diary-1676",
-      "author": "始関千華",
-      "title": "始関千華：今日は同期会です。",
-      "published_at": "2026-11-11",
-      "source_url": "https://waseda-ac.jp/diary/detail/1676"
-    },
-    {
-      "id": "official-diary-1675",
-      "author": "木下晏里",
-      "title": "木下晏里：ソウルの寒さ舐めてました",
-      "published_at": "2026-11-10",
-      "source_url": "https://waseda-ac.jp/diary/detail/1675"
-    },
-    {
-      "id": "official-diary-1674",
-      "author": "ガードナレイチェル麻由",
-      "title": "ガードナレイチェル麻由:解散万歳",
-      "published_at": "2026-11-09",
-      "source_url": "https://waseda-ac.jp/diary/detail/1674"
-    },
-    {
-      "id": "official-diary-1672",
-      "author": "谷中天架",
-      "title": "谷中天架：胃袋、強化中。",
-      "published_at": "2026-11-08",
-      "source_url": "https://waseda-ac.jp/diary/detail/1672"
-    },
-    {
-      "id": "official-diary-1671",
-      "author": "為田素生",
-      "title": "為田素生：母校の話",
-      "published_at": "2026-11-07",
-      "source_url": "https://waseda-ac.jp/diary/detail/1671"
-    },
-    {
       "id": "official-diary-1670",
       "author": "本田桜二郎",
       "title": "本田桜二郎：Follow Your Instincts",
@@ -248,193 +185,11 @@
       "source_url": "https://waseda-ac.jp/diary/detail/1666"
     },
     {
-      "id": "official-diary-1665",
-      "author": "渕上翔太",
-      "title": "渕上翔太：プロローグ　完",
-      "published_at": "2026-11-04",
-      "source_url": "https://waseda-ac.jp/diary/detail/1665"
-    },
-    {
-      "id": "official-diary-1664",
-      "author": "関口裕太",
-      "title": "関口裕太：憧れ",
-      "published_at": "2026-11-03",
-      "source_url": "https://waseda-ac.jp/diary/detail/1664"
-    },
-    {
-      "id": "official-diary-1663",
-      "author": "森田陽樹",
-      "title": "森田陽樹 : 私の陸上競技",
-      "published_at": "2026-11-02",
-      "source_url": "https://waseda-ac.jp/diary/detail/1663"
-    },
-    {
-      "id": "official-diary-1662",
-      "author": "由井 響",
-      "title": "由井　響：たかが陸上、されど陸上",
-      "published_at": "2026-11-01",
-      "source_url": "https://waseda-ac.jp/diary/detail/1662"
-    },
-    {
-      "id": "official-diary-1661",
-      "author": "平田和",
-      "title": "平田和：幸せ者",
-      "published_at": "2026-10-31",
-      "source_url": "https://waseda-ac.jp/diary/detail/1661"
-    },
-    {
-      "id": "official-diary-1660",
-      "author": "髙木沙也",
-      "title": "髙木沙也：Whisper of the Heart",
-      "published_at": "2026-10-30",
-      "source_url": "https://waseda-ac.jp/diary/detail/1660"
-    },
-    {
-      "id": "official-diary-1659",
-      "author": "舟生早織",
-      "title": "舟生早織：きっと、ずっと、忘れない",
-      "published_at": "2026-10-29",
-      "source_url": "https://waseda-ac.jp/diary/detail/1659"
-    },
-    {
-      "id": "official-diary-1658",
-      "author": "岩下和史",
-      "title": "岩下和史：miler 完",
-      "published_at": "2026-10-28",
-      "source_url": "https://waseda-ac.jp/diary/detail/1658"
-    },
-    {
-      "id": "official-diary-1657",
-      "author": "鈴木真帆",
-      "title": "鈴木真帆：朝の目覚めが良い",
-      "published_at": "2026-10-27",
-      "source_url": "https://waseda-ac.jp/diary/detail/1657"
-    },
-    {
-      "id": "official-diary-1656",
-      "author": "丹野優泉子",
-      "title": "丹野優泉子：more than words",
-      "published_at": "2026-10-26",
-      "source_url": "https://waseda-ac.jp/diary/detail/1656"
-    },
-    {
-      "id": "official-diary-1655",
-      "author": "岡本漠久",
-      "title": "岡本漠久：光の跡",
-      "published_at": "2026-10-25",
-      "source_url": "https://waseda-ac.jp/diary/detail/1655"
-    },
-    {
-      "id": "official-diary-1654",
-      "author": "水嶋優斗",
-      "title": "水嶋優斗：大事なもんは持った全部",
-      "published_at": "2026-10-24",
-      "source_url": "https://waseda-ac.jp/diary/detail/1654"
-    },
-    {
-      "id": "official-diary-1650",
-      "author": "鈴木翼沙",
-      "title": "鈴木翼沙：ラストシーズン強いです",
-      "published_at": "2026-10-23",
-      "source_url": "https://waseda-ac.jp/diary/detail/1650"
-    },
-    {
-      "id": "official-diary-1649",
-      "author": "上島周子",
-      "title": "上島周子： 随所作主",
-      "published_at": "2026-10-22",
-      "source_url": "https://waseda-ac.jp/diary/detail/1649"
-    },
-    {
-      "id": "official-diary-1648",
-      "author": "内藤香乃",
-      "title": "内藤香乃：ありがとう臙脂",
-      "published_at": "2026-10-21",
-      "source_url": "https://waseda-ac.jp/diary/detail/1648"
-    },
-    {
-      "id": "official-diary-1647",
-      "author": "矢野夏希",
-      "title": "矢野夏希：活発婉麗",
-      "published_at": "2026-10-20",
-      "source_url": "https://waseda-ac.jp/diary/detail/1647"
-    },
-    {
-      "id": "official-diary-1646",
-      "author": "中尾心春",
-      "title": "中尾心春：相乗",
-      "published_at": "2026-10-19",
-      "source_url": "https://waseda-ac.jp/diary/detail/1646"
-    },
-    {
-      "id": "official-diary-1645",
-      "author": "山本真菜",
-      "title": "山本真菜：感謝",
-      "published_at": "2026-10-18",
-      "source_url": "https://waseda-ac.jp/diary/detail/1645"
-    },
-    {
-      "id": "official-diary-1637",
-      "author": "富樫優",
-      "title": "富樫優：早大競技会も残り1回",
-      "published_at": "2026-10-17",
-      "source_url": "https://waseda-ac.jp/diary/detail/1637"
-    },
-    {
-      "id": "official-diary-1636",
-      "author": "木村健人",
-      "title": "木村健人：一日一生",
-      "published_at": "2026-10-16",
-      "source_url": "https://waseda-ac.jp/diary/detail/1636"
-    },
-    {
-      "id": "official-diary-1634",
-      "author": "髙須楓翔",
-      "title": "髙須楓翔：夢はいつか必ず叶う",
-      "published_at": "2026-10-15",
-      "source_url": "https://waseda-ac.jp/diary/detail/1634"
-    },
-    {
-      "id": "official-diary-1632",
-      "author": "片山大地",
-      "title": "片山大地：NEVER SAY NEVER",
-      "published_at": "2026-10-14",
-      "source_url": "https://waseda-ac.jp/diary/detail/1632"
-    },
-    {
-      "id": "official-diary-1631",
-      "author": "佐々木悠人",
-      "title": "佐々木悠人：乾杯",
-      "published_at": "2026-10-13",
-      "source_url": "https://waseda-ac.jp/diary/detail/1631"
-    },
-    {
-      "id": "official-diary-1630",
-      "author": "山崎 望",
-      "title": "山崎 望：まだまだこれから",
-      "published_at": "2026-10-12",
-      "source_url": "https://waseda-ac.jp/diary/detail/1630"
-    },
-    {
       "id": "official-diary-1629",
       "author": "小平敦之",
       "title": "小平敦之: だから僕は陸上を辞める",
       "published_at": "2026-10-11",
       "source_url": "https://waseda-ac.jp/diary/detail/1629"
-    },
-    {
-      "id": "official-diary-1628",
-      "author": "千葉史織",
-      "title": "千葉史織：最高で最強の暇つぶし",
-      "published_at": "2026-10-10",
-      "source_url": "https://waseda-ac.jp/diary/detail/1628"
-    },
-    {
-      "id": "official-diary-1625",
-      "author": "水嶋優斗",
-      "title": "水嶋優斗：TEENAGE VIBE",
-      "published_at": "2026-10-09",
-      "source_url": "https://waseda-ac.jp/diary/detail/1625"
     },
     {
       "id": "official-diary-1624",
@@ -535,48 +290,6 @@
       "source_url": "https://waseda-ac.jp/diary/detail/1600"
     },
     {
-      "id": "official-diary-1599",
-      "author": "吉田新",
-      "title": "吉田新：大胆な希望",
-      "published_at": "2026-09-24",
-      "source_url": "https://waseda-ac.jp/diary/detail/1599"
-    },
-    {
-      "id": "official-diary-1598",
-      "author": "為田素生",
-      "title": "為田素生：無力感の話",
-      "published_at": "2026-09-23",
-      "source_url": "https://waseda-ac.jp/diary/detail/1598"
-    },
-    {
-      "id": "official-diary-1597",
-      "author": "鈴木真帆",
-      "title": "鈴木真帆：更に向こうへ！",
-      "published_at": "2026-09-22",
-      "source_url": "https://waseda-ac.jp/diary/detail/1597"
-    },
-    {
-      "id": "official-diary-1596",
-      "author": "髙木敬太",
-      "title": "髙木敬太：新時代",
-      "published_at": "2026-09-21",
-      "source_url": "https://waseda-ac.jp/diary/detail/1596"
-    },
-    {
-      "id": "official-diary-1588",
-      "author": "富樫優",
-      "title": "富樫優：まつ毛の調子が素晴らしいです",
-      "published_at": "2026-09-20",
-      "source_url": "https://waseda-ac.jp/diary/detail/1588"
-    },
-    {
-      "id": "official-diary-1587",
-      "author": "畑山操",
-      "title": "畑山操：前女生だもの",
-      "published_at": "2026-09-19",
-      "source_url": "https://waseda-ac.jp/diary/detail/1587"
-    },
-    {
       "id": "official-diary-1580",
       "author": "中島橙子",
       "title": "中島橙子：夏の輪郭",
@@ -598,403 +311,11 @@
       "source_url": "https://waseda-ac.jp/diary/detail/1576"
     },
     {
-      "id": "official-diary-1573",
-      "author": "髙木沙也",
-      "title": "髙木沙也：引き算の優しさ",
-      "published_at": "2026-09-15",
-      "source_url": "https://waseda-ac.jp/diary/detail/1573"
-    },
-    {
-      "id": "official-diary-1572",
-      "author": "田村るう",
-      "title": "田村るう：笑う門には福来る",
-      "published_at": "2026-09-14",
-      "source_url": "https://waseda-ac.jp/diary/detail/1572"
-    },
-    {
-      "id": "official-diary-1571",
-      "author": "上島周子",
-      "title": "上島周子：ホルモンをうまく焼ける大人になりたい",
-      "published_at": "2026-09-13",
-      "source_url": "https://waseda-ac.jp/diary/detail/1571"
-    },
-    {
-      "id": "official-diary-1570",
-      "author": "林美希",
-      "title": "林美希：食欲の秋",
-      "published_at": "2026-09-12",
-      "source_url": "https://waseda-ac.jp/diary/detail/1570"
-    },
-    {
-      "id": "official-diary-1569",
-      "author": "内藤香乃",
-      "title": "内藤香乃：さつまいもの秋",
-      "published_at": "2026-09-11",
-      "source_url": "https://waseda-ac.jp/diary/detail/1569"
-    },
-    {
-      "id": "official-diary-1568",
-      "author": "松田晏奈",
-      "title": "松田晏奈：来年こそ、必ず",
-      "published_at": "2026-09-10",
-      "source_url": "https://waseda-ac.jp/diary/detail/1568"
-    },
-    {
-      "id": "official-diary-1565",
-      "author": "濱崎秀馬",
-      "title": "濱崎秀馬：向かい風だっていいじゃない",
-      "published_at": "2026-09-09",
-      "source_url": "https://waseda-ac.jp/diary/detail/1565"
-    },
-    {
-      "id": "official-diary-1564",
-      "author": "青山侑樹",
-      "title": "青山侑樹 : 満ち足りれば負け",
-      "published_at": "2026-09-08",
-      "source_url": "https://waseda-ac.jp/diary/detail/1564"
-    },
-    {
-      "id": "official-diary-1563",
-      "author": "安心院大渡",
-      "title": "安心院大渡 : ASSEMBLE",
-      "published_at": "2026-09-07",
-      "source_url": "https://waseda-ac.jp/diary/detail/1563"
-    },
-    {
-      "id": "official-diary-1562",
-      "author": "伊橋璃矩",
-      "title": "伊橋璃矩：シンテン",
-      "published_at": "2026-09-06",
-      "source_url": "https://waseda-ac.jp/diary/detail/1562"
-    },
-    {
-      "id": "official-diary-1561",
-      "author": "関口裕太",
-      "title": "関口裕太：The Climb",
-      "published_at": "2026-09-05",
-      "source_url": "https://waseda-ac.jp/diary/detail/1561"
-    },
-    {
-      "id": "official-diary-1560",
-      "author": "由井 響",
-      "title": "由井　響：On your mark",
-      "published_at": "2026-09-04",
-      "source_url": "https://waseda-ac.jp/diary/detail/1560"
-    },
-    {
-      "id": "official-diary-1554",
-      "author": "牛島壮司朗",
-      "title": "牛島壮司朗：小さな炎が大炎を巻き起こす",
-      "published_at": "2026-09-03",
-      "source_url": "https://waseda-ac.jp/diary/detail/1554"
-    },
-    {
-      "id": "official-diary-1553",
-      "author": "平田和",
-      "title": "平田和：思いの火",
-      "published_at": "2026-09-02",
-      "source_url": "https://waseda-ac.jp/diary/detail/1553"
-    },
-    {
-      "id": "official-diary-1552",
-      "author": "水野琉之介",
-      "title": "水野琉之介：もう一度",
-      "published_at": "2026-09-01",
-      "source_url": "https://waseda-ac.jp/diary/detail/1552"
-    },
-    {
-      "id": "official-diary-1551",
-      "author": "森田陽樹",
-      "title": "森田陽樹 : 覇者で在れ",
-      "published_at": "2026-08-31",
-      "source_url": "https://waseda-ac.jp/diary/detail/1551"
-    },
-    {
-      "id": "official-diary-1548",
-      "author": "千葉史織",
-      "title": "千葉史織：日本インカレ、晴れますように",
-      "published_at": "2026-08-30",
-      "source_url": "https://waseda-ac.jp/diary/detail/1548"
-    },
-    {
       "id": "official-diary-1547",
       "author": "増子陽季",
       "title": "増子陽季 : 成功への近道",
       "published_at": "2026-08-29",
       "source_url": "https://waseda-ac.jp/diary/detail/1547"
-    },
-    {
-      "id": "official-diary-1546",
-      "author": "鹿毛丈",
-      "title": "鹿毛丈：ネギチャー",
-      "published_at": "2026-08-28",
-      "source_url": "https://waseda-ac.jp/diary/detail/1546"
-    },
-    {
-      "id": "official-diary-1545",
-      "author": "髙木敬太",
-      "title": "髙木敬太：さらなる高みへ",
-      "published_at": "2026-08-27",
-      "source_url": "https://waseda-ac.jp/diary/detail/1545"
-    },
-    {
-      "id": "official-diary-1544",
-      "author": "竹下蓮飛",
-      "title": "竹下蓮飛：土の味",
-      "published_at": "2026-08-26",
-      "source_url": "https://waseda-ac.jp/diary/detail/1544"
-    },
-    {
-      "id": "official-diary-1543",
-      "author": "松本悠斗",
-      "title": "松本悠斗：チームのために何ができるか",
-      "published_at": "2026-08-25",
-      "source_url": "https://waseda-ac.jp/diary/detail/1543"
-    },
-    {
-      "id": "official-diary-1542",
-      "author": "酒井大輔",
-      "title": "酒井大輔：頂点への挑戦",
-      "published_at": "2026-08-24",
-      "source_url": "https://waseda-ac.jp/diary/detail/1542"
-    },
-    {
-      "id": "official-diary-1541",
-      "author": "関口裕太",
-      "title": "関口裕太：残り12日",
-      "published_at": "2026-08-23",
-      "source_url": "https://waseda-ac.jp/diary/detail/1541"
-    },
-    {
-      "id": "official-diary-1540",
-      "author": "佐藤克樹",
-      "title": "佐藤克樹：こっから",
-      "published_at": "2026-08-22",
-      "source_url": "https://waseda-ac.jp/diary/detail/1540"
-    },
-    {
-      "id": "official-diary-1532",
-      "author": "鶴巻陽太",
-      "title": "鶴巻陽太：時には歩くより、まず走れだ！",
-      "published_at": "2026-08-21",
-      "source_url": "https://waseda-ac.jp/diary/detail/1532"
-    },
-    {
-      "id": "official-diary-1530",
-      "author": "若菜敬",
-      "title": "若菜敬:200m",
-      "published_at": "2026-08-20",
-      "source_url": "https://waseda-ac.jp/diary/detail/1530"
-    },
-    {
-      "id": "official-diary-1529",
-      "author": "高須楓翔",
-      "title": "高須楓翔:やっぱり俺が一番強い",
-      "published_at": "2026-08-19",
-      "source_url": "https://waseda-ac.jp/diary/detail/1529"
-    },
-    {
-      "id": "official-diary-1528",
-      "author": "星野紗菜",
-      "title": "星野紗菜：己れを捨てよ",
-      "published_at": "2026-08-18",
-      "source_url": "https://waseda-ac.jp/diary/detail/1528"
-    },
-    {
-      "id": "official-diary-1527",
-      "author": "イベル聖羅",
-      "title": "イベル聖羅：Baby I'm a monster.",
-      "published_at": "2026-08-17",
-      "source_url": "https://waseda-ac.jp/diary/detail/1527"
-    },
-    {
-      "id": "official-diary-1526",
-      "author": "佐々木秀晟",
-      "title": "佐々木秀晟：あと2回",
-      "published_at": "2026-08-16",
-      "source_url": "https://waseda-ac.jp/diary/detail/1526"
-    },
-    {
-      "id": "official-diary-1525",
-      "author": "堀池靖幸",
-      "title": "堀池靖幸：最後の瞬間まで、最大のサポートを",
-      "published_at": "2026-08-15",
-      "source_url": "https://waseda-ac.jp/diary/detail/1525"
-    },
-    {
-      "id": "official-diary-1523",
-      "author": "片山大地",
-      "title": "片山大地：1753",
-      "published_at": "2026-08-14",
-      "source_url": "https://waseda-ac.jp/diary/detail/1523"
-    },
-    {
-      "id": "official-diary-1522",
-      "author": "河野桃々",
-      "title": "河野桃々：憧れぶらさげて",
-      "published_at": "2026-08-13",
-      "source_url": "https://waseda-ac.jp/diary/detail/1522"
-    },
-    {
-      "id": "official-diary-1521",
-      "author": "林美希",
-      "title": "林美希：すきだから",
-      "published_at": "2026-08-12",
-      "source_url": "https://waseda-ac.jp/diary/detail/1521"
-    },
-    {
-      "id": "official-diary-1520",
-      "author": "伊東輝恵",
-      "title": "伊東輝恵：はじめてだから",
-      "published_at": "2026-08-11",
-      "source_url": "https://waseda-ac.jp/diary/detail/1520"
-    },
-    {
-      "id": "official-diary-1519",
-      "author": "内藤香乃",
-      "title": "内藤香乃：自分らしさ",
-      "published_at": "2026-08-10",
-      "source_url": "https://waseda-ac.jp/diary/detail/1519"
-    },
-    {
-      "id": "official-diary-1518",
-      "author": "蔵野絢果",
-      "title": "蔵野絢果：皇天親無く惟徳を是輔く",
-      "published_at": "2026-08-09",
-      "source_url": "https://waseda-ac.jp/diary/detail/1518"
-    },
-    {
-      "id": "official-diary-1517",
-      "author": "山本真菜",
-      "title": "山本真菜：あと４本",
-      "published_at": "2026-08-08",
-      "source_url": "https://waseda-ac.jp/diary/detail/1517"
-    },
-    {
-      "id": "official-diary-1516",
-      "author": "正木紗",
-      "title": "正木紗：1分1秒でも長くいて欲しい",
-      "published_at": "2026-08-07",
-      "source_url": "https://waseda-ac.jp/diary/detail/1516"
-    },
-    {
-      "id": "official-diary-1515",
-      "author": "富樫優",
-      "title": "富樫優：1分1秒でも室内にいさせて欲しい",
-      "published_at": "2026-08-06",
-      "source_url": "https://waseda-ac.jp/diary/detail/1515"
-    },
-    {
-      "id": "official-diary-1514",
-      "author": "水野琉之介",
-      "title": "水野琉之介：頂の景色",
-      "published_at": "2026-08-05",
-      "source_url": "https://waseda-ac.jp/diary/detail/1514"
-    },
-    {
-      "id": "official-diary-1508",
-      "author": "大辻樂",
-      "title": "大辻樂 : 燃えよオオツジガク",
-      "published_at": "2026-08-04",
-      "source_url": "https://waseda-ac.jp/diary/detail/1508"
-    },
-    {
-      "id": "official-diary-1506",
-      "author": "森田陽樹",
-      "title": "森田陽樹 : ラスト50m",
-      "published_at": "2026-08-03",
-      "source_url": "https://waseda-ac.jp/diary/detail/1506"
-    },
-    {
-      "id": "official-diary-1504",
-      "author": "木下晏里",
-      "title": "木下晏里：夏の成長",
-      "published_at": "2026-08-02",
-      "source_url": "https://waseda-ac.jp/diary/detail/1504"
-    },
-    {
-      "id": "official-diary-1502",
-      "author": "岡本漠久",
-      "title": "岡本漠久：バクッメリッザクッ!!!",
-      "published_at": "2026-08-01",
-      "source_url": "https://waseda-ac.jp/diary/detail/1502"
-    },
-    {
-      "id": "official-diary-1501",
-      "author": "西徹朗",
-      "title": "西徹朗：2歩下がっても3歩進む",
-      "published_at": "2026-07-31",
-      "source_url": "https://waseda-ac.jp/diary/detail/1501"
-    },
-    {
-      "id": "official-diary-1500",
-      "author": "木村健人",
-      "title": "木村健人：菅平は涼しいです",
-      "published_at": "2026-07-30",
-      "source_url": "https://waseda-ac.jp/diary/detail/1500"
-    },
-    {
-      "id": "official-diary-1498",
-      "author": "眞下優音",
-      "title": "眞下優音：日々先輩",
-      "published_at": "2026-07-29",
-      "source_url": "https://waseda-ac.jp/diary/detail/1498"
-    },
-    {
-      "id": "official-diary-1497",
-      "author": "山崎 望",
-      "title": "山崎 望：2日目にして、もう寂しい",
-      "published_at": "2026-07-28",
-      "source_url": "https://waseda-ac.jp/diary/detail/1497"
-    },
-    {
-      "id": "official-diary-1495",
-      "author": "渕上翔太",
-      "title": "渕上翔太：努力の天才",
-      "published_at": "2026-07-27",
-      "source_url": "https://waseda-ac.jp/diary/detail/1495"
-    },
-    {
-      "id": "official-diary-1494",
-      "author": "平田和",
-      "title": "平田和：最高の夏に",
-      "published_at": "2026-07-26",
-      "source_url": "https://waseda-ac.jp/diary/detail/1494"
-    },
-    {
-      "id": "official-diary-1493",
-      "author": "相場遥心",
-      "title": "相場遥心：この夏、もっと強く",
-      "published_at": "2026-07-25",
-      "source_url": "https://waseda-ac.jp/diary/detail/1493"
-    },
-    {
-      "id": "official-diary-1492",
-      "author": "由井 響",
-      "title": "由井　響：夢見てた未来はそれほど離れちゃいない♪",
-      "published_at": "2026-07-24",
-      "source_url": "https://waseda-ac.jp/diary/detail/1492"
-    },
-    {
-      "id": "official-diary-1491",
-      "author": "髙津采里",
-      "title": "髙津采里：未知への追及",
-      "published_at": "2026-07-23",
-      "source_url": "https://waseda-ac.jp/diary/detail/1491"
-    },
-    {
-      "id": "official-diary-1488",
-      "author": "千葉史織",
-      "title": "千葉史織：傲慢さと強がりと",
-      "published_at": "2026-07-22",
-      "source_url": "https://waseda-ac.jp/diary/detail/1488"
-    },
-    {
-      "id": "official-diary-1487",
-      "author": "熊倉花萌",
-      "title": "熊倉花萌：YES or YES",
-      "published_at": "2026-07-21",
-      "source_url": "https://waseda-ac.jp/diary/detail/1487"
     },
     {
       "id": "official-diary-1486",
@@ -1039,53 +360,11 @@
       "source_url": "https://waseda-ac.jp/diary/detail/1479"
     },
     {
-      "id": "official-diary-1478",
-      "author": "鈴木真帆",
-      "title": "鈴木真帆：夏到来",
-      "published_at": "2026-07-14",
-      "source_url": "https://waseda-ac.jp/diary/detail/1478"
-    },
-    {
-      "id": "official-diary-1477",
-      "author": "始関千華",
-      "title": "始関千華：コツコツコツコツコツ…",
-      "published_at": "2026-07-13",
-      "source_url": "https://waseda-ac.jp/diary/detail/1477"
-    },
-    {
-      "id": "official-diary-1473",
-      "author": "鈴木翼沙",
-      "title": "鈴木翼沙：あの声に押されて",
-      "published_at": "2026-07-12",
-      "source_url": "https://waseda-ac.jp/diary/detail/1473"
-    },
-    {
-      "id": "official-diary-1471",
-      "author": "岩下和史",
-      "title": "岩下和史：Lewis Hamilton",
-      "published_at": "2026-07-11",
-      "source_url": "https://waseda-ac.jp/diary/detail/1471"
-    },
-    {
       "id": "official-diary-1468",
       "author": "佐々木哲",
       "title": "佐々木哲：Side by Sideで",
       "published_at": "2026-07-10",
       "source_url": "https://waseda-ac.jp/diary/detail/1468"
-    },
-    {
-      "id": "official-diary-1467",
-      "author": "水嶋優斗",
-      "title": "水嶋優斗：KとPを",
-      "published_at": "2026-07-09",
-      "source_url": "https://waseda-ac.jp/diary/detail/1467"
-    },
-    {
-      "id": "official-diary-1466",
-      "author": "木村涼太",
-      "title": "木村涼太：賢くなりたい",
-      "published_at": "2026-07-08",
-      "source_url": "https://waseda-ac.jp/diary/detail/1466"
     },
     {
       "id": "official-diary-1465",
@@ -1102,88 +381,11 @@
       "source_url": "https://waseda-ac.jp/diary/detail/1464"
     },
     {
-      "id": "official-diary-1463",
-      "author": "藤本涼哉",
-      "title": "藤本涼哉：紺碧ファミリー",
-      "published_at": "2026-07-05",
-      "source_url": "https://waseda-ac.jp/diary/detail/1463"
-    },
-    {
       "id": "official-diary-1462",
       "author": "増子 陽季",
       "title": "増子 陽季 : タイトルはいつも後付け",
       "published_at": "2026-07-04",
       "source_url": "https://waseda-ac.jp/diary/detail/1462"
-    },
-    {
-      "id": "official-diary-1461",
-      "author": "武田亜子",
-      "title": "武田亜子：ターニングポイント",
-      "published_at": "2026-07-03",
-      "source_url": "https://waseda-ac.jp/diary/detail/1461"
-    },
-    {
-      "id": "official-diary-1460",
-      "author": "中尾心春",
-      "title": "中尾心春：芋堅干",
-      "published_at": "2026-07-02",
-      "source_url": "https://waseda-ac.jp/diary/detail/1460"
-    },
-    {
-      "id": "official-diary-1459",
-      "author": "星野紗菜",
-      "title": "星野紗菜：出会いの力",
-      "published_at": "2026-07-01",
-      "source_url": "https://waseda-ac.jp/diary/detail/1459"
-    },
-    {
-      "id": "official-diary-1458",
-      "author": "畑山操",
-      "title": "畑山操：無知の知",
-      "published_at": "2026-06-30",
-      "source_url": "https://waseda-ac.jp/diary/detail/1458"
-    },
-    {
-      "id": "official-diary-1457",
-      "author": "新津杏莉",
-      "title": "新津杏莉：Believe",
-      "published_at": "2026-06-29",
-      "source_url": "https://waseda-ac.jp/diary/detail/1457"
-    },
-    {
-      "id": "official-diary-1456",
-      "author": "田村るう",
-      "title": "田村るう：エンジン深志はじめました",
-      "published_at": "2026-06-28",
-      "source_url": "https://waseda-ac.jp/diary/detail/1456"
-    },
-    {
-      "id": "official-diary-1455",
-      "author": "佐藤七夏",
-      "title": "佐藤七夏：プラスアルファ",
-      "published_at": "2026-06-27",
-      "source_url": "https://waseda-ac.jp/diary/detail/1455"
-    },
-    {
-      "id": "official-diary-1454",
-      "author": "吉瀬和佳",
-      "title": "吉瀬和佳：大好きなもの",
-      "published_at": "2026-06-26",
-      "source_url": "https://waseda-ac.jp/diary/detail/1454"
-    },
-    {
-      "id": "official-diary-1453",
-      "author": "ガードナレイチェル麻由",
-      "title": "ガードナレイチェル麻由：愛すべからく今を愛す",
-      "published_at": "2026-06-25",
-      "source_url": "https://waseda-ac.jp/diary/detail/1453"
-    },
-    {
-      "id": "official-diary-1452",
-      "author": "伊東輝恵",
-      "title": "伊東輝恵：選手とともに",
-      "published_at": "2026-06-24",
-      "source_url": "https://waseda-ac.jp/diary/detail/1452"
     },
     {
       "id": "official-diary-1451",
@@ -1198,13 +400,6 @@
       "title": "若狭奏汰：夢中になれ！",
       "published_at": "2026-06-22",
       "source_url": "https://waseda-ac.jp/diary/detail/1450"
-    },
-    {
-      "id": "official-diary-1449",
-      "author": "森楓真",
-      "title": "森楓真：学連の森です。",
-      "published_at": "2026-06-21",
-      "source_url": "https://waseda-ac.jp/diary/detail/1449"
     },
     {
       "id": "official-diary-1448",
@@ -1228,60 +423,11 @@
       "source_url": "https://waseda-ac.jp/diary/detail/1439"
     },
     {
-      "id": "official-diary-1438",
-      "author": "藤澤友大",
-      "title": "藤澤友大：夜のブロック塀にはご注意を",
-      "published_at": "2026-06-17",
-      "source_url": "https://waseda-ac.jp/diary/detail/1438"
-    },
-    {
-      "id": "official-diary-1437",
-      "author": "原田勇吹",
-      "title": "原田勇吹：挑戦者として。",
-      "published_at": "2026-06-16",
-      "source_url": "https://waseda-ac.jp/diary/detail/1437"
-    },
-    {
-      "id": "official-diary-1436",
-      "author": "濱崎秀馬",
-      "title": "濱崎秀馬：枯れても腐るな",
-      "published_at": "2026-06-15",
-      "source_url": "https://waseda-ac.jp/diary/detail/1436"
-    },
-    {
       "id": "official-diary-1434",
       "author": "新妻遼己",
       "title": "新妻遼己:自分のペースで",
       "published_at": "2026-06-14",
       "source_url": "https://waseda-ac.jp/diary/detail/1434"
-    },
-    {
-      "id": "official-diary-1433",
-      "author": "中村健心",
-      "title": "中村健心：生まれ変わる4年間",
-      "published_at": "2026-06-13",
-      "source_url": "https://waseda-ac.jp/diary/detail/1433"
-    },
-    {
-      "id": "official-diary-1432",
-      "author": "東城諒汰",
-      "title": "東城諒汰：選んだ道を正解に！",
-      "published_at": "2026-06-12",
-      "source_url": "https://waseda-ac.jp/diary/detail/1432"
-    },
-    {
-      "id": "official-diary-1431",
-      "author": "為田素生",
-      "title": "為田素生：助走の先の話",
-      "published_at": "2026-06-11",
-      "source_url": "https://waseda-ac.jp/diary/detail/1431"
-    },
-    {
-      "id": "official-diary-1430",
-      "author": "竹下蓮飛",
-      "title": "竹下蓮飛：佐賀県民はがばいはやかばい",
-      "published_at": "2026-06-10",
-      "source_url": "https://waseda-ac.jp/diary/detail/1430"
     },
     {
       "id": "official-diary-1429",
@@ -1298,81 +444,11 @@
       "source_url": "https://waseda-ac.jp/diary/detail/1428"
     },
     {
-      "id": "official-diary-1427",
-      "author": "髙木連麻",
-      "title": "髙木連麻：感謝を胸に",
-      "published_at": "2026-06-07",
-      "source_url": "https://waseda-ac.jp/diary/detail/1427"
-    },
-    {
-      "id": "official-diary-1426",
-      "author": "髙木敬太",
-      "title": "髙木敬太：ここから",
-      "published_at": "2026-06-06",
-      "source_url": "https://waseda-ac.jp/diary/detail/1426"
-    },
-    {
       "id": "official-diary-1422",
       "author": "鈴木勇飛",
       "title": "鈴木勇飛：挑戦と飛躍の1年に",
       "published_at": "2026-06-05",
       "source_url": "https://waseda-ac.jp/diary/detail/1422"
-    },
-    {
-      "id": "official-diary-1421",
-      "author": "杉山蔣",
-      "title": "杉山蔣：這い上がる",
-      "published_at": "2026-06-04",
-      "source_url": "https://waseda-ac.jp/diary/detail/1421"
-    },
-    {
-      "id": "official-diary-1418",
-      "author": "佐藤大地",
-      "title": "佐藤大地：“Brother”",
-      "published_at": "2026-06-03",
-      "source_url": "https://waseda-ac.jp/diary/detail/1418"
-    },
-    {
-      "id": "official-diary-1417",
-      "author": "佐藤克樹",
-      "title": "佐藤克樹：偉大な先輩の背中を追って",
-      "published_at": "2026-06-02",
-      "source_url": "https://waseda-ac.jp/diary/detail/1417"
-    },
-    {
-      "id": "official-diary-1415",
-      "author": "坂本一竜",
-      "title": "坂本一竜：十足の草鞋",
-      "published_at": "2026-06-01",
-      "source_url": "https://waseda-ac.jp/diary/detail/1415"
-    },
-    {
-      "id": "official-diary-1414",
-      "author": "酒井大輔",
-      "title": "酒井大輔：勝負強い選手に",
-      "published_at": "2026-05-31",
-      "source_url": "https://waseda-ac.jp/diary/detail/1414"
-    },
-    {
-      "id": "official-diary-1413",
-      "author": "齋藤悠仁",
-      "title": "齋藤悠仁：オレンジ緑から臙脂へ",
-      "published_at": "2026-05-30",
-      "source_url": "https://waseda-ac.jp/diary/detail/1413"
-    },
-    {
-      "id": "official-diary-1412",
-      "author": "大辻樂",
-      "title": "大辻樂：新天地",
-      "published_at": "2026-05-29",
-      "source_url": "https://waseda-ac.jp/diary/detail/1412"
-    },
-    {
-      "id": "official-diary-1411",
-      "author": "海野一磨",
-      "title": "海野一磨：はじめまして",
-      "published_at": "2026-05-28",
-      "source_url": "https://waseda-ac.jp/diary/detail/1411"
     },
     {
       "id": "official-diary-1410",
@@ -1382,144 +458,11 @@
       "source_url": "https://waseda-ac.jp/diary/detail/1410"
     },
     {
-      "id": "official-diary-1408",
-      "author": "石川柊太",
-      "title": "石川柊太：土台作り",
-      "published_at": "2026-05-26",
-      "source_url": "https://waseda-ac.jp/diary/detail/1408"
-    },
-    {
-      "id": "official-diary-1407",
-      "author": "相場遥心",
-      "title": "相場遥心：恩返し",
-      "published_at": "2026-05-25",
-      "source_url": "https://waseda-ac.jp/diary/detail/1407"
-    },
-    {
-      "id": "official-diary-1406",
-      "author": "関口裕太",
-      "title": "関口裕太：いこう。",
-      "published_at": "2026-05-24",
-      "source_url": "https://waseda-ac.jp/diary/detail/1406"
-    },
-    {
-      "id": "official-diary-1405",
-      "author": "平田 和",
-      "title": "平田　和：信じて勝つ",
-      "published_at": "2026-05-23",
-      "source_url": "https://waseda-ac.jp/diary/detail/1405"
-    },
-    {
-      "id": "official-diary-1404",
-      "author": "池田 海",
-      "title": "池田　海：お久しぶりです！",
-      "published_at": "2026-05-22",
-      "source_url": "https://waseda-ac.jp/diary/detail/1404"
-    },
-    {
-      "id": "official-diary-1403",
-      "author": "イベル聖羅",
-      "title": "イベル聖羅：Game Changer",
-      "published_at": "2026-05-21",
-      "source_url": "https://waseda-ac.jp/diary/detail/1403"
-    },
-    {
-      "id": "official-diary-1402",
-      "author": "水野琉之介",
-      "title": "水野琉之介：捲土重来",
-      "published_at": "2026-05-20",
-      "source_url": "https://waseda-ac.jp/diary/detail/1402"
-    },
-    {
-      "id": "official-diary-1400",
-      "author": "藤本涼哉",
-      "title": "藤本涼哉：REVENGE",
-      "published_at": "2026-05-19",
-      "source_url": "https://waseda-ac.jp/diary/detail/1400"
-    },
-    {
-      "id": "official-diary-1398",
-      "author": "木村健人",
-      "title": "木村健人：夏バテ",
-      "published_at": "2026-05-18",
-      "source_url": "https://waseda-ac.jp/diary/detail/1398"
-    },
-    {
-      "id": "official-diary-1397",
-      "author": "松本悠斗",
-      "title": "松本悠斗：このマークを背負って戦うこと",
-      "published_at": "2026-05-17",
-      "source_url": "https://waseda-ac.jp/diary/detail/1397"
-    },
-    {
-      "id": "official-diary-1396",
-      "author": "山崎 望",
-      "title": "山崎 望：君がいるから",
-      "published_at": "2026-05-16",
-      "source_url": "https://waseda-ac.jp/diary/detail/1396"
-    },
-    {
-      "id": "official-diary-1395",
-      "author": "牛島壮司朗",
-      "title": "牛島壮司朗：既に全カレ向かってます",
-      "published_at": "2026-05-15",
-      "source_url": "https://waseda-ac.jp/diary/detail/1395"
-    },
-    {
-      "id": "official-diary-1392",
-      "author": "安心院大渡",
-      "title": "安心院大渡：記録は破るためにある",
-      "published_at": "2026-05-14",
-      "source_url": "https://waseda-ac.jp/diary/detail/1392"
-    },
-    {
       "id": "official-diary-1391",
       "author": "山口竣平",
       "title": "山口竣平：見えないものを見ようとして",
       "published_at": "2026-05-13",
       "source_url": "https://waseda-ac.jp/diary/detail/1391"
-    },
-    {
-      "id": "official-diary-1390",
-      "author": "鶴巻陽太",
-      "title": "鶴巻陽太：関東インカレのダークホース巻陽太です",
-      "published_at": "2026-05-12",
-      "source_url": "https://waseda-ac.jp/diary/detail/1390"
-    },
-    {
-      "id": "official-diary-1383",
-      "author": "荒木星哉",
-      "title": "荒木星哉：結局氣持ち",
-      "published_at": "2026-05-11",
-      "source_url": "https://waseda-ac.jp/diary/detail/1383"
-    },
-    {
-      "id": "official-diary-1382",
-      "author": "鴛渕有咲",
-      "title": "鴛渕有咲：ママ大好きいつもありがとう",
-      "published_at": "2026-05-10",
-      "source_url": "https://waseda-ac.jp/diary/detail/1382"
-    },
-    {
-      "id": "official-diary-1380",
-      "author": "河野桃々",
-      "title": "河野桃々：明日は母の日です",
-      "published_at": "2026-05-09",
-      "source_url": "https://waseda-ac.jp/diary/detail/1380"
-    },
-    {
-      "id": "official-diary-1378",
-      "author": "佐々木悠人",
-      "title": "佐々木悠人：このままでは終われない",
-      "published_at": "2026-05-08",
-      "source_url": "https://waseda-ac.jp/diary/detail/1378"
-    },
-    {
-      "id": "official-diary-1377",
-      "author": "正木紗",
-      "title": "正木紗：軸をもつ Part2",
-      "published_at": "2026-05-07",
-      "source_url": "https://waseda-ac.jp/diary/detail/1377"
     },
     {
       "id": "official-diary-1372",
@@ -1599,74 +542,11 @@
       "source_url": "https://waseda-ac.jp/diary/detail/1360"
     },
     {
-      "id": "official-diary-1359",
-      "author": "吉田新",
-      "title": "吉田新：下萌",
-      "published_at": "2026-04-25",
-      "source_url": "https://waseda-ac.jp/diary/detail/1359"
-    },
-    {
-      "id": "official-diary-1358",
-      "author": "熊倉花萌",
-      "title": "熊倉花萌：読書の春",
-      "published_at": "2026-04-24",
-      "source_url": "https://waseda-ac.jp/diary/detail/1358"
-    },
-    {
-      "id": "official-diary-1353",
-      "author": "五味彩花",
-      "title": "五味彩花：好事魔多し",
-      "published_at": "2026-04-23",
-      "source_url": "https://waseda-ac.jp/diary/detail/1353"
-    },
-    {
-      "id": "official-diary-1352",
-      "author": "山本真菜",
-      "title": "山本真菜：一日一生",
-      "published_at": "2026-04-22",
-      "source_url": "https://waseda-ac.jp/diary/detail/1352"
-    },
-    {
-      "id": "official-diary-1351",
-      "author": "林美希",
-      "title": "林美希：為せば成る",
-      "published_at": "2026-04-21",
-      "source_url": "https://waseda-ac.jp/diary/detail/1351"
-    },
-    {
       "id": "official-diary-1350",
       "author": "山田晃央",
       "title": "山田晃央：ひよこ達",
       "published_at": "2026-04-20",
       "source_url": "https://waseda-ac.jp/diary/detail/1350"
-    },
-    {
-      "id": "official-diary-1349",
-      "author": "上島周子",
-      "title": "上島周子：慈しみ、柔らかく",
-      "published_at": "2026-04-19",
-      "source_url": "https://waseda-ac.jp/diary/detail/1349"
-    },
-    {
-      "id": "official-diary-1345",
-      "author": "野村美月",
-      "title": "野村美月：トモコレはじめました。",
-      "published_at": "2026-04-18",
-      "source_url": "https://waseda-ac.jp/diary/detail/1345"
-    },
-    {
-      "id": "official-diary-1344",
-      "author": "平田和",
-      "title": "平田和：信じて、進め。",
-      "published_at": "2026-04-17",
-      "source_url": "https://waseda-ac.jp/diary/detail/1344"
-    },
-    {
-      "id": "official-diary-1341",
-      "author": "木下晏里",
-      "title": "木下晏里：まだまだこれから！",
-      "published_at": "2026-04-16",
-      "source_url": "https://waseda-ac.jp/diary/detail/1341"
     },
     {
       "id": "official-diary-1340",
@@ -1681,97 +561,6 @@
       "title": "高橋優喜 : 意志あらば道あり",
       "published_at": "2026-04-14",
       "source_url": "https://waseda-ac.jp/diary/detail/1339"
-    },
-    {
-      "id": "official-diary-1338",
-      "author": "富樫優",
-      "title": "富樫優：西洋哲学と腸活にはまっています",
-      "published_at": "2026-04-13",
-      "source_url": "https://waseda-ac.jp/diary/detail/1338"
-    },
-    {
-      "id": "official-diary-1336",
-      "author": "渕上翔太",
-      "title": "渕上翔太：折り返し",
-      "published_at": "2026-04-12",
-      "source_url": "https://waseda-ac.jp/diary/detail/1336"
-    },
-    {
-      "id": "official-diary-1334",
-      "author": "イベル聖羅",
-      "title": "イベル聖羅：頼むわAdidas",
-      "published_at": "2026-04-11",
-      "source_url": "https://waseda-ac.jp/diary/detail/1334"
-    },
-    {
-      "id": "official-diary-1333",
-      "author": "松永成美",
-      "title": "松永成美：焦らず、慌てず、諦めず",
-      "published_at": "2026-04-10",
-      "source_url": "https://waseda-ac.jp/diary/detail/1333"
-    },
-    {
-      "id": "official-diary-1332",
-      "author": "丹野優泉子",
-      "title": "丹野優泉子：未来照らすのは、自分自身",
-      "published_at": "2026-04-09",
-      "source_url": "https://waseda-ac.jp/diary/detail/1332"
-    },
-    {
-      "id": "official-diary-1331",
-      "author": "稲毛碧",
-      "title": "稲毛碧：全部だ",
-      "published_at": "2026-04-08",
-      "source_url": "https://waseda-ac.jp/diary/detail/1331"
-    },
-    {
-      "id": "official-diary-1329",
-      "author": "鹿毛丈",
-      "title": "鹿毛丈：桜が綺麗です",
-      "published_at": "2026-04-07",
-      "source_url": "https://waseda-ac.jp/diary/detail/1329"
-    },
-    {
-      "id": "official-diary-1328",
-      "author": "森田陽樹",
-      "title": "森田陽樹 : 4年目",
-      "published_at": "2026-04-06",
-      "source_url": "https://waseda-ac.jp/diary/detail/1328"
-    },
-    {
-      "id": "official-diary-1326",
-      "author": "蔵野絢果",
-      "title": "蔵野絢果：仲良くなりたい",
-      "published_at": "2026-04-05",
-      "source_url": "https://waseda-ac.jp/diary/detail/1326"
-    },
-    {
-      "id": "official-diary-1324",
-      "author": "中尾心春",
-      "title": "中尾心春：躍進",
-      "published_at": "2026-04-04",
-      "source_url": "https://waseda-ac.jp/diary/detail/1324"
-    },
-    {
-      "id": "official-diary-1323",
-      "author": "平山果歩",
-      "title": "平山果歩：虎",
-      "published_at": "2026-04-03",
-      "source_url": "https://waseda-ac.jp/diary/detail/1323"
-    },
-    {
-      "id": "official-diary-1322",
-      "author": "権田浬",
-      "title": "権田浬：3年生になったらしいです",
-      "published_at": "2026-04-02",
-      "source_url": "https://waseda-ac.jp/diary/detail/1322"
-    },
-    {
-      "id": "official-diary-1321",
-      "author": "始関千華",
-      "title": "始関千華：前髪がなかなか伸びません",
-      "published_at": "2026-04-01",
-      "source_url": "https://waseda-ac.jp/diary/detail/1321"
     },
     {
       "id": "official-diary-1320",
@@ -1802,32 +591,11 @@
       "source_url": "https://waseda-ac.jp/diary/detail/1317"
     },
     {
-      "id": "official-diary-1314",
-      "author": "山崎 望",
-      "title": "山崎 望：＃歩くフィニッシュタイマー",
-      "published_at": "2026-03-27",
-      "source_url": "https://waseda-ac.jp/diary/detail/1314"
-    },
-    {
       "id": "official-diary-1313",
       "author": "金野真綾",
       "title": "金野真綾：満開の桜が楽しみ",
       "published_at": "2026-03-26",
       "source_url": "https://waseda-ac.jp/diary/detail/1313"
-    },
-    {
-      "id": "official-diary-1312",
-      "author": "青山侑樹",
-      "title": "青山侑樹：楽しんでなんぼやろ",
-      "published_at": "2026-03-25",
-      "source_url": "https://waseda-ac.jp/diary/detail/1312"
-    },
-    {
-      "id": "official-diary-1310",
-      "author": "舟生早織",
-      "title": "舟生早織：深く、アツく",
-      "published_at": "2026-03-24",
-      "source_url": "https://waseda-ac.jp/diary/detail/1310"
     },
     {
       "id": "official-diary-1309",
@@ -1844,74 +612,11 @@
       "source_url": "https://waseda-ac.jp/diary/detail/1308"
     },
     {
-      "id": "official-diary-1307",
-      "author": "鈴木翼沙",
-      "title": "鈴木翼沙：きっと運がいいほう",
-      "published_at": "2026-03-21",
-      "source_url": "https://waseda-ac.jp/diary/detail/1307"
-    },
-    {
-      "id": "official-diary-1306",
-      "author": "佐々木秀晟",
-      "title": "佐々木秀晟：運が良いのか悪いのか",
-      "published_at": "2026-03-20",
-      "source_url": "https://waseda-ac.jp/diary/detail/1306"
-    },
-    {
-      "id": "official-diary-1303",
-      "author": "内藤香乃",
-      "title": "内藤香乃：たまごっちパラダイス始めました",
-      "published_at": "2026-03-19",
-      "source_url": "https://waseda-ac.jp/diary/detail/1303"
-    },
-    {
-      "id": "official-diary-1301",
-      "author": "木村涼太",
-      "title": "木村涼太：我武者羅",
-      "published_at": "2026-03-18",
-      "source_url": "https://waseda-ac.jp/diary/detail/1301"
-    },
-    {
-      "id": "official-diary-1300",
-      "author": "岩下和史",
-      "title": "岩下和史：答え合わせ",
-      "published_at": "2026-03-17",
-      "source_url": "https://waseda-ac.jp/diary/detail/1300"
-    },
-    {
-      "id": "official-diary-1299",
-      "author": "江本亘",
-      "title": "江本亘：2021年12月以来の部員日記です",
-      "published_at": "2026-03-16",
-      "source_url": "https://waseda-ac.jp/diary/detail/1299"
-    },
-    {
       "id": "official-diary-1298",
       "author": "山口竣平",
       "title": "山口竣平：応援される選手に",
       "published_at": "2026-03-15",
       "source_url": "https://waseda-ac.jp/diary/detail/1298"
-    },
-    {
-      "id": "official-diary-1297",
-      "author": "木村健人",
-      "title": "木村健人：背負うという自覚",
-      "published_at": "2026-03-14",
-      "source_url": "https://waseda-ac.jp/diary/detail/1297"
-    },
-    {
-      "id": "official-diary-1296",
-      "author": "木下晏里",
-      "title": "木下晏里：冬を超えて見えてきたもの",
-      "published_at": "2026-03-13",
-      "source_url": "https://waseda-ac.jp/diary/detail/1296"
-    },
-    {
-      "id": "official-diary-1294",
-      "author": "正木紗",
-      "title": "正木紗：自分が正解",
-      "published_at": "2026-03-12",
-      "source_url": "https://waseda-ac.jp/diary/detail/1294"
     },
     {
       "id": "official-diary-1293",
@@ -1935,32 +640,11 @@
       "source_url": "https://waseda-ac.jp/diary/detail/1291"
     },
     {
-      "id": "official-diary-1290",
-      "author": "守屋浩睦",
-      "title": "守屋浩睦：ハラー・ヘッターと飯我慢の12時",
-      "published_at": "2026-03-08",
-      "source_url": "https://waseda-ac.jp/diary/detail/1290"
-    },
-    {
-      "id": "official-diary-1289",
-      "author": "眞下優音",
-      "title": "眞下優音：日々営業",
-      "published_at": "2026-03-07",
-      "source_url": "https://waseda-ac.jp/diary/detail/1289"
-    },
-    {
       "id": "official-diary-1288",
       "author": "髙尾啓太朗",
       "title": "髙尾啓太朗：つながり",
       "published_at": "2026-03-06",
       "source_url": "https://waseda-ac.jp/diary/detail/1288"
-    },
-    {
-      "id": "official-diary-1287",
-      "author": "林桜",
-      "title": "林桜：バイタリティ",
-      "published_at": "2026-03-05",
-      "source_url": "https://waseda-ac.jp/diary/detail/1287"
     },
     {
       "id": "official-diary-1286",
@@ -2012,102 +696,11 @@
       "source_url": "https://waseda-ac.jp/diary/detail/1277"
     },
     {
-      "id": "official-diary-1276",
-      "author": "谷中天架",
-      "title": "谷中天架：おばさんになりました。",
-      "published_at": "2026-02-25",
-      "source_url": "https://waseda-ac.jp/diary/detail/1276"
-    },
-    {
-      "id": "official-diary-1275",
-      "author": "林美希",
-      "title": "林美希：ほどなく、シーズンです",
-      "published_at": "2026-02-24",
-      "source_url": "https://waseda-ac.jp/diary/detail/1275"
-    },
-    {
       "id": "official-diary-1274",
       "author": "瀬間元輔",
       "title": "瀬間元輔：焦燥と決意",
       "published_at": "2026-02-23",
       "source_url": "https://waseda-ac.jp/diary/detail/1274"
-    },
-    {
-      "id": "official-diary-1273",
-      "author": "牛島壮司朗",
-      "title": "牛島壮司朗：モーーすぐシーズン！",
-      "published_at": "2026-02-22",
-      "source_url": "https://waseda-ac.jp/diary/detail/1273"
-    },
-    {
-      "id": "official-diary-1271",
-      "author": "水野琉之介",
-      "title": "水野琉之介：GIVER",
-      "published_at": "2026-02-21",
-      "source_url": "https://waseda-ac.jp/diary/detail/1271"
-    },
-    {
-      "id": "official-diary-1270",
-      "author": "丹野優泉子",
-      "title": "丹野優泉子：尊敬は I love you！",
-      "published_at": "2026-02-20",
-      "source_url": "https://waseda-ac.jp/diary/detail/1270"
-    },
-    {
-      "id": "official-diary-1269",
-      "author": "五味彩花",
-      "title": "五味彩花：Better",
-      "published_at": "2026-02-19",
-      "source_url": "https://waseda-ac.jp/diary/detail/1269"
-    },
-    {
-      "id": "official-diary-1259",
-      "author": "平田和",
-      "title": "平田和：心を燃やせ！",
-      "published_at": "2026-02-18",
-      "source_url": "https://waseda-ac.jp/diary/detail/1259"
-    },
-    {
-      "id": "official-diary-1257",
-      "author": "富樫優",
-      "title": "富樫優：揺らす",
-      "published_at": "2026-02-17",
-      "source_url": "https://waseda-ac.jp/diary/detail/1257"
-    },
-    {
-      "id": "official-diary-1256",
-      "author": "鴛渕有咲",
-      "title": "鴛渕有咲：今年も幸せなバレンタインでした！",
-      "published_at": "2026-02-16",
-      "source_url": "https://waseda-ac.jp/diary/detail/1256"
-    },
-    {
-      "id": "official-diary-1255",
-      "author": "松本悠斗",
-      "title": "松本悠斗：一歩引いて、一歩先へ",
-      "published_at": "2026-02-15",
-      "source_url": "https://waseda-ac.jp/diary/detail/1255"
-    },
-    {
-      "id": "official-diary-1254",
-      "author": "森田陽樹",
-      "title": "森田陽樹 : 自分を信じ抜く力",
-      "published_at": "2026-02-14",
-      "source_url": "https://waseda-ac.jp/diary/detail/1254"
-    },
-    {
-      "id": "official-diary-1253",
-      "author": "若菜敬",
-      "title": "若菜敬：現状",
-      "published_at": "2026-02-13",
-      "source_url": "https://waseda-ac.jp/diary/detail/1253"
-    },
-    {
-      "id": "official-diary-1252",
-      "author": "渕上翔太",
-      "title": "渕上翔太：軌跡",
-      "published_at": "2026-02-12",
-      "source_url": "https://waseda-ac.jp/diary/detail/1252"
     },
     {
       "id": "official-diary-1250",
@@ -2131,137 +724,11 @@
       "source_url": "https://waseda-ac.jp/diary/detail/1247"
     },
     {
-      "id": "official-diary-1246",
-      "author": "滝澤悠貴",
-      "title": "滝澤悠貴：山が好き",
-      "published_at": "2026-02-08",
-      "source_url": "https://waseda-ac.jp/diary/detail/1246"
-    },
-    {
-      "id": "official-diary-1245",
-      "author": "西徹朗",
-      "title": "西徹朗：海の底へ",
-      "published_at": "2026-02-07",
-      "source_url": "https://waseda-ac.jp/diary/detail/1245"
-    },
-    {
-      "id": "official-diary-1243",
-      "author": "村松悦基",
-      "title": "村松悦基：D.C. al Coda",
-      "published_at": "2026-02-06",
-      "source_url": "https://waseda-ac.jp/diary/detail/1243"
-    },
-    {
-      "id": "official-diary-1242",
-      "author": "千葉史織",
-      "title": "千葉史織：日が見えるということは",
-      "published_at": "2026-02-05",
-      "source_url": "https://waseda-ac.jp/diary/detail/1242"
-    },
-    {
-      "id": "official-diary-1240",
-      "author": "石原佳篤",
-      "title": "石原佳篤：老後と向き合うことで得られた考え方",
-      "published_at": "2026-02-04",
-      "source_url": "https://waseda-ac.jp/diary/detail/1240"
-    },
-    {
-      "id": "official-diary-1239",
-      "author": "髙木沙也",
-      "title": "髙木沙也：たゆたえども沈まず",
-      "published_at": "2026-02-03",
-      "source_url": "https://waseda-ac.jp/diary/detail/1239"
-    },
-    {
-      "id": "official-diary-1238",
-      "author": "山崎 望",
-      "title": "山崎 望：今日満月です。",
-      "published_at": "2026-02-02",
-      "source_url": "https://waseda-ac.jp/diary/detail/1238"
-    },
-    {
-      "id": "official-diary-1237",
-      "author": "熊倉花萌",
-      "title": "熊倉花萌：如月のはじまり",
-      "published_at": "2026-02-01",
-      "source_url": "https://waseda-ac.jp/diary/detail/1237"
-    },
-    {
       "id": "official-diary-1236",
       "author": "中島橙子",
       "title": "中島橙子：強さ",
       "published_at": "2026-01-31",
       "source_url": "https://waseda-ac.jp/diary/detail/1236"
-    },
-    {
-      "id": "official-diary-1234",
-      "author": "藤本涼哉",
-      "title": "藤本涼哉：自由",
-      "published_at": "2026-01-30",
-      "source_url": "https://waseda-ac.jp/diary/detail/1234"
-    },
-    {
-      "id": "official-diary-1233",
-      "author": "大圖希々",
-      "title": "大圖希々：授業終わり",
-      "published_at": "2026-01-29",
-      "source_url": "https://waseda-ac.jp/diary/detail/1233"
-    },
-    {
-      "id": "official-diary-1229",
-      "author": "山本真菜",
-      "title": "山本真菜：小さな目標と大きな野望",
-      "published_at": "2026-01-28",
-      "source_url": "https://waseda-ac.jp/diary/detail/1229"
-    },
-    {
-      "id": "official-diary-1228",
-      "author": "荒木星哉",
-      "title": "荒木星哉：負けない人生　負けない気持ち",
-      "published_at": "2026-01-27",
-      "source_url": "https://waseda-ac.jp/diary/detail/1228"
-    },
-    {
-      "id": "official-diary-1227",
-      "author": "イベル聖羅",
-      "title": "イベル聖羅：水はやべぇだろ",
-      "published_at": "2026-01-26",
-      "source_url": "https://waseda-ac.jp/diary/detail/1227"
-    },
-    {
-      "id": "official-diary-1226",
-      "author": "鈴木真帆",
-      "title": "鈴木真帆：4年生の皆さんありがとうございました！",
-      "published_at": "2026-01-25",
-      "source_url": "https://waseda-ac.jp/diary/detail/1226"
-    },
-    {
-      "id": "official-diary-1225",
-      "author": "鶴巻陽太",
-      "title": "鶴巻陽太：departure!",
-      "published_at": "2026-01-24",
-      "source_url": "https://waseda-ac.jp/diary/detail/1225"
-    },
-    {
-      "id": "official-diary-1224",
-      "author": "始関千華",
-      "title": "始関千華：考えるな、やれ。",
-      "published_at": "2026-01-23",
-      "source_url": "https://waseda-ac.jp/diary/detail/1224"
-    },
-    {
-      "id": "official-diary-1221",
-      "author": "眞下優音",
-      "title": "眞下優音：日々授業",
-      "published_at": "2026-01-22",
-      "source_url": "https://waseda-ac.jp/diary/detail/1221"
-    },
-    {
-      "id": "official-diary-1220",
-      "author": "佐々木悠人",
-      "title": "佐々木悠人：SASAKI in your area",
-      "published_at": "2026-01-21",
-      "source_url": "https://waseda-ac.jp/diary/detail/1220"
     },
     {
       "id": "official-diary-1219",
@@ -2304,20 +771,6 @@
       "title": "辻陽介：意味のあるものに（インフルすらも）",
       "published_at": "2026-01-15",
       "source_url": "https://waseda-ac.jp/diary/detail/1214"
-    },
-    {
-      "id": "official-diary-1212",
-      "author": "正木紗",
-      "title": "正木紗：レベルアップ",
-      "published_at": "2026-01-14",
-      "source_url": "https://waseda-ac.jp/diary/detail/1212"
-    },
-    {
-      "id": "official-diary-1211",
-      "author": "矢島杏紀",
-      "title": "矢島杏紀：星が見たい",
-      "published_at": "2026-01-13",
-      "source_url": "https://waseda-ac.jp/diary/detail/1211"
     },
     {
       "id": "official-diary-1207",
@@ -2381,14 +834,62 @@
       "title": "小平敦之: 勝つ",
       "published_at": "2026-01-04",
       "source_url": "https://waseda-ac.jp/diary/detail/1195"
-    },
-    {
-      "id": "official-diary-1194",
-      "author": "白石幸誠",
-      "title": "白石幸誠：217.1kmの、その先へ",
-      "published_at": "2026-01-01",
-      "source_url": "https://waseda-ac.jp/diary/detail/1194"
     }
   ],
-  "author_count": 145
+  "author_count": 44,
+  "long_distance_only": true,
+  "source_archive_total": 319,
+  "excluded_other_groups": 222,
+  "allowed_authors": [
+    "工藤慎作",
+    "小平敦之",
+    "髙尾啓太朗",
+    "高橋優喜",
+    "武田知典",
+    "広瀬夏希",
+    "増子陽季",
+    "宮本優希",
+    "安江悠登",
+    "山﨑一吹",
+    "浅川京平",
+    "大和田春",
+    "佐藤広人",
+    "鈴木翔瑛",
+    "瀬間元輔",
+    "立迫大徳",
+    "辻陽介",
+    "中島橙子",
+    "山口竣平",
+    "吉倉ナヤブ直希",
+    "安食光翔",
+    "神先強志",
+    "桑原マテウス大地",
+    "木暮耀幸",
+    "金野真綾",
+    "斉藤天紀",
+    "佐々木哲",
+    "鈴木琉胤",
+    "多田真",
+    "谷川航太",
+    "冨田拓臣",
+    "八谷謙太朗",
+    "堀野正太",
+    "山田晃央",
+    "上杉敦史",
+    "鈴木勇飛",
+    "髙久拓己",
+    "高舘友杜",
+    "新妻遼己",
+    "本田桜二郎",
+    "増子陽太",
+    "水出依寿",
+    "若狭奏汰",
+    "和田寛",
+    "山口智規",
+    "間瀬田純平",
+    "宮岡凛太",
+    "伊藤幸太郎"
+  ],
+  "roster_source_current": "https://waseda-ac.jp/team/member/block/3",
+  "roster_source_graduates_2026": "https://www.waseda.jp/top/news/117621"
 }
