@@ -126,6 +126,20 @@ $('histObNames').addEventListener('click',e=>{
 });
 $('histObExport').onclick=()=>exportRows(records.filter(r=>r.status==='OB'),'waseda_ob_2024_2025.csv');
 refresh2024();refreshOB();
+// Add workbook-only events to the existing 2025 event filter without overwriting its official records.
+const metric2025=$('arc25Metric');
+if(metric2025){
+ const known=new Set([...metric2025.options].map(o=>o.value));
+ for(const event of [...new Set(window.WSD_HISTORY_2025_SUPPLEMENT.map(r=>r.metric))].sort((a,b)=>a.localeCompare(b,'ja'))){
+  if(known.has(event))continue;
+  const option=document.createElement('option');option.value=event;option.textContent=event;
+  metric2025.appendChild(option);known.add(event);
+ }
+ const title=$('arc25Count');
+ const note=document.createElement('p');note.className='hist24-note';
+ note.textContent='2025年另有82条朋友整理的原始记录参与补充；页面会与已有官方及社区赛果按选手、日期和成绩去重。朋友整理记录均标为待复核，且不修改现有官方记录。';
+ title?.before(note);
+}
 window.WSD_REFRESH_2025_ARCHIVE?.();
 if(location.hash==='#archive2024')show('archive2024');
 if(location.hash==='#obarchive')show('obarchive');
