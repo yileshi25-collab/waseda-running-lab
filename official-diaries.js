@@ -211,8 +211,19 @@
       '<button class="btn btn-small" type="button" data-diary-cancel>取消</button></div></form>';
     async function save(payload) {
       if (!admin || !db) throw Error('只有管理员登录后才能管理官方日志。');
-      const {data, error} = await db.from(TABLE).upsert(payload, {onConflict:'diary_id'}).select('diary_id');
-      if (error || !data?.length) throw Error(error?.message || '保存未生效，请检查管理员权限。');
+      // PostgREST upsert attempts to update the conflict key as well, but the
+      // database deliberately grants UPDATE only on editable columns.
+      // Keep the original diary ID immutable and only send table columns.
+      const {diary_id, author, title, published_at, source_url, hidden} = payload;
+      const fields = {author, title, published_at, source_url, hidden};
+      if (!/^official-diary-[0-9]{1,8}$/.test(diary_id))
+        throw Error('无效的官网日志编号。');
+      const exists = overrides.some(row => row.diary_id === diary_id);
+      const query = exists
+        ? db.from(TABLE).update(fields).eq('diary_id', diary_id)
+        : db.from(TABLE).insert({diary_id, ...fields});
+      const {data, error} = await query.select('diary_id');
+      if (error || !data?.length) throw Error(error?.message || '保存未生效，请确认管理员登录状态和数据库权限。');
       await loadOverrides();
     }
     async function loadOverrides() {
