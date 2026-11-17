@@ -414,7 +414,9 @@
     // We never assume a race was from a specific school stage without evidence.
     const static2025=(Array.isArray(window.WSD_2025_ARCHIVE_ROWS)?window.WSD_2025_ARCHIVE_ROWS:[])
       .filter(r=>r.profileName===name);
+    const static2026=(Array.isArray(window.WSD_2026_ATHLETE_RESULTS)?window.WSD_2026_ATHLETE_RESULTS:[]).filter(r=>r.name===name);
     const rows=[
+      ...static2026.map(r=>({date:r.date||"2026",stage:"站内 2026 赛事档案",meet:r.meet||"",event:r.event||"",time:r.time||"",rank:r.rank,school:"",note:r.notes||"",source:r.link||"",communityId:null,raceRef:"2026-"+r.id})),
       ...static2025.map(r=>({date:r.date,stage:"站内 2025 赛事档案",
         meet:r.event||"",event:r.metric||"",time:r.time||"",rank:r.rank,
         school:"",note:r.note||"",source:r.source||"",communityId:null,raceRef:r.raceRef||""})),
@@ -447,7 +449,7 @@
       .join("|")+";"+admin+";"+[...ownPostIds].join(",");
     if(section.dataset.historyKey===visibleKey)return;
     const histories=[...groups].map(([year,items])=>
-      '<details class="wsd-career-year" '+(year==="2025"?'open':"")+'><summary>'+esc(year)+' 年 · '+items.length+' 条</summary>'+
+      '<details class="wsd-career-year" '+(year==="2026"?'open':"")+'><summary>'+esc(year)+' 年 · '+items.length+' 条</summary>'+
       items.map(r=>'<div class="wsd-career-record">'+
         '<div class="wsd-career-record-head"><time>'+esc(r.date)+'</time><span class="wsd-career-stage">'+esc(r.stage)+'</span></div>'+
         '<div class="wsd-career-record-meet">'+esc(r.meet)+' · '+esc(r.event)+'</div>'+
@@ -458,15 +460,15 @@
         '<div class="wsd-race-editorial-slot" data-wsd-race-attach data-wsd-race-ref="'+esc(r.raceRef||"")+'" data-wsd-athlete="'+esc(name)+'"></div>'+
         '<div class="wsd-career-record-foot">'+
           (r.communityId?'<span class="wsd-community-origin">跑友补录 · 未经独立核实</span>':
-            '<span class="wsd-community-origin">站内 2025 原始档案</span>')+
+            '<span class="wsd-community-origin">站内赛事档案</span>')+
           sourceLink(r.source,"成绩来源")+
           (r.communityId&&(admin||ownPostIds.has(r.communityId))?
             '<button class="wsd-community-delete" type="button" data-wsd-delete="'+esc(r.communityId)+'">删除我的补充</button>':"")+
         '</div></div>').join("")+'</details>'
     ).join("");
-    section.innerHTML='<div class="wsd-athlete-photo-heading"><h4>历年／中学成绩 · CAREER HISTORY</h4>'+
+    section.innerHTML='<div class="wsd-athlete-photo-heading"><h4>选手赛事记录 · RACE HISTORY</h4>'+
       '<span>'+rows.length+' 条</span></div>'+
-      '<p class="wsd-career-intro">按比赛年份归档，可补充大学、初中及高中成绩。原始资料与社区补充会明确区分；未经核实的投稿不会修改个人 PB。</p>'+
+      '<p class="wsd-career-intro">按年份由新到旧排列：2026 → 2025 → 更早年份。可补充大学、初中及高中成绩。原始资料与社区补充会明确区分；未经核实的投稿不会修改个人 PB。</p>'+
       (histories||'<p class="wsd-career-empty">暂无关联的历年或中学成绩，欢迎补录。</p>')+
       '<button class="btn btn-small wsd-career-add" type="button" data-wsd-add-history="'+esc(name)+'">＋ 为 '+esc(name)+' 补充历年／中学成绩</button>';
     section.dataset.historyKey=visibleKey;
