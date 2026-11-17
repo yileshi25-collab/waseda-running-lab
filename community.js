@@ -122,7 +122,7 @@
     return '<article class="wsd-editorial-entry">'+
       '<div class="wsd-editorial-entry-head"><span class="wsd-editorial-tag">'+
         esc(editorialCategories[row.category]||"补充资料")+'</span>'+
-        '<small>'+esc(row.display_name)+' · '+(row.is_official?esc(row.published_at):new Date(row.created_at).toLocaleDateString("zh-CN"))+'</small></div>'+
+        '<small>'+esc(row.display_name)+' · '+(row.is_official||row.category==="diary"&&row.published_at?esc(row.published_at):new Date(row.created_at).toLocaleDateString("zh-CN"))+(row.is_official?" · 官网索引":row.category==="diary"?" · 跑友补录／待核实":"")+'</small></div>'+
       '<strong>'+esc(row.title)+'</strong>'+(row.related_athletes?.length?'<p>关联选手：'+esc(linkedNames(row).join('、'))+'</p>':'')+
       (row.body?'<p class="wsd-editorial-body">'+esc(row.body)+'</p>':"")+
       (https(row.source_url||"")?'<a href="'+esc(row.source_url)+'" rel="noopener noreferrer nofollow" target="_blank">阅读采访／原文链接 ↗</a>':"")+
@@ -151,7 +151,7 @@
     const raceRows=careerHistoryFor(name).rows;
     const raceByRef=new Map(raceRows.filter(x=>x.raceRef).map(x=>[x.raceRef,x]));
     const entries=[...publicEditorialEntries("bio",name,null),...editorial.filter(x=>x.scope==="race"&&linkedNames(x).includes(name))];
-    const sig=entries.map(x=>[x.id,x.category,x.title,x.body,x.source_url,x.display_name,(x.related_athletes||[]).join(",")].join("~")).join("||")+"|"+[...ownEditorialIds].join(",")+"|"+admin+"|"+!!user;
+    const sig=entries.map(x=>[x.id,x.category,x.title,x.body,x.source_url,x.display_name,x.published_at||"",(x.related_athletes||[]).join(",")].join("~")).join("||")+"|"+[...ownEditorialIds].join(",")+"|"+admin+"|"+!!user;
     if(panel.dataset.wsdEditorialSignature===sig||panel.querySelector("[data-wsd-editorial-form]"))return;
     const groups=[["bio","选手介绍","个人经历、跑步背景"],["diary","部员日志","训练日记、部员感想"],["interview","选手采访","官方采访、媒体专访"],["summary","赛后总结","比赛回顾、赛后感想"],["article","相关文章／相关新闻","新闻报道、专题文章"],["analysis","赛事分析","表现分析、跑友观察"],["other","其他补充","其他选手相关资料"]];
     panel.innerHTML='<div class="wsd-athlete-photo-heading"><h4>选手资料 · ATHLETE LIBRARY</h4>'+
@@ -188,11 +188,15 @@
   }
   async function refreshEditorial(){
     const {data,error}=await sb.from(EDITORIAL)
-      .select("id,athlete_name,related_athletes,scope,race_ref,category,title,body,source_url,display_name,created_at")
+      .select("id,athlete_name,related_athletes,scope,race_ref,category,title,body,source_url,display_name,created_at,published_at")
       .order("created_at",{ascending:false}).limit(1500);
     if(error){note("读取选手简介／采访资料失败："+error.message,true);return;}
     editorial=data||[];
     await loadOwnEditorialIds();
+    window.WSD_COMMUNITY_DIARIES=editorial.filter(row=>row.scope==="bio"&&row.category==="diary"&&
+      /^https:\/\/waseda-ac\.jp\/diary\/detail\/\d{1,8}$/.test(row.source_url||""));
+    window.WSD_COMMUNITY_DIARY_PERMISSIONS={admin,user:!!user,editableIds:[...ownEditorialIds]};
+    window.dispatchEvent(new Event("wsd-community-diaries-updated"));
     const head=$("detailBody")?.querySelector(".detail-head");
     const name=head?.querySelector("h2")?.textContent?.trim();
     if(name)decorateBio(name,head);
@@ -351,7 +355,7 @@
     const feed=$("wsdFeed");
     const expanded=new Set([...feed.querySelectorAll("details[data-wsd-feed-category][open]")].map(el=>el.dataset.wsdFeedCategory));
     const renderPost=r=>{
-      if(r.kind==="editorial")return '<article class="wsd-post wsd-editorial-entry"><div class="wsd-post-body"><div class="wsd-post-type">ARTICLE / '+esc(editorialCategories[r.category]||"文字资料")+'</div><h4>'+esc(r.title)+'</h4><p>选手：'+esc(r.athlete_name)+'</p>'+(r.body?'<p>'+esc(r.body)+'</p>':"")+'<small>投稿者：'+esc(r.display_name)+' · '+new Date(r.created_at).toLocaleString("zh-CN")+'</small><footer>'+sourceLink(r.source_url,"阅读原文")+(user&&(admin||ownEditorialIds.has(r.id))?'<button type="button" data-wsd-editorial-edit="'+esc(r.id)+'">编辑投稿</button> <button type="button" data-wsd-editorial-delete="'+esc(r.id)+'">删除投稿</button>':"")+'</footer></div></article>';
+      if(r.kind==="editorial")return '<article class="wsd-post wsd-editorial-entry"><div class="wsd-post-body"><div class="wsd-post-type">ARTICLE / '+esc(editorialCategories[r.category]||"文字资料")+'</div><h4>'+esc(r.title)+'</h4><p>选手：'+esc(r.athlete_name)+'</p>'+(r.category==="diary"&&r.published_at?'<p>原文发布日期：'+esc(r.published_at)+' · 跑友补录／待核实</p>':"")+(r.body?'<p>'+esc(r.body)+'</p>':"")+'<small>投稿者：'+esc(r.display_name)+' · '+new Date(r.created_at).toLocaleString("zh-CN")+'</small><footer>'+sourceLink(r.source_url,"阅读原文")+(user&&(admin||ownEditorialIds.has(r.id))?'<button type="button" data-wsd-editorial-edit="'+esc(r.id)+'">编辑投稿</button> <button type="button" data-wsd-editorial-delete="'+esc(r.id)+'">删除投稿</button>':"")+'</footer></div></article>';
       const image=r.kind==="photo"?postImage(r):"";
       const chosen=r.kind==="photo"?coverPhoto(resolveAthleteName(r.athlete_name)):null;
       const isCover=chosen?.id===r.id;
@@ -382,7 +386,7 @@
     feed.innerHTML=items.length?categories.map(([kind,label])=>{
       const group=items.filter(r=>r.kind===kind);
       if(active!=="all"&&active!==kind)return "";
-      return '<details class="wsd-feed-category" data-wsd-feed-category="'+kind+'" '+(expanded.has(kind)||(!feed.dataset.wsdGrouped&&kind==="race")?'open':"")+'><summary style="cursor:pointer;padding:12px 4px;font-weight:700">'+esc(label)+' · '+group.length+' 条</summary><div class="wsd-feed-category-content">'+(group.length?group.map(renderPost).join(""):'<p class="wsd-community-help">暂无此类投稿。</p>')+'</div></details>';
+      return '<details class="wsd-feed-category" data-wsd-feed-category="'+kind+'" '+(expanded.has(kind)||(!feed.dataset.wsdGrouped&&(kind==="race"||kind==="editorial"))?'open':"")+'><summary style="cursor:pointer;padding:12px 4px;font-weight:700">'+esc(label)+' · '+group.length+' 条</summary><div class="wsd-feed-category-content">'+(group.length?group.map(renderPost).join(""):'<p class="wsd-community-help">暂无此类投稿。</p>')+'</div></details>';
     }).join(""):'<div class="wsd-community-skeleton">暂无此类投稿。登录后可上传第一条。</div>';
     feed.dataset.wsdGrouped="1";
     decorateRoster();
@@ -1270,6 +1274,7 @@
       (raceRef?' data-wsd-race-ref="'+esc(raceRef)+'"':"")+'>'+
       choices+raceChoice+
       '<label>关联其他选手（可多选，用逗号分隔；最多20人）<input name="related_athletes" type="text" maxlength="1000" placeholder="例如：增子陽太、本田桜二郎、新妻遼己"></label>'+
+      '<label>原文发布日期（部员日志可选）<input name="published_at" type="date" min="2020-01-01"></label>'+
       '<label>标题<input name="title" type="text" maxlength="100" minlength="2" required placeholder="'+
         (scope==="bio"?'例如：选手经历与比赛风格':'例如：赛后采访／赛事回顾')+'"></label>'+
       '<label>手写内容（可选）<textarea name="body" rows="5" maxlength="4000" placeholder="可以直接撰写简介、采访摘要或比赛总结；请勿整段复制未经许可的文章。"></textarea></label>'+
@@ -1300,7 +1305,7 @@
       const old=card.querySelector(".wsd-editorial-admin-form");if(old){old.remove();return;}
       const form=document.createElement("form");form.className="wsd-editorial-admin-form";
       form.style.cssText="margin-top:12px;padding:12px;border:1px solid #e1ccd4;border-radius:8px;display:grid;gap:8px";
-      const fields=[["related_athletes","关联其他选手（用逗号分隔）",(row.related_athletes||[]).join("、"),1000],["title","标题",row.title,100],["body","正文",row.body,4000],["source_url","来源链接",row.source_url||"",400],["display_name","署名",row.display_name,30]];
+      const fields=[...(row.category==="diary"?[["athlete_name","对应选手／原文作者",row.athlete_name,75],["published_at","原文发布日期",row.published_at||"",10]]:[]),["related_athletes","关联其他选手（用逗号分隔）",(row.related_athletes||[]).join("、"),1000],["title","标题",row.title,100],["body","正文",row.body,4000],["source_url","来源链接",row.source_url||"",400],["display_name","署名",row.display_name,30]];
       const category=document.createElement("select");category.name="category";
       for(const [key,label] of Object.entries(editorialCategories)){const option=document.createElement("option");option.value=key;option.textContent=label;option.selected=row.category===key;category.append(option);}
       const categoryLabel=document.createElement("label");categoryLabel.textContent="资料分类 ";categoryLabel.append(category);form.append(categoryLabel);
@@ -1309,13 +1314,18 @@
         const input=key==="body"?document.createElement("textarea"):document.createElement("input");
         input.name=key;input.maxLength=max;input.value=value||"";
         if(key==="body")input.rows=5;
+        if(key==="published_at"){input.type="date";input.min="2020-01-01";}
         input.style.cssText="display:block;width:100%;margin-top:4px";wrap.append(input);form.append(wrap);
       }
       const save=document.createElement("button");save.type="submit";save.className="btn btn-primary btn-small";save.textContent="保存修改";form.append(save);
       const status=document.createElement("p");status.setAttribute("role","status");form.append(status);
       form.onsubmit=async event=>{
         event.preventDefault();if(!user||(!admin&&!ownEditorialIds.has(row.id)))return;
-        const payload={related_athletes:parseLinkedNames(form.elements.namedItem("related_athletes").value,row.athlete_name),category:category.value,title:form.elements.namedItem("title").value.trim(),body:form.elements.namedItem("body").value.trim(),source_url:form.elements.namedItem("source_url").value.trim()||null,display_name:form.elements.namedItem("display_name").value.trim()};
+        const editedAthlete=row.category==="diary"?resolveAthleteName(form.elements.namedItem("athlete_name").value.trim()):row.athlete_name;
+        const payload={related_athletes:parseLinkedNames(form.elements.namedItem("related_athletes").value,editedAthlete),category:category.value,title:form.elements.namedItem("title").value.trim(),body:form.elements.namedItem("body").value.trim(),source_url:form.elements.namedItem("source_url").value.trim()||null,display_name:form.elements.namedItem("display_name").value.trim()};
+        if(row.category==="diary"){payload.athlete_name=editedAthlete;payload.published_at=form.elements.namedItem("published_at").value||null;}
+        if(payload.athlete_name&&(payload.athlete_name.length<2||payload.athlete_name.length>75)){status.textContent="选手姓名长度无效";return;}
+        if(payload.published_at&&!/^20\d\d-\d\d-\d\d$/.test(payload.published_at)){status.textContent="发布日期格式无效";return;}
         if(!payload.title||payload.title.length<2||!payload.display_name||payload.display_name.length<2||(!payload.body&&!payload.source_url)){status.textContent="标题、署名和正文／链接需要填写完整";return;}
         if(payload.source_url&&!https(payload.source_url)){status.textContent="来源链接须使用 HTTPS";return;}
         if(["summary","analysis"].includes(payload.category)&&row.scope!=="race"){status.textContent="赛后总结／赛事分析需要关联具体比赛";return;}
@@ -1376,6 +1386,7 @@
     const url=form.elements.namedItem("source_url").value.trim();
     const displayName=form.elements.namedItem("display_name").value.trim();
     const category=form.elements.namedItem("category")?.value;
+    const publishedAt=category==="diary"?form.elements.namedItem("published_at")?.value||null:null;
     if(!["bio","race"].includes(scope)||name.length<2||name.length>75){fail("选手姓名无效。");return;}
     if(scope==="race"&&!editorialRaceRefValid(raceRef)){fail("关联赛事编号无效。");return;}
     if(!["bio","interview","summary","diary","article","analysis","other"].includes(category)||(scope==="race"&&category==="bio")){fail("资料类型无效。");return;}
@@ -1383,13 +1394,14 @@
     if(title.length<2||title.length>100||body.length>4000||displayName.length<2||displayName.length>30){fail("请检查标题、正文及署名长度。");return;}
     if(!body&&!url){fail("请填写文字内容或原文链接，至少填写一项。");return;}
     if(url&&!https(url)){fail("链接需要使用 HTTPS，且长度不超过 400 字。");return;}
+    if(publishedAt&&(!/^20\d\d-\d\d-\d\d$/.test(publishedAt)||Number.isNaN(Date.parse(publishedAt)))){fail("发布日期无效。");return;}
     const button=form.querySelector('button[type="submit"]');
     button.disabled=true;button.textContent="正在发布…";
     try{
       const {error}=await sb.from(EDITORIAL).insert({
         author_id:user.id,athlete_name:name,scope,
         race_ref:scope==="race"?raceRef:null,related_athletes:parseLinkedNames(form.elements.namedItem("related_athletes")?.value,name),category,title,body,
-        source_url:url||null,display_name:displayName
+        source_url:url||null,display_name:displayName,published_at:publishedAt
       });
       if(error)throw error;
       status.textContent="已公开发布！";
@@ -1599,6 +1611,7 @@
     }).catch(err=>rankEditStatus('提交失败：'+err.message,true)).finally(()=>{submit.disabled=false;});
   });
 
+  window.addEventListener("wsd-community-editorial-refresh",()=>{refreshEditorial().catch(err=>note("日志更新失败："+err.message,true));});
   sb.auth.onAuthStateChange(()=>{setTimeout(()=>{setAuth().catch(()=>{});},0);});
   const officialIndex=await window.WSD_OFFICIAL_DIARIES_READY;
   function syncOfficialDiaries(){
