@@ -46,8 +46,8 @@ const styles=[
 ].join('\n');
 const st=document.createElement('style');st.textContent=styles;document.head.appendChild(st);
 const viewH='<section class="view" id="view-racehistory"><div class="sectionhead"><div><div class="eyebrow">EKIDEN · HISTORICAL ARCHIVE</div><h2>早稻田历年驿传战绩</h2><p>按赛事与年份检索团队总成绩，展开查看区间表现</p></div></div>'+
-'<div class="wrec-wrap"><div class="wrec-statline"><span>已录入赛事 <strong id="wrecTotal"></strong></span><span>箱根历史范围 <strong>1920—2026</strong></span></div>'+
-'<p class="wrec-keyline">官方历届箱根记录覆盖第1—102回。目前网站展示已结构化录入的年份；其他历史赛事可进入下方十届原始档案。不同年代赛道不同，不直接按用时给跨时代排名。</p>'+
+'<div class="wrec-wrap"><div class="wrec-statline"><span>已收录赛果 <strong id="wrecTotal"></strong></span><span>箱根历史范围 <strong>1920—2026</strong></span></div>'+
+'<p class="wrec-keyline">已按官网导入第1—102回箱根资料（含未参赛年份）；出云和全日本持续补录。不同年代赛道不同，不直接按用时给跨时代排名。</p>'+
 '<div class="wrec-tools"><select id="wrecRace"><option value="all">三大驿传</option><option value="hak">箱根驿传</option><option value="izu">出云驿传</option><option value="zen">全日本大学驿传</option></select><select id="wrecDecade"><option value="all">全部年代</option></select><input type="search" id="wrecSearch" placeholder="搜索年份或届次，例如 2011"></div><p class="wrec-keyline" id="wrecSummary"></p><div class="wrec-cards" id="wrecList"></div></div>'+
 '<div class="wrec-wrap"><h3>箱根驿传 · 分年代原始档案</h3><p class="wrec-keyline">覆盖第1—102回的官方资料，尚未结构化录入的年份可在这里查阅。</p><div class="wrec-source-links" id="wrecArchives"></div></div>'+
 '<div class="wrec-wrap"><h3>2024—2026 · 同区间最快（已收录范围）</h3><p class="wrec-keyline">仅比较2024、2025、2026三个已录入赛季的箱根区间，<strong>不是早稻田历代区间纪录</strong>、也不是大会区间纪录。不同赛道时期不可混排。</p><div class="wrec-leggrid" id="wrecLegBest"></div></div></section>';
@@ -72,9 +72,9 @@ function legsHtml(r){
 function renderHistory(){
  const t=$('wrecRace').value,y=$('wrecSearch').value.trim(),d=$('wrecDecade').value;
  const filtered=all.filter(r=>(t==='all'||r.race===t)&&(d==='all'||r.year>=Number(d)&&r.year<Number(d)+10)&&(!y||String(r.year).includes(y)||String(r.edition||'').includes(y)));
- $('wrecTotal').textContent=all.length;
- $('wrecSummary').textContent='显示 '+filtered.length+' / '+all.length+' 场已录入赛事';
- $('wrecList').innerHTML=filtered.map((r,i)=>'<details class="wrec-card" '+(i===0?'open':'')+'><summary><strong>'+r.year+' · '+esc(raceNames[r.race])+(r.edition?'（第'+r.edition+'回）':'')+'</strong><span>第'+r.rank+'名　'+esc(r.total)+'　⌄</span></summary><div class="wrec-details">'+(r.out?'<p class="wrec-keyline">往路：'+esc(r.out)+' · 复路：'+esc(r.back)+'</p>':'')+legsHtml(r)+'<p class="wrec-keyline">'+urlLink(r.source)+'</p></div></details>').join('')||'<p class="wrec-keyline">此筛选暂无已录入记录，其他年份可查看官网原始档案。</p>';
+ $('wrecTotal').textContent=all.filter(x=>x.total).length;
+ $('wrecSummary').textContent='显示 '+filtered.length+' / '+all.length+' 条历史记录（包括未参赛年份）';
+ $('wrecList').innerHTML=filtered.map((r,i)=>'<details class="wrec-card" '+(i===0?'open':'')+'><summary><strong>'+r.year+' · '+esc(raceNames[r.race])+(r.edition?'（第'+r.edition+'回）':'')+'</strong><span>'+(r.status==='not_participated'?'未参赛':'第'+r.rank+'名　'+esc(r.total))+'　⌄</span></summary><div class="wrec-details">'+(r.out?'<p class="wrec-keyline">往路：'+esc(r.out)+' · 复路：'+esc(r.back)+'</p>':'')+(r.status==='not_participated'?'<p class="wrec-keyline">'+esc(r.reason||'未参赛')+'</p>':legsHtml(r))+(r.source_format_note?'<p class="wrec-keyline">'+esc(r.source_format_note)+'</p>':'')+'<p class="wrec-keyline">'+urlLink(r.source)+'</p></div></details>').join('')||'<p class="wrec-keyline">此筛选暂无已录入记录，其他年份可查看官网原始档案。</p>';
 }
 function renderLegBest(){
  const rows=D.hakone.filter(r=>r.year>=2024&&r.year<=2026&&r.legs?.length===10);
