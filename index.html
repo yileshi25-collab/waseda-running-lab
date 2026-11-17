@@ -131,6 +131,22 @@
 .hak27-alert{border-radius:9px;background:#fff0ed;border:1px solid #f0c9c0;color:#9d4436;padding:10px 12px;font-size:12px;line-height:1.7;margin-top:12px}
 @media(max-width:750px){.hak27-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hak27-row{grid-template-columns:58px minmax(0,1fr) 115px}.hak27-row .leg-hint{grid-column:2/-1}}
 @media(max-width:430px){.hak27-row{grid-template-columns:48px minmax(0,1fr)}.hak27-row .time-field{grid-column:2}.hak27-row .leg-hint{grid-column:2}}
+
+/* 2027 Hakone fan lineup vote */
+.hak27-vote{margin-top:20px;padding-top:20px;border-top:1px solid #efe4e8}
+.hak27-vote h3{margin:0 0 6px;font-size:17px;color:#612a41}
+.hak27-vote p{line-height:1.75;font-size:12px;color:#85737b}
+.hak27-vote-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:15px}
+.hak27-vote-leg{border:1px solid #eee1e6;background:#fff;border-radius:12px;padding:14px}
+.hak27-vote-leg header{font-weight:850;font-size:12px;color:#6c2842;margin-bottom:11px}
+.hak27-vote-row{display:grid;grid-template-columns:20px minmax(0,1fr) 44px;gap:7px;align-items:center;margin:9px 0;font-size:11px}
+.hak27-vote-row .who{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#51404a}
+.hak27-vote-row strong{color:#70324c;text-align:right;font-variant-numeric:tabular-nums}
+.hak27-vote-row .bar{grid-column:2/-1;height:5px;background:#f2eaee;border-radius:3px;margin-top:-3px;overflow:hidden}
+.hak27-vote-row .bar i{display:block;height:100%;background:#8a3a59;border-radius:3px}
+.hak27-vote-status{font-size:11px;line-height:1.6;color:#846f7c;margin-top:10px}
+.hak27-vote-total{font-size:12px;font-weight:750;color:#653047}
+@media(max-width:650px){.hak27-vote-grid{grid-template-columns:1fr}}
 </style>
 <link rel="stylesheet" href="community.css?v=20261117-editorial1">
 </head>
@@ -177,6 +193,20 @@
     <div class="hak27-section">往路 · 2027年1月2日</div><div class="hak27-rows" id="hak27Outbound"></div>
     <div class="hak27-section">复路 · 2027年1月3日</div><div class="hak27-rows" id="hak27Return"></div>
     <div id="hak27Issues" aria-live="polite"></div>
+<div class="hak27-vote" id="hak27PollBoard">
+ <div class="eyebrow">COMMUNITY PREDICTION · FAN VOTE</div>
+ <h3>跑友预测热度榜 · 2027箱根</h3>
+ <p>先为全部10区各选一名选手，再点「提交我的阵容」；每个区间会统计跑友选择最多的选手。投票与官方名单完全无关。无需填写姓名，提交后仅公开汇总票数。</p>
+ <div class="hak27-actions">
+  <button class="btn btn-small btn-primary" id="hak27VoteSubmit" type="button">提交我的10区预测</button>
+  <button class="btn btn-small" id="hak27VoteRefresh" type="button">刷新投票热度 ↻</button>
+  <span class="hak27-vote-total" id="hak27VoteTotal">正在读取投票统计…</span>
+ </div>
+ <div class="hak27-vote-status" id="hak27VoteStatus" aria-live="polite"></div>
+ <div class="hak27-vote-grid" id="hak27VoteLegs"></div>
+ <p class="hak27-note">统计说明：每份有效预测须包含10位不重复的现役选手，每份预测为各区贡献1票。当前以浏览器随机标识限制重复提交，不是实名验证，也不具备严格的反刷票能力。投票提交后不能在当前版本中修改；更改本地模拟名单不会改变已提交的投票。本站不公开个人浏览器标识。</p>
+</div>
+
     <p class="hak27-note">候选人来自本站2026学年度现役男子长距离名单；已毕业的2026箱根历史参赛者不会出现。分配区间不代表资格确认；正式出场可能因伤病、状态和报名而变化。不同赛道、上下坡、风力与天气会影响区间成绩，平地10000m PB不能直接推算箱根用时。填写格式为 1:05:30（时:分:秒），留空则不参与总时间计算。</p>
   </div>
 </section>
@@ -573,6 +603,75 @@ $('hak27Export').addEventListener('click',()=>{
  const total=$('hak27Total').textContent;
  download('waseda_hakone_2027_fan_simulation.csv','\ufeff2027箱根驿传跑友非官方模拟\n区间,距离,自选选手,预估用时\n'+line.join('\n')+'\n总预估时间,,,'+total+'\n','text/csv;charset=utf-8');
 });
+
+
+/* Public poll: uses publishable (non-secret) API key. Database exposes aggregate views only. */
+const HAK27_POLL_API='https://oflrjljywtqpgrcetwob.supabase.co/rest/v1';
+const HAK27_POLL_PUBLIC_KEY='sb_publishable_a0jgI2U8sq1h-UrdJi_EiQ_i7-pKFNN';
+async function hak27PollFetch(endpoint,options={}){
+ const res=await fetch(HAK27_POLL_API+endpoint,{
+  ...options,headers:{'apikey':HAK27_POLL_PUBLIC_KEY,'Content-Type':'application/json',...(options.headers||{})}
+ });
+ if(!res.ok){const detail=await res.json().catch(()=>({}));const error=new Error(detail.message||detail.code||'HTTP '+res.status);error.status=res.status;error.code=detail.code;throw error;}
+ return res.status===204?null:res.json();
+}
+function setHak27VoteStatus(msg,isError=false){
+ const el=$('hak27VoteStatus');if(!el)return;
+ el.textContent=msg;el.style.color=isError?'#a43f3f':'#806d78';
+}
+async function refreshHak27Votes(){
+ const container=$('hak27VoteLegs'),total=$('hak27VoteTotal');
+ total.textContent='正在读取投票统计…';
+ try{
+  const [raw,summary]=await Promise.all([
+   hak27PollFetch('/wsd_hak27_popularity?select=leg,athlete,votes&order=leg.asc,votes.desc'),
+   hak27PollFetch('/wsd_hak27_summary?select=submissions')
+  ]);
+  const n=summary?.[0]?.submissions||0;
+  total.textContent='已提交 '+n+' 份完整阵容';
+  container.innerHTML=Array.from({length:10},(_,i)=>{
+   const rows=(raw||[]).filter(x=>x.leg===i+1).sort((a,b)=>b.votes-a.votes||a.athlete.localeCompare(b.athlete,'ja')).slice(0,3);
+   const max=rows[0]?.votes||1;
+   return '<article class="hak27-vote-leg"><header>第'+(i+1)+'区 · '+HAK27_DIST[i].toFixed(1)+'km</header>'+
+    (rows.length?rows.map((x,j)=>'<div class="hak27-vote-row"><span>'+(j+1)+'</span><span class="who" title="'+escapeHTML(x.athlete)+'">'+escapeHTML(x.athlete)+'</span><strong>'+x.votes+'票</strong><div class="bar"><i style="width:'+Math.round(100*x.votes/max)+'%"></i></div></div>').join(''):'<p class="hak27-note">尚无预测投稿</p>')+'</article>';
+  }).join('');
+ }catch(err){
+  total.textContent='投票统计暂不可用';container.innerHTML='';
+  setHak27VoteStatus('热度榜读取失败：'+(err.message||'网络故障')+'。本地模拟仍可使用。',true);
+ }
+}
+async function submitHak27Vote(){
+ if(state.hak27VoteSubmitted){setHak27VoteStatus('此浏览器已提交过预测。更改本地阵容不会修改已提交的投票。');return;}
+ const picks=hak27Plan().map(x=>x.athlete);
+ const candidates=new Set(getCurrentAthletes().filter(x=>x.gender==='男'&&!x.communityOnly).map(x=>x.name));
+ if(picks.some(x=>!candidates.has(x))){setHak27VoteStatus('请先为10个区间分别选择一名现役选手，再提交。',true);return;}
+ if(new Set(picks).size!==10){setHak27VoteStatus('不能让同一名选手跑两个区间，请检查重复选人。',true);return;}
+ if(!window.crypto?.randomUUID){setHak27VoteStatus('浏览器不支持安全随机标识，请换用较新的浏览器。',true);return;}
+ if(!confirm('提交这份10区预测并计入公开热度统计？提交后不能修改，且不公开你的浏览器标识。'))return;
+ const btn=$('hak27VoteSubmit');btn.disabled=true;btn.textContent='正在提交…';
+ try{
+  if(!state.hak27VoteToken){state.hak27VoteToken=crypto.randomUUID();persist();}
+  await hak27PollFetch('/wsd_hak27_votes',{method:'POST',
+   headers:{'Prefer':'return=minimal'},
+   body:JSON.stringify({browser_token:state.hak27VoteToken,lineup:picks})});
+  state.hak27VoteSubmitted=true;persist();btn.textContent='已提交 ✓';
+  setHak27VoteStatus('提交成功！你的阵容已计入各区热度统计。');
+  await refreshHak27Votes();
+ }catch(err){
+  if(err.code==='23505'){
+   state.hak27VoteSubmitted=true;persist();btn.textContent='已提交 ✓';
+   setHak27VoteStatus('此浏览器的预测此前已经计入统计，不会重复计票。');
+   await refreshHak27Votes();
+  }else{
+   setHak27VoteStatus('投票提交失败：'+(err.message||'网络故障')+'。本地模拟已保留，可稍后重试。',true);
+   btn.disabled=false;btn.textContent='提交我的10区预测';
+  }
+ }
+}
+$('hak27VoteSubmit').addEventListener('click',submitHak27Vote);
+$('hak27VoteRefresh').addEventListener('click',refreshHak27Votes);
+if(state.hak27VoteSubmitted){$('hak27VoteSubmit').disabled=true;$('hak27VoteSubmit').textContent='已提交 ✓';setHak27VoteStatus('此浏览器已提交过一次预测。');}
+refreshHak27Votes();
 
 setupNav();renderHak27();updateCurrentMetrics();renderRank();renderTrend();renderRoster();renderRace();renderCompare();renderNotebook();renderSources();const start=location.hash.replace('#','');if(navItems.some(x=>x[0]===start))show(start);
 
