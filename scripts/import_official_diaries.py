@@ -14,6 +14,35 @@ from urllib.request import Request, urlopen
 
 BASE = 'https://waseda-ac.jp'
 
+ROSTER_PATH = Path(__file__).resolve().parents[1] / 'data' / 'official-diary-eligible-authors-2026.json'
+
+def normalize_author(name):
+    """Normalize spaces and legacy Japanese character variants for name matching."""
+    return unicodedata.normalize('NFKC', name).replace('髙', '高').replace('﨑', '崎').translate(
+        str.maketrans('', '', ' \u3000\t\n\r'))
+
+def filter_long_distance(index, roster):
+    """Keep current long-distance athletes plus those who graduated in March 2026."""
+    if roster['year'] != index['year']:
+        raise ValueError('Roster year does not match archive year')
+    permitted = roster['current'] + roster['graduates_2026']
+    lookup = {normalize_author(name) for name in permitted}
+    rows = [r for r in index['entries'] if normalize_author(r['author']) in lookup]
+    if not rows:
+        raise ValueError('Long-distance roster produced no matching diaries')
+    result = dict(index)
+    result['entries'] = rows
+    result['total'] = len(rows)
+    result['author_count'] = len({normalize_author(r['author']) for r in rows})
+    result['long_distance_only'] = True
+    result['source_archive_total'] = index['total']
+    result['excluded_other_groups'] = index['total'] - len(rows)
+    result['allowed_authors'] = permitted
+    result['roster_source_current'] = roster['source_current']
+    result['roster_source_graduates_2026'] = roster['source_graduates']
+    return result
+
+
 def plain(value):
     return unescape(re.sub(r'<[^>]*>', '', value)).strip()
 
@@ -86,6 +115,9 @@ if __name__ == '__main__':
     parser.add_argument('--cache-dir', type=Path, default=Path('work/official-diaries-cache'))
     args = parser.parse_args()
     result = build(args.year, args.as_of, args.cache_dir)
+    if args.year == 2026:
+        roster = json.loads(ROSTER_PATH.read_text(encoding='utf-8'))
+        result = filter_long_distance(result, roster)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
     print(f'Indexed {result["total"]} diaries, {result["author_count"]} authors (whitespace normalized); oldest {result["entries"][-1]["published_at"]}')
