@@ -236,15 +236,33 @@
        location.hash.includes("access_token=");
   }
   const roster=Array.isArray(window.WSD_ATHLETE_NAMES)?window.WSD_ATHLETE_NAMES:[];
+  // Normalize common Simplified/Traditional/Japanese name variants before matching.
+  // Keep the canonical spelling from the roster when storing linked athletes.
+  const athleteNameVariants={
+    "增":"増","增":"増","桜":"桜","樱":"桜","櫻":"桜","阳":"陽","陽":"陽",
+    "辽":"遼","遼":"遼","泽":"澤","沢":"澤","澤":"澤","斋":"齋","斉":"齋","齊":"齋","齋":"齋",
+    "岛":"島","嶋":"島","島":"島","边":"邊","辺":"邊","邊":"邊","滨":"濱","浜":"濱","濱":"濱",
+    "广":"廣","広":"廣","廣":"廣","龙":"龍","竜":"龍","龍":"龍","冈":"岡","岡":"岡",
+    "桥":"橋","橋":"橋","东":"東","東":"東","宫":"宮","宮":"宮","国":"國","國":"國",
+    "气":"氣","気":"氣","氣":"氣","优":"優","優":"優","马":"馬","馬":"馬",
+    "岛":"島","岛":"島","藤":"藤","树":"樹","樹":"樹","纪":"紀","紀":"紀",
+    "岛":"島","长":"長","長":"長","关":"關","関":"關","關":"關",
+    "齐":"齋","会":"會","會":"會","彻":"徹","徹":"徹","贵":"貴","貴":"貴",
+    "实":"實","実":"實","實":"實","濑":"瀬","瀨":"瀬","瀬":"瀬",
+    "户":"戸","戶":"戸","戸":"戸","广":"廣","鸟":"鳥","鳥":"鳥",
+    "濑":"瀬","边":"邊","滨":"濱","泷":"瀧","滝":"瀧","瀧":"瀧",
+    "崎":"崎","坂":"坂","内":"内","內":"内","叶":"葉","葉":"葉"
+  };
+  const athleteNameKey=name=>String(name||"").normalize("NFKC").replace(/[\\s·・･]/g,"").toLowerCase()
+    .replace(/./gu,ch=>athleteNameVariants[ch]||ch);
   function resolveAthleteName(name){
     const val=String(name||"").trim();
-    const normalized=val.replace(/\s+/g,"").toLowerCase();
-    const registered=roster.find(n=>n.replace(/\s+/g,"").toLowerCase()===normalized);
+    const normalized=athleteNameKey(val);
+    const registered=roster.find(n=>athleteNameKey(n)===normalized);
     if(registered)return registered;
     try{
       if(typeof ANNUAL_2026!=="undefined"){
-        const record=ANNUAL_2026.find(r=>
-          String(r.csvName||"").replace(/\s+/g,"").toLowerCase()===normalized);
+        const record=ANNUAL_2026.find(r=>athleteNameKey(r.csvName||"")===normalized||athleteNameKey(r.name||"")===normalized);
         if(record)return record.name;
       }
     }catch(e){}
