@@ -148,13 +148,13 @@
     const entries=publicEditorialEntries("bio",name,null);
     const sig=entries.map(x=>x.id).join(",")+"|"+[...ownEditorialIds].join(",")+"|"+admin+"|"+!!user;
     if(panel.dataset.wsdEditorialSignature===sig||panel.querySelector("[data-wsd-editorial-form]"))return;
-    const groups=[["bio","选手介绍"],["diary","部员日志"],["interview","选手采访"],["summary","赛后总结"],["article","相关文章"],["analysis","赛事分析"],["other","其他补充"]];
+    const groups=[["bio","选手介绍","个人经历、跑步背景"],["diary","部员日志","训练日记、部员感想"],["interview","选手采访","官方采访、媒体专访"],["summary","赛后总结","比赛回顾、赛后感想"],["article","相关文章","新闻报道、专题文章"],["analysis","赛事分析","表现分析、跑友观察"],["other","其他补充","其他选手相关资料"]];
     panel.innerHTML='<div class="wsd-athlete-photo-heading"><h4>选手资料 · ATHLETE LIBRARY</h4>'+
       '<span>'+entries.length+' 条资料</span></div>'+
-      groups.map(([category,label],i)=>{
+      groups.map(([category,label,description],i)=>{
         const list=entries.filter(x=>x.category===category);
         return '<details class="wsd-athlete-editorial-group" data-wsd-editorial-group="'+category+'" '+(i===0?'open':"")+' style="border-top:1px solid #eee1e6;padding:9px 0">'+
-          '<summary style="cursor:pointer;font-weight:700;padding:5px 0">'+esc(label)+' · '+list.length+' 条</summary>'+
+          '<summary style="cursor:pointer;font-weight:700;padding:5px 0">'+esc(label)+' <small style="font-weight:400;color:#96818b;margin-left:8px">'+esc(description)+'</small> · '+list.length+' 条</summary>'+
           (list.length?list.map(editorialEntryHTML).join(""):'<p class="wsd-editorial-empty">暂无此类资料。</p>')+'</details>';
       }).join("")+
       '<div class="wsd-editorial-actions">'+editorialAddButton("bio",name,null,"＋ 添加选手资料")+'</div>'+
