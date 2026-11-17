@@ -65,6 +65,40 @@ def parse_time(value: str) -> str | None:
     return m.group(0) if m else None
 
 
+
+LEG_RE = re.compile(
+    r"(?<!\d)(?P<leg>10|[1-9])区\s*(?:[\(（]\s*(?P<km>\d+(?:\.\d+)?)\s*km\s*[\)）])?\s*"
+    r"(?P<name>.{2,65}?)\s+"
+    r"(?P<time>\d{1,2}[:.]\d{2}(?:[:.]\d{2})?)\s*"
+    r"(?:[◎○]\s*)?区間\s*(?P<rank>\d{1,2})\s*位",
+    re.S
+)
+
+
+def extract_legs(segment: str) -> list[dict]:
+    # Per-race segment begins after the numbered edition heading.
+    # 10 validated leg numbers are required; never fabricate a missing leg.
+    if "個人成績" not in segment:
+        return []
+    personal = segment.split("個人成績", 1)[1]
+    found = []
+    for match in LEG_RE.finditer(personal):
+        leg = int(match["leg"])
+        name = re.sub(r"\s+", " ", match["name"]).strip()
+        if not (1 <= leg <= 10 and 2 <= len(name) <= 40):
+            continue
+        time = match["time"]
+        km = float(match["km"]) if match["km"] else None
+        found.append({
+            "leg": leg, "name": name, "time": time,
+            "rank": int(match["rank"]), "km": km,
+        })
+    # Ignore accidental duplicate captures and malformed editions.
+    if len(found) != 10 or [x["leg"] for x in found] != list(range(1, 11)):
+        return []
+    return found
+
+
 def extract_one_page(detail_id: int, html: str) -> list[dict]:
     soup = BeautifulSoup(html, "html.parser")
     # Remove navigation/footer so sidebar decade links cannot be mistaken
@@ -113,7 +147,7 @@ def extract_one_page(detail_id: int, html: str) -> list[dict]:
             "out_rank": parsed["out_rank"],
             "back_rank": parsed["back_rank"],
             "source": SOURCE.format(detail_id),
-            "legs": [],
+            "legs": extract_legs(part),
             **({"source_format_note": "官网总成绩数字存在「分秒」顺序排版问题，按时分秒规范化"} if "分秒" in TIME_RANK["総合成績"].search(part)[1] else {}),
         })
     return found
@@ -155,9 +189,12 @@ def main() -> None:
     nonparticipants = sum(1 for r in results.values() if r.get("status") == "not_participated")
     if nonparticipants != 7:
         raise RuntimeError(f"Expected 7 documented Waseda non-participations, got {nonparticipants}")
+    covered_legs = sum(len(r.get("legs", [])) == 10 for r in results.values())
+    print(f"Validated 10-leg breakdowns for {covered_legs}/{len(results)-nonparticipants} participating editions")
     old["hakone"] = sorted(results.values(), key=lambda r: r["year"])
     old.setdefault("meta", {})["completeHakone"] = True
     old["meta"]["fetched"] = datetime.now(timezone.utc).date().isoformat()
+    old["meta"]["hakoneLegCoverage"] = covered_legs
     old["meta"]["source"] = "https://waseda-ac.jp/record/"
     text = "/* Official Waseda records, imported from publicly available record-room pages. */\n" + HEAD + json.dumps(old, ensure_ascii=False, separators=(",", ":")) + ";\n"
     TARGET.write_text(text, "utf-8")
