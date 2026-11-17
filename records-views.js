@@ -87,7 +87,7 @@ function renderHistory(){
  $('wrecList').innerHTML=filtered.slice(0,historyLimit).map((r,i)=>'<details class="wrec-card"><summary><strong>'+r.year+' · '+esc(raceNames[r.race])+(r.edition?'（第'+r.edition+'回）':'')+'</strong><span>'+(r.status==='not_participated'?'未参赛':'第'+r.rank+'名　'+esc(r.total))+'　⌄</span></summary><div class="wrec-details">'+(r.out?'<p class="wrec-keyline">往路：'+esc(r.out)+' · 复路：'+esc(r.back)+'</p>':'')+(r.status==='not_participated'?'<p class="wrec-keyline">'+esc(r.reason||'未参赛')+'</p>':legsHtml(r))+(r.source_format_note?'<p class="wrec-keyline">'+esc(r.source_format_note)+'</p>':'')+'<p class="wrec-keyline">'+urlLink(r.source)+'</p><div class="wsd-open-controls">'+editBtn('ekiden',r._editKey)+'</div></div></details>').join('')||'<p class="wrec-keyline">此筛选暂无已录入记录，其他年份可查看官网原始档案。</p>';
 }
 function renderLegBest(){
- const rows=D.hakone.filter(r=>r.year>=2024&&r.year<=2026&&r.legs?.length===10);
+ const rows=archiveHistory().filter(r=>r.race==='hak'&&r.year>=2024&&r.year<=2026&&r.legs?.length===10);
  let items=[];
  for(let i=1;i<=10;i++){
   const candidates=rows.map(r=>({year:r.year,l:r.legs.find(x=>x.leg===i)})).filter(x=>x.l?.time);
