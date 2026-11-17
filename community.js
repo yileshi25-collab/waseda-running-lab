@@ -496,6 +496,15 @@
     }
     decorateCareerHistory(name,head);
     decorateBio(name,head);
+    // Stable profile order: basic information, editorial bio, athlete photos, race history.
+    const basic=body.querySelector(".wsd-athlete-bio:not(.wsd-community-gallery)");
+    const editorialBio=body.querySelector(".wsd-community-gallery.wsd-athlete-bio");
+    const photos=body.querySelector(".wsd-athlete-photo-section");
+    const career=body.querySelector(".wsd-career-history");
+    let preceding=head;
+    for(const element of [basic,editorialBio,photos,career]){
+      if(element){preceding.after(element);preceding=element;}
+    }
     const result=photoCardsFor(name);
     const cards=section.querySelector("[data-wsd-photo-cards]");
     const coverSlot=section.querySelector("[data-wsd-photo-cover]");
