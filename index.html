@@ -186,6 +186,20 @@
 .int-rank-count{font-size:11px;color:#846f79;background:#f1e5eb;padding:3px 8px;border-radius:10px}
 .int-rank-event .int-rank-table{min-width:520px}
 .int-rank-event .tablewrap{margin:0}
+.int-rank-contribution{margin:12px 0}
+.int-rank-contribution details{border:1px solid #e6dce1;border-radius:10px;background:#fff}
+.int-rank-contribution summary{padding:12px 14px;cursor:pointer;font-weight:700;color:#67354b}
+.int-rank-form{padding:0 14px 14px;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.int-rank-form label{display:flex;flex-direction:column;gap:5px;color:#735664;font-size:11px;font-weight:650}
+.int-rank-form input,.int-rank-form select{width:100%;border:1px solid #d9c9d1;border-radius:7px;padding:10px 9px;background:#fff;color:#3f3036;font-size:12px}
+.int-rank-form .int-rank-full{grid-column:1/-1}
+.int-rank-form .int-rank-submit{grid-column:1/-1;justify-self:start}
+.int-rank-help{color:#826c78;font-size:11px;line-height:1.7;margin:0 14px 13px}
+.int-rank-review{padding:10px 14px;border-top:1px solid #e9dfe4}
+.int-rank-review-item{border:1px solid #e9dfe4;border-radius:8px;padding:10px;margin:8px 0}
+.int-rank-review-item small{display:block;color:#876d79;margin:5px 0}
+.int-rank-review-item .tools{gap:7px;margin-top:8px}
+.int-rank-editor-status{font-size:11px;color:#725160;padding:0 14px 12px;white-space:pre-wrap}
 </style>
 <link rel="stylesheet" href="community.css?v=20261117-editorial1">
 </head>
@@ -215,6 +229,7 @@
  <summary class="int-rank-section-summary"><span><span class="eyebrow">WORLD ATHLETICS · RANKING SNAPSHOTS</span><strong>国际排名 · World / Asia Rankings</strong><small>按项目分类查看排名 · 点击标题可展开／收起整个区域</small></span><span class="int-rank-chevron" aria-hidden="true">⌄</span></summary>
  <div class="int-rank-section-body">
   <div class="int-rank-head"><p>排名按项目分组；点击各项目标题展开／收起。数据保留官方公布日期及来源。</p><button class="btn btn-small" id="rankInternationalRefresh" type="button">刷新排名 ↻</button></div>
+  <div id="rankContributionMount" class="int-rank-contribution"></div>
   <div id="rankInternationalGroups" aria-live="polite"><p class="int-rank-note">排名读取中…</p></div>
   <p class="int-rank-note">官方排名快照不是实时榜单。亚洲地区名次若无可靠官方依据则留空；未收录不代表选手未上榜。每个项目仅展示选手最新一条记录，历史快照保留在数据库中。</p>
  </div>
