@@ -114,6 +114,7 @@
 @media(max-width:700px){.race-insight-metrics{grid-template-columns:1fr 1fr}.race-insight-cards{grid-template-columns:1fr}}
 
 .wsd-race-category{border:1px solid #e8dce2;border-radius:13px;margin:12px 0;background:#fff;overflow:hidden}.wsd-race-category>summary{cursor:pointer;padding:15px 17px;font-weight:800;color:#692b45;display:flex;justify-content:space-between;gap:12px;align-items:center}.wsd-race-category>summary small{font-size:11px;font-weight:500;color:#907d86}.wsd-race-category-grid{padding:5px 14px 15px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:12px}.wsd-race-category-grid article{margin:0}@media(max-width:500px){.wsd-race-category>summary{align-items:flex-start;flex-direction:column;gap:4px}}
+.arc25-meet-fold{margin:12px 0;border:1px solid #eadce2;border-radius:12px;overflow:hidden}.arc25-meet-fold>summary{cursor:pointer;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:14px;color:#692640;background:#faf4f6}.arc25-meet-fold>summary span{font-size:12px;color:#897580}.arc25-meet-fold .hdr{padding:12px 14px}
 /* 2027 Hakone virtual line-up planner */
 .hak27{margin-top:32px}.hak27-head{background:linear-gradient(110deg,#481526,#812b49);border-radius:17px;padding:23px 24px;color:white;margin-bottom:14px}
 .hak27-head .eyebrow{color:#e7b5c7}.hak27-head h2{font-size:22px;margin:7px 0}.hak27-head p{font-size:12px;color:#f4dce5;line-height:1.8;margin:0}
@@ -988,8 +989,10 @@ const events=[...new Set(RESULTS.map(x=>x.metric))].sort((a,b)=>a.localeCompare(
 $a('arc25Metric').innerHTML+='<option value="other-ekiden">驿传各区</option>'+events.filter(x=>!x.includes('区')).map(x=>`<option value="${htmlSafe(x)}">${htmlSafe(x)}</option>`).join('');
 let selected='hak';
 function renderRelays(){
- $a('arc25Races').innerHTML=Object.entries(RELAYS).map(([key,r])=>`<button class="arc25-race ${selected===key?'active':''}" data-arc25-race="${key}"><div class="nm">${htmlSafe(r.name)}</div><strong>第 ${r.rank} 名</strong><small>${r.date} · ${r.total} · ${r.legs.length} 区</small></button>`).join('');
- const r=RELAYS[selected];$a('arc25Legs').innerHTML=`<div class="hdr"><b>${r.name} · 逐区成绩</b><a style="font-size:11px;color:#823351;text-decoration:underline" href="${SRC[selected]}" target="_blank" rel="noopener">查看官方赛果 ↗</a></div><div class="arc25-legs"><table><thead><tr><th>区间</th><th>跑者</th><th>里程</th><th>区间成绩</th><th>区间名次</th></tr></thead><tbody>${r.legs.map(([name,km,time,rank],i)=>`<tr><td>${i+1} 区</td><td><strong>${htmlSafe(name)}</strong></td><td>${km} km</td><td style="font-variant-numeric:tabular-nums;font-weight:800">${time}</td><td>${rank===1?'🏅 ':''}${rank} 位</td></tr>`).join('')}</tbody></table></div>`;
+
+ $a('arc25Races').innerHTML=Object.entries(RELAYS).map(([key,r])=>`<button type="button" class="arc25-race ${selected===key?'active':''}" data-arc25-race="${key}" aria-pressed="${selected===key}"><div class="nm">${htmlSafe(r.name)}</div><strong>第 ${r.rank} 名</strong><small>${r.date} · ${r.total} · ${r.legs.length} 区</small></button>`).join('');
+ $a('arc25Legs').innerHTML=Object.entries(RELAYS).map(([key,r])=>`<details class="arc25-meet-fold" data-arc25-meet="${key}" ${selected===key?'open':''}><summary><b>${htmlSafe(r.name)}</b><span>${r.legs.length} 区 · 第 ${r.rank} 名 · ${r.total}</span></summary><div class="hdr"><b>完整区间成绩</b><a style="font-size:11px;color:#823351;text-decoration:underline" href="${SRC[key]}" target="_blank" rel="noopener">查看官方赛果 ↗</a></div><div class="arc25-legs"><table><thead><tr><th>区间</th><th>跑者</th><th>里程</th><th>区间成绩</th><th>区间名次</th></tr></thead><tbody>${r.legs.map(([name,km,time,rank],i)=>`<tr><td>${i+1} 区</td><td><strong>${htmlSafe(name)}</strong></td><td>${km} km</td><td style="font-variant-numeric:tabular-nums;font-weight:800">${time}</td><td>${rank===1?'🏅 ':''}${rank} 位</td></tr>`).join('')}</tbody></table></div></details>`).join('');
+
 }
 function allArchiveRows(){
  const community=(window.WSD_COMMUNITY_RACES||[])
