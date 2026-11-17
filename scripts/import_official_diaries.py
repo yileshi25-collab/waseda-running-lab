@@ -83,7 +83,7 @@ if __name__ == '__main__':
     parser.add_argument('--year', type=int, default=2026)
     parser.add_argument('--as-of', type=date.fromisoformat, required=True)
     parser.add_argument('--output', type=Path, default=Path('data/official-diaries-2026.json'))
-    parser.add_argument('--cache-dir', type=Path, default=Path('/workspace/work/official-diaries-cache'))
+    parser.add_argument('--cache-dir', type=Path, default=Path('work/official-diaries-cache'))
     args = parser.parse_args()
     result = build(args.year, args.as_of, args.cache_dir)
     args.output.parent.mkdir(parents=True, exist_ok=True)

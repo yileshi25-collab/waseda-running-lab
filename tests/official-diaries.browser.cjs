@@ -29,6 +29,13 @@ const assert = require('node:assert/strict');
     const dates=await group.locator('.wsd-editorial-entry-head small').allTextContents();
     assert.ok(dates.every(text=>text.includes('2026-')));
     assert.equal(await group.locator('[data-wsd-editorial-delete],[data-wsd-editorial-edit]').count(),0);
-    console.log('Browser checks passed: index, pagination, whitespace search, January, mobile fit, canonical athlete association and read-only official entries.');
+    const offline=await browser.newPage();
+    await offline.route('https://cdn.jsdelivr.net/npm/@supabase/**',route=>route.abort());
+    await offline.route('https://*.supabase.co/**',route=>route.abort());
+    await offline.goto('http://127.0.0.1:8080/');
+    await offline.evaluate(()=>show('community'));
+    await offline.waitForFunction(()=>document.querySelector('[data-diary-status]')?.textContent.includes('319'));
+    await offline.close();
+    console.log('Browser checks passed: index, pagination, whitespace search, January, mobile fit, canonical athlete association read-only official entries and availability without Supabase.');
   } finally { await browser.close(); }
 })().catch(error=>{console.error(error);process.exitCode=1;});
