@@ -682,6 +682,8 @@ renderSeason();
 
 /* 2027 箱根模拟: 用2026学年度现役名单，2027年1月比赛前仅用于非官方情景研究 */
 const HAK27_DIST=[21.3,23.1,21.4,20.9,20.8,20.8,21.3,21.4,23.1,23.0];
+// 2026 Hakone section averages (rounded, third-party analysis); guidance only, not athlete forecasts.
+const HAK27_REF=["1:01:29","1:07:20","1:02:19","1:02:14","1:12:29","0:58:57","1:03:39","1:05:20","1:09:08","1:09:42"];
 function hak27Plan(){
  const raw=state.hak27;
  return Array.from({length:10},(_,i)=>{
@@ -703,8 +705,10 @@ function renderHak27(){
  const choices=getCurrentAthletes().filter(x=>x.gender==='男'&&!x.communityOnly).sort((x,y)=>(x.grade||99)-(y.grade||99)||seconds(x.pb10000)-seconds(y.pb10000)||x.name.localeCompare(y.name,'ja'));
  const make=(i)=>{
    const v=a[i],choicesHTML='<option value="">— 请选择选手 —</option>'+choices.map(x=>'<option value="'+escapeHTML(x.name)+'" '+(v.athlete===x.name?'selected':'')+'>'+escapeHTML(x.name)+' · '+(x.grade||'?')+'年级'+(x.pb10000?' · 10000m '+escapeHTML(x.pb10000):'')+'</option>').join('');
-   return '<div class="hak27-row"><div class="leg-id">'+(i+1)+'区<small>'+HAK27_DIST[i].toFixed(1)+'km</small></div><label><select aria-label="第'+(i+1)+'区选手" data-hak27-athlete="'+i+'">'+choicesHTML+'</select></label><label class="time-field"><input aria-label="第'+(i+1)+'区预计用时" data-hak27-time="'+i+'" inputmode="numeric" placeholder="1:05:30" maxlength="8" value="'+escapeHTML(v.time)+'"></label><span class="leg-hint">'+(['平坦／下坡','长距离关键区','山前衔接','起伏路段','山上坡','山下坡','往路转复路','后半段调整','长距离关键区','最终决胜区'][i])+'</span></div>';
+   return '<div class="hak27-row"><div class="leg-id">'+(i+1)+'区<small>'+HAK27_DIST[i].toFixed(1)+'km</small></div><label><select aria-label="第'+(i+1)+'区选手" data-hak27-athlete="'+i+'">'+choicesHTML+'</select></label><label class="time-field"><input aria-label="第'+(i+1)+'区预计用时" data-hak27-time="'+i+'" inputmode="numeric" placeholder="'+HAK27_REF[i]+'" maxlength="8" value="'+escapeHTML(v.time)+'"><small style="display:block;margin-top:4px;font-size:10px;color:#806d76">2026 区间平均：'+HAK27_REF[i]+'</small><button type="button" class="btn btn-small" style="margin-top:4px;padding:4px 7px;font-size:10px" data-hak27-use-ref="'+i+'">填入参考</button></label><span class="leg-hint">'+(['平坦／下坡','长距离关键区','山前衔接','起伏路段','山上坡','山下坡','往路转复路','后半段调整','长距离关键区','最终决胜区'][i])+'</span></div>';
  };
+ const refNote=document.getElementById('hak27RefNote');
+ if(refNote)refNote.innerHTML='各区参考时间采用 2026 年箱根驿传区间平均用时，仅帮助填写，不代表早稻田选手的预测成绩。<a href="https://free-research.hateblo.jp/entry/2026/01/09/174000" target="_blank" rel="noopener noreferrer">数据说明 ↗</a>';
  $('hak27Outbound').innerHTML=Array.from({length:5},(_,i)=>make(i)).join('');
  $('hak27Return').innerHTML=Array.from({length:5},(_,i)=>make(i+5)).join('');
  updateHak27Stats();
@@ -730,6 +734,13 @@ document.addEventListener('change',e=>{
  const id=e.target.dataset.hak27Athlete;
  if(id===undefined)return;
  const idx=Number(id),a=hak27Plan();a[idx].athlete=e.target.value;state.hak27=a;persist();updateHak27Stats();
+});
+document.addEventListener('click',e=>{
+ const btn=e.target.closest('[data-hak27-use-ref]');if(!btn)return;
+ const idx=Number(btn.dataset.hak27UseRef),a=hak27Plan();
+ a[idx].time=HAK27_REF[idx];state.hak27=a;persist();
+ const input=document.querySelector('[data-hak27-time="'+idx+'"]');if(input)input.value=a[idx].time;
+ updateHak27Stats();
 });
 document.addEventListener('input',e=>{
  const id=e.target.dataset.hak27Time;
