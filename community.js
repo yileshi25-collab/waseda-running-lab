@@ -289,7 +289,7 @@
     const feed=$("wsdFeed");
     const expanded=new Set([...feed.querySelectorAll("details[data-wsd-feed-category][open]")].map(el=>el.dataset.wsdFeedCategory));
     const renderPost=r=>{
-      if(r.kind==="editorial")return '<article class="wsd-post"><div class="wsd-post-body"><div class="wsd-post-type">ARTICLE / '+esc(editorialCategories[r.category]||"文字资料")+'</div><h4>'+esc(r.title)+'</h4><p>选手：'+esc(r.athlete_name)+'</p>'+(r.body?'<p>'+esc(r.body)+'</p>':"")+'<small>投稿者：'+esc(r.display_name)+' · '+new Date(r.created_at).toLocaleString("zh-CN")+'</small><footer>'+sourceLink(r.source_url,"阅读原文")+'</footer></div></article>';
+      if(r.kind==="editorial")return '<article class="wsd-post wsd-editorial-entry"><div class="wsd-post-body"><div class="wsd-post-type">ARTICLE / '+esc(editorialCategories[r.category]||"文字资料")+'</div><h4>'+esc(r.title)+'</h4><p>选手：'+esc(r.athlete_name)+'</p>'+(r.body?'<p>'+esc(r.body)+'</p>':"")+'<small>投稿者：'+esc(r.display_name)+' · '+new Date(r.created_at).toLocaleString("zh-CN")+'</small><footer>'+sourceLink(r.source_url,"阅读原文")+'</footer></div></article>';
       const image=r.kind==="photo"?postImage(r):"";
       const chosen=r.kind==="photo"?coverPhoto(resolveAthleteName(r.athlete_name)):null;
       const isCover=chosen?.id===r.id;
@@ -312,6 +312,7 @@
          '<div class="wsd-race-editorial-slot" data-wsd-race-attach data-wsd-race-ref="community-'+esc(r.id)+'" data-wsd-athlete="'+esc(resolveAthleteName(r.athlete_name))+'"></div>')+
        '<footer>'+sourceLink(r.source_url,"资料来源")+
        (user?'<button data-wsd-report="'+esc(r.id)+'" type="button">举报</button>':'<small>登录后可举报</small>')+
+       (admin?'<button type="button" data-wsd-post-edit="'+esc(r.id)+'">管理员编辑</button>':"")+
        (user&&(admin||ownPostIds.has(r.id))?'<button class="wsd-community-delete" data-wsd-delete="'+esc(r.id)+'" type="button">'+(admin&&!ownPostIds.has(r.id)?'管理员删除':'删除我的投稿')+'</button>':"")+
        '</footer></div></article>';
     };
@@ -930,6 +931,44 @@
         '</span><button data-wsd-admin-delete="'+esc(id)+'" class="btn btn-small wsd-community-delete" type="button">管理员永久删除</button></div>'
       ).join("")||'<p>暂无举报</p>');
   }
+  document.addEventListener("click",e=>{
+    const btn=e.target.closest("[data-wsd-post-edit]");if(!btn||!admin||!user)return;
+    e.preventDefault();
+    const row=posts.find(x=>x.id===btn.dataset.wsdPostEdit);if(!row)return;
+    const card=btn.closest(".wsd-post");if(!card)return;
+    const old=card.querySelector(".wsd-post-admin-form");if(old){old.remove();return;}
+    const form=document.createElement("form");form.className="wsd-post-admin-form";
+    form.style.cssText="padding:12px;margin-top:10px;border:1px solid #dfcbd2;border-radius:8px;display:grid;gap:8px";
+    const fields=row.kind==="race"?[
+      ["athlete_name","选手",row.athlete_name],["meet_name","赛事名称",row.meet_name||""],["event_name","项目",row.event_name||""],["race_date","日期",row.race_date||""],["result_time","成绩",row.result_time||""],["rank","名次",row.rank||""],["source_url","来源链接",row.source_url||""],["notes","补充说明",row.notes||""]]:[
+      ["athlete_name","选手",row.athlete_name],["image_credit","照片署名",row.image_credit||""],["source_url","来源链接",row.source_url||""],["notes","补充说明",row.notes||""]];
+    for(const [key,label,value] of fields){
+      const wrap=document.createElement("label");wrap.textContent=label+" ";
+      const input=document.createElement("input");input.name=key;input.value=value;input.style.cssText="display:block;width:100%";
+      if(key==="race_date")input.type="date";
+      wrap.append(input);form.append(wrap);
+    }
+    const save=document.createElement("button");save.type="submit";save.className="btn btn-primary btn-small";save.textContent="保存修改";form.append(save);
+    const status=document.createElement("p");status.setAttribute("role","status");form.append(status);
+    form.onsubmit=async event=>{
+      event.preventDefault();if(!admin||!user)return;
+      const payload=Object.fromEntries(fields.map(([key])=>[key,form.elements.namedItem(key).value.trim()]));
+      if(!payload.athlete_name||payload.athlete_name.length<2){status.textContent="请填写有效选手姓名";return;}
+      if(payload.source_url&&!https(payload.source_url)){status.textContent="来源链接必须为 HTTPS";return;}
+      if(row.kind==="race"){
+        if(!payload.meet_name||!payload.event_name||!payload.race_date||!/^\\d{1,2}(:\\d{2}){1,2}(\\.\\d{1,2})?$/.test(payload.result_time)){status.textContent="赛事、项目、日期或成绩格式不正确";return;}
+        if(payload.rank&&!/^\\d+$/.test(payload.rank)){status.textContent="名次须为正整数";return;}
+        payload.rank=payload.rank?Number(payload.rank):null;
+      }
+      if(row.kind==="photo"&&!payload.image_credit){status.textContent="请填写照片署名";return;}
+      for(const key of ["source_url","notes","meet_name"])if(key in payload&&!payload[key])payload[key]=key==="notes"?"":null;
+      save.disabled=true;
+      const {data,error}=await sb.from(TABLE).update(payload).eq("id",row.id).select("id");
+      if(error||!data?.length){status.textContent="修改失败："+(error?.message||"没有权限");save.disabled=false;return;}
+      await refresh();note("投稿已修改。");
+    };
+    card.append(form);
+  });
   async function deletePost(id){
     if(deleting)return;
     if(!user){note("请先使用 Google 登录后再删除投稿。",true);return;}
