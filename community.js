@@ -150,7 +150,7 @@
     const raceRows=careerHistoryFor(name).rows;
     const raceByRef=new Map(raceRows.filter(x=>x.raceRef).map(x=>[x.raceRef,x]));
     const entries=[...publicEditorialEntries("bio",name,null),...editorial.filter(x=>x.scope==="race"&&resolveAthleteName(x.athlete_name)===name)];
-    const sig=entries.map(x=>x.id).join(",")+"|"+[...ownEditorialIds].join(",")+"|"+admin+"|"+!!user;
+    const sig=entries.map(x=>[x.id,x.category,x.title,x.body,x.source_url,x.display_name].join("~")).join("||")+"|"+[...ownEditorialIds].join(",")+"|"+admin+"|"+!!user;
     if(panel.dataset.wsdEditorialSignature===sig||panel.querySelector("[data-wsd-editorial-form]"))return;
     const groups=[["bio","选手介绍","个人经历、跑步背景"],["diary","部员日志","训练日记、部员感想"],["interview","选手采访","官方采访、媒体专访"],["summary","赛后总结","比赛回顾、赛后感想"],["article","相关文章／相关新闻","新闻报道、专题文章"],["analysis","赛事分析","表现分析、跑友观察"],["other","其他补充","其他选手相关资料"]];
     panel.innerHTML='<div class="wsd-athlete-photo-heading"><h4>选手资料 · ATHLETE LIBRARY</h4>'+
@@ -175,7 +175,7 @@
       const raceRef=slot.dataset.wsdRaceRef||"";
       if(!name||!raceRef)return;
       const entries=publicEditorialEntries("race",name,raceRef);
-      const sig=entries.map(x=>x.id).join(",")+"|"+[...ownEditorialIds].join(",")+"|"+admin+"|"+!!user;
+      const sig=entries.map(x=>[x.id,x.category,x.title,x.body,x.source_url,x.display_name].join("~")).join("||")+"|"+[...ownEditorialIds].join(",")+"|"+admin+"|"+!!user;
       if(slot.dataset.wsdEditorialSignature===sig||slot.querySelector("[data-wsd-editorial-form]"))return;
       slot.innerHTML='<div class="wsd-race-editorial-head"><strong>采访与赛后总结</strong>'+
         '<span>'+entries.length+' 条</span></div>'+
@@ -1241,7 +1241,7 @@
         save.disabled=true;
         const {data,error}=await sb.from(EDITORIAL).update(payload).eq("id",row.id).select("id");
         if(error||!data?.length){status.textContent="修改失败："+(error?.message||"未获数据库更新权限");save.disabled=false;return;}
-        await refreshEditorial();note("资料已修改并保存。");
+        await refreshEditorial();status.textContent="保存成功";note("资料已修改并保存。");
       };
       card.append(form);return;
     }
