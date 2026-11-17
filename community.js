@@ -85,7 +85,7 @@
   catch { note("数据库组件加载失败，请检查网络连接。",true);return; }
   let user=null,admin=false,posts=[],active="all";
   let ownPostIds=new Set(),ownCorrectionIds=new Set(),corrections=[],deleting=false;
-  let editorial=[],ownEditorialIds=new Set();
+  let editorial=[],officialEditorial=[],ownEditorialIds=new Set();
   async function loadOwnPostIds(){
     if(!user){ownPostIds=new Set();return;}
     // The public feed does not expose author UUIDs. This RPC returns
@@ -110,19 +110,19 @@
   const editorialCategories={bio:"选手简介",interview:"采访",summary:"赛后总结",diary:"部员日志",
     article:"相关文章／相关新闻",analysis:"赛事分析",other:"其他补充"};
   function canDeleteEditorial(row){
-    return !!user&&(admin||ownEditorialIds.has(row.id));
+    return !row.is_official&&!!user&&(admin||ownEditorialIds.has(row.id));
   }
   const linkedNames=r=>[r.athlete_name,...(Array.isArray(r.related_athletes)?r.related_athletes:[])].map(resolveAthleteName).filter(Boolean);
   const parseLinkedNames=(raw,primary)=>[...new Set(String(raw||"").split(/[，,、;；\n]+/).map(x=>resolveAthleteName(x.trim())).filter(x=>x&&x!==resolveAthleteName(primary)))].slice(0,20);
   function publicEditorialEntries(scope,name,raceRef){
-    return editorial.filter(r=>r.scope===scope&&linkedNames(r).includes(name)&&
+    return [...editorial,...officialEditorial.filter(row=>!editorial.some(post=>post.source_url===row.source_url))].filter(r=>r.scope===scope&&linkedNames(r).includes(name)&&
       (scope==="bio"||r.race_ref===raceRef));
   }
   function editorialEntryHTML(row){
     return '<article class="wsd-editorial-entry">'+
       '<div class="wsd-editorial-entry-head"><span class="wsd-editorial-tag">'+
         esc(editorialCategories[row.category]||"补充资料")+'</span>'+
-        '<small>'+esc(row.display_name)+' · '+new Date(row.created_at).toLocaleDateString("zh-CN")+'</small></div>'+
+        '<small>'+esc(row.display_name)+' · '+(row.is_official?esc(row.published_at):new Date(row.created_at).toLocaleDateString("zh-CN"))+'</small></div>'+
       '<strong>'+esc(row.title)+'</strong>'+(row.related_athletes?.length?'<p>关联选手：'+esc(linkedNames(row).join('、'))+'</p>':'')+
       (row.body?'<p class="wsd-editorial-body">'+esc(row.body)+'</p>':"")+
       (https(row.source_url||"")?'<a href="'+esc(row.source_url)+'" rel="noopener noreferrer nofollow" target="_blank">阅读采访／原文链接 ↗</a>':"")+
@@ -252,7 +252,7 @@
     "濑":"瀬","边":"邊","滨":"濱","泷":"瀧","滝":"瀧","瀧":"瀧",
     "崎":"崎","坂":"坂","内":"内","內":"内","叶":"葉","葉":"葉"
   };
-  const athleteNameKey=name=>String(name||"").normalize("NFKC").replace(/[\\s·・･]/g,"").toLowerCase()
+  const athleteNameKey=name=>String(name||"").normalize("NFKC").replace(/[\s·・･]/g,"").toLowerCase()
     .replace(/./gu,ch=>athleteNameVariants[ch]||ch);
   function resolveAthleteName(name){
     const val=String(name||"").trim();
@@ -1600,6 +1600,12 @@
   });
 
   sb.auth.onAuthStateChange(()=>{setTimeout(()=>{setAuth().catch(()=>{});},0);});
+  const officialIndex=await window.WSD_OFFICIAL_DIARIES_READY;
+  if(officialIndex?.entries)officialEditorial=officialIndex.entries.map(row=>({
+    ...row,athlete_name:resolveAthleteName(row.author),related_athletes:[],scope:"bio",race_ref:null,
+    category:"diary",body:"官方日志索引；正文请在早稻田大学竞走部官网阅读。",display_name:"官方原文 · "+row.author,
+    is_official:true
+  }));
   await setAuth();await Promise.all([refresh(),refreshCorrections(),refreshEditorial()]);
   const callbackParams=new URLSearchParams(location.search);
   const fragmentParams=new URLSearchParams(location.hash.startsWith("#")?location.hash.slice(1):"");

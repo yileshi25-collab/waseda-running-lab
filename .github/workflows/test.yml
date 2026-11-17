@@ -17,3 +17,12 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - run: npm run check
       - run: npm test
+      - run: python -m unittest discover -s tests -p 'test_official_diaries.py'
+      - name: Verify official diary browser integration
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 &
+          for attempt in 1 2 3 4 5; do
+            curl --silent --fail http://127.0.0.1:8080/ > /dev/null && break
+            sleep 1
+          done
+          node tests/official-diaries.browser.cjs
