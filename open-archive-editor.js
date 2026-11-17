@@ -15,7 +15,9 @@ ekiden:[["year","年份","number",1],["race","赛事","select",1,["hak","izu","z
 school_record:[["gender","性别","select",1,["男","女"]],["event","项目","text",1],["performance","纪录","text",1],["athlete","保持者","text",1],["date","创造日期","text"],["source","HTTPS来源","url"]],
 alltime_rank:[["gender","性别","select",1,["男","女"]],["event","项目","text",1],["rank","历史名次","number",1],["performance","成绩","text",1],["athlete","选手","text",1],["year","纪录年份","number",1],["source","HTTPS来源","url"]]
 };
-let edits=[],ready=false,active=null;
+let edits=[],ready=false,active=null,editorUser=null;
+const authReady=db.auth.getUser().then(({data})=>{editorUser=data?.user||null;}).catch(()=>{});
+db.auth.onAuthStateChange((_event,session)=>{editorUser=session?.user||null;});
 const keyOb=r=>"ob:"+[r.name,r.date,r.meet,r.event,r.time].map(x=>String(x||"").trim()).join("|").slice(0,178);
 const keyEk=r=>"race:"+r.race+":"+r.year;
 const keySchool=r=>"school:"+r.gender+":"+r.event;
@@ -71,7 +73,7 @@ style.textContent=[
 ].join("\n");
 document.head.appendChild(style);
 const dlg=document.createElement("dialog");dlg.className="wsd-edit-modal";
-dlg.innerHTML='<div class="wsd-edit-sheet"><h3 id="wsdEditTitle"></h3><p class="wsd-edit-help">所有访客均可新增、修改、删除（可恢复）数据。历史版本会保留，请尽量附官方来源。</p><form id="wsdEditForm"><div id="wsdEditGrid" class="wsd-edit-grid"></div><p id="wsdEditStatus" class="wsd-edit-status" role="status"></p><div class="wsd-edit-actions"><button type="submit" class="wsd-open-btn">保存</button><button type="button" class="wsd-open-btn danger" id="wsdDelete">删除</button><button type="button" class="wsd-open-btn" id="wsdRestore">恢复</button><button type="button" class="wsd-open-btn" id="wsdClose">取消</button></div></form></div>';
+dlg.innerHTML='<div class="wsd-edit-sheet"><h3 id="wsdEditTitle"></h3><p class="wsd-edit-help">所有人可浏览；使用 Google 登录后可新增、修改、删除（可恢复）数据。历史版本会保留，请尽量附官方来源。</p><div id="wsdEditorLogin" hidden><p class="wsd-edit-help">请先使用 Google 登录，登录后所有用户均可参与编辑。</p><button type="button" class="wsd-open-btn" id="wsdEditorGoogle">使用 Google 登录后编辑</button></div><form id="wsdEditForm"><div id="wsdEditGrid" class="wsd-edit-grid"></div><p id="wsdEditStatus" class="wsd-edit-status" role="status"></p><div class="wsd-edit-actions"><button type="submit" class="wsd-open-btn">保存</button><button type="button" class="wsd-open-btn danger" id="wsdDelete">删除</button><button type="button" class="wsd-open-btn" id="wsdRestore">恢复</button><button type="button" class="wsd-open-btn" id="wsdClose">取消</button></div></form></div>';
 document.body.appendChild(dlg);
 function fieldHtml([key,label,type,required,options],value){
 const mark=required?" required":"",valueStr=esc(value??"");
@@ -82,12 +84,15 @@ return '<label'+(type==="url"?' class="full"':'')+'>'+esc(label)+'<input name="'
 function merged(kind,key){const e=get(kind,key);return e?{...base(kind,key),...e.payload}:base(kind,key);}
 function open(kind,key="",defaults={}){
 if(!fields[kind])return;
+const signedIn=!!editorUser;
 active={kind,key};
 const obj=key?merged(kind,key):{};
 const values={...obj,...defaults};
 if(kind==="ekiden")values.legs_text=(obj.legs||[]).map(x=>[x.leg,x.name,x.km??"",x.time,x.rank??""].join(" | ")).join("\n");
 $("wsdEditTitle").textContent=(key?"修改／恢复 ":"新增 ")+names[kind];
 $("wsdEditGrid").innerHTML=fields[kind].map(row=>fieldHtml(row,values[row[0]])).join("");
+$("wsdEditorLogin").hidden=signedIn;
+$("wsdEditForm").hidden=!signedIn;
 $("wsdEditStatus").textContent=ready?"保存后页面将同步更新，历史版本可追溯。":"数据库尚未连接，请刷新重试。";
 $("wsdDelete").hidden=!key||!!get(kind,key)?.is_deleted;
 $("wsdRestore").hidden=!get(kind,key)?.is_deleted;
@@ -125,12 +130,15 @@ if(error)throw error;
 edits=data||[];ready=true;window.dispatchEvent(new Event("wsd-open-archive-change"));
 }
 async function save(kind,key,payload,deleted){
+const {data:identity,error:authError}=await db.auth.getUser();
+if(authError||!identity?.user)throw Error("请先使用 Google 登录");
 if(!ready)throw Error("协作数据库暂不可用");
 const present=get(kind,key);
 const q=present?db.from("wsd_open_archive_edits").update({payload,is_deleted:deleted}).eq("entity_type",kind).eq("record_key",key):db.from("wsd_open_archive_edits").insert({entity_type:kind,record_key:key,payload,is_deleted:deleted});
 const {error}=await q;if(error)throw error;
 await reload();
 }
+$("wsdEditorGoogle").onclick=async()=>{const {error}=await db.auth.signInWithOAuth({provider:"google",options:{redirectTo:location.origin+location.pathname+location.search+location.hash}});if(error)$("wsdEditStatus").textContent="登录失败："+error.message;};
 $("wsdEditForm").addEventListener("submit",async e=>{
 e.preventDefault();const btn=e.target.querySelector('[type="submit"]');btn.disabled=true;
 try{const payload=parse(active.kind,e.target);await save(active.kind,active.key||"new:"+crypto.randomUUID(),payload,false);dlg.close();}
@@ -162,6 +170,7 @@ const deleted=edits.filter(x=>x.is_deleted).sort((a,b)=>String(b.updated_at).loc
 list.innerHTML=deleted.length?deleted.map(x=>'<div class="wsd-recovery-item"><span>'+esc(names[x.entity_type])+' · '+esc(String(x.record_key).slice(0,65))+'</span><button type="button" class="wsd-open-btn" data-wsd-edit="'+esc(x.entity_type)+'" data-wsd-key="'+esc(x.record_key)+'">查看／恢复</button></div>').join(""):'<p>暂无删除记录。</p>';
 }
 window.addEventListener("wsd-open-archive-change",refreshRecovery);
+await authReady;
 try{await reload();}catch(e){console.error("Archive editor data unavailable",e);}
 window.addEventListener("focus",()=>{if(ready)reload().catch(()=>{});});
 setInterval(()=>{if(ready&&!document.hidden)reload().catch(()=>{});},90000);
