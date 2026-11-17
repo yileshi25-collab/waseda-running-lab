@@ -153,6 +153,49 @@ def extract_one_page(detail_id: int, html: str) -> list[dict]:
     return found
 
 
+
+def extract_alltime_rankings(gender: str, html: str, url: str) -> list[dict]:
+    """Parse the official per-event ranked result tables (not athlete profile PB)."""
+    soup = BeautifulSoup(html, "html.parser")
+    results = []
+    seen = set()
+    for heading in soup.find_all(["h3", "h4", "h5", "h6"]):
+        event = heading.get_text(" ", strip=True)
+        if not event or len(event) > 35:
+            continue
+        # A table belongs to an event only if no new heading is encountered.
+        table = heading.find_next("table")
+        nxt_heading = heading.find_next(["h3", "h4", "h5", "h6"])
+        if not table or nxt_heading and nxt_heading.sourceline and table.sourceline and nxt_heading.sourceline < table.sourceline:
+            continue
+        for tr in table.find_all("tr"):
+            cells = [c.get_text(" ", strip=True) for c in tr.find_all(["th", "td"], recursive=False)]
+            if len(cells) < 4:
+                continue
+            number = unicodedata.normalize("NFKC", cells[0]).strip()
+            if not re.fullmatch(r"\d{1,2}", number):
+                continue
+            rank = int(number)
+            if not 1 <= rank <= 10:
+                continue
+            mark = re.sub(r"\s+", " ", cells[1]).strip()
+            name = re.sub(r"\s+", " ", cells[2]).strip()
+            year = unicodedata.normalize("NFKC", cells[3]).strip()
+            m = re.search(r"(19|20)\d{2}", year)
+            if not (mark and 2 <= len(name) <= 45 and m):
+                continue
+            key = (gender, event, rank, mark, name)
+            if key in seen:
+                continue
+            seen.add(key)
+            results.append({
+                "gender": gender, "event": event, "rank": rank,
+                "performance": mark, "athlete": name,
+                "year": int(m.group(0)), "source": url,
+            })
+    return results
+
+
 def read_existing() -> dict:
     source = TARGET.read_text("utf-8")
     i = source.index(HEAD) + len(HEAD)
@@ -182,6 +225,28 @@ def main() -> None:
     # Never overwrite the deployed website with a partial archive.
     if failures or len(results) < 102 or min(results, default=3000) > 1920 or max(results, default=0) < 2026:
         raise RuntimeError(f"Refusing incomplete import: {len(results)} years; failures={failures}")
+    # Import historical top-10 lists; ambiguous tied/blank rank rows are
+    # skipped rather than assigned invented ranks.
+    ranking_rows = []
+    for gender, url in (
+        ("男", "https://waseda-ac.jp/record/detail/2"),
+        ("女", "https://waseda-ac.jp/record/detail/3"),
+    ):
+        try:
+            with urlopen(Request(url, headers={"User-Agent": "WasedaRunningLabArchiveBot/1.0", "Accept-Language": "ja"}), timeout=25) as resp:
+                html = resp.read().decode("utf-8", "replace")
+            rows = extract_alltime_rankings(gender, html, url)
+            print(f"{gender} all-time ranked items: {len(rows)}")
+            ranking_rows.extend(rows)
+        except Exception as exc:
+            print(f"Ranking page failure {url}: {exc}", file=sys.stderr)
+    # Keep existing data if the layout changed or one gender did not parse.
+    if (sum(x["gender"] == "男" for x in ranking_rows) >= 60
+            and sum(x["gender"] == "女" for x in ranking_rows) >= 60):
+        old["rankings"] = ranking_rows
+    else:
+        print("Warning: did not replace all-time rankings because data was incomplete")
+
     # Existing, manually sourced 2024-2026 leg results are retained.
     for year, row in results.items():
         if old_by_year.get(year, {}).get("legs"):
