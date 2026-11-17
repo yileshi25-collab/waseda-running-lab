@@ -165,7 +165,7 @@
       if (!match) throw Error('必须使用早稻田竞走部官网的部员日志链接。');
       if (!datePattern.test(published_at) ||
           Number.isNaN(Date.parse(published_at)) ||
-          published_at > new Date().toISOString().slice(0, 10))
+          published_at > new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString().slice(0, 10))
         throw Error('请填写有效的 2026 年发布日期（不能晚于今天）。');
       const diary_id = 'official-diary-' + match[1];
       if (editingId && diary_id !== editingId) throw Error('编辑已有日志时不能更改原文的文章 ID。');
