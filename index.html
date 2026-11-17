@@ -613,7 +613,7 @@ async function hak27PollFetch(endpoint,options={}){
   ...options,headers:{'apikey':HAK27_POLL_PUBLIC_KEY,'Content-Type':'application/json',...(options.headers||{})}
  });
  if(!res.ok){const detail=await res.json().catch(()=>({}));const error=new Error(detail.message||detail.code||'HTTP '+res.status);error.status=res.status;error.code=detail.code;throw error;}
- return res.status===204?null:res.json();
+ if(res.status===204||res.status===201)return null;const responseText=await res.text();return responseText?JSON.parse(responseText):null;
 }
 function setHak27VoteStatus(msg,isError=false){
  const el=$('hak27VoteStatus');if(!el)return;
