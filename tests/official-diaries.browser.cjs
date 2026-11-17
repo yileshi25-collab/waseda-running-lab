@@ -23,7 +23,7 @@ const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
     await guest.goto('http://127.0.0.1:8080/');
     await guest.evaluate(()=>show('community'));
     const section=guest.locator('#wsdOfficialDiaries');
-    await guest.waitForFunction(()=>document.querySelector('[data-diary-status]')?.textContent.includes('319'));
+    await guest.waitForFunction(()=>document.querySelector('[data-diary-status]')?.textContent.includes('97'));
     assert.equal(await section.locator('[data-diary-list] .wsd-official-diary-card').count(),5);
     assert.equal(await section.locator('[data-diary-archive]').getAttribute('open'),null);
     assert.ok(await section.evaluate(el=>el.scrollWidth<=el.clientWidth));
@@ -53,7 +53,7 @@ const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
     await offline.route('https://*.supabase.co/**',route=>route.abort());
     await offline.goto('http://127.0.0.1:8080/');
     await offline.evaluate(()=>show('community'));
-    await offline.waitForFunction(()=>document.querySelector('[data-diary-status]')?.textContent.includes('319'));
+    await offline.waitForFunction(()=>document.querySelector('[data-diary-status]')?.textContent.includes('97'));
     await offline.close();
 
     async function signedInPage(isAdmin) {
@@ -61,7 +61,7 @@ const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
       await stubNetwork(page,MOCK_SOURCE.replace('__ADMIN__',String(isAdmin)));
       await page.goto('http://127.0.0.1:8080/');
       await page.evaluate(()=>show('community'));
-      await page.waitForFunction(()=>document.querySelector('[data-diary-status]')?.textContent.includes('319') &&
+      await page.waitForFunction(()=>document.querySelector('[data-diary-status]')?.textContent.includes('97') &&
         !!window.WSD_COMMUNITY_DIARY_PERMISSIONS);
       return page;
     }
