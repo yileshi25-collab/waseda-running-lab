@@ -52,6 +52,7 @@ window.WSD_HISTORY_2025_SUPPLEMENT=records.filter(x=>x.year===2025).map(r=>({
  note:(r.status==='OB'?'毕业后 · ':'在校 · ')+'朋友整理 · 待逐项复核'+(r.stage?' · '+r.stage:''),
  source:r.link,fromWorkbook:true
 }));
+window.dispatchEvent(new Event('wsd-history-loaded'));
 const css=String.raw`
 .hist24-toolbar{display:flex;gap:9px;flex-wrap:wrap;margin:15px 0}
 .hist24-toolbar input,.hist24-toolbar select{padding:11px;border:1px solid #e5d8df;border-radius:9px;background:#fff;color:#4e3240;min-width:125px;max-width:100%}
