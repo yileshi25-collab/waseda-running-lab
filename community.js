@@ -70,6 +70,7 @@
     '<h3>跑友实时投稿</h3><select id="wsdFeedKind" aria-label="筛选投稿"><option value="all">所有投稿</option><option value="race">比赛成绩</option><option value="photo">人物照片</option><option value="editorial">采访／总结／日志</option></select></div>'+
     '<div class="wsd-community-feed" id="wsdFeed"><div class="wsd-community-skeleton">正在准备投稿列表…</div></div>'+
     '<p class="wsd-community-help">社区投稿不等于官方认证。请核对比赛原始来源；若发现错误、侵权或隐私问题，请举报。</p>'+
+    '<section id="wsdBulkPanel" hidden style="margin:18px 0;padding:16px;border:1px solid #e4cfd7;border-radius:12px"><h3>管理员 · 批量导入个人比赛成绩（CSV）</h3><p>仅管理员可导入。CSV 表头：athlete_name,meet_name,event_name,race_date,result_time,rank,source_url,career_stage,school_name,notes。必填：选手、赛事、项目、日期、成绩、来源。</p><button type="button" class="btn btn-small" id="wsdBulkTemplate">下载 CSV 模板</button> <input type="file" id="wsdBulkFile" accept=".csv,text/csv" aria-label="选择比赛成绩CSV"><div id="wsdBulkPreview" style="margin-top:10px;max-height:320px;overflow:auto"></div><button type="button" class="btn btn-small" id="wsdBulkImport" disabled>确认导入有效记录</button><p id="wsdBulkStatus" role="status"></p></section>'+ 
     '<div id="wsdAdminSummary" class="wsd-admin-indicator"></div>'+
     '</section></div>';
   const setup = $("wsdSetup");
@@ -698,8 +699,9 @@
     if(u){
       const {data}=await sb.rpc("wsd_is_community_admin");
       admin=data===true;
+      bulkPanel.hidden=!admin;
       if(admin)loadReports();else $("wsdAdminSummary").textContent="";
-    }else{admin=false;$("wsdAdminSummary").textContent="";}
+    }else{admin=false;bulkPanel.hidden=true;$("wsdAdminSummary").textContent="";}
     await loadOwnPostIds();
     await loadOwnCorrectionIds();
     drawFeed();
@@ -819,6 +821,77 @@
       if(uploaded)await sb.storage.from(BUCKET).remove([uploaded]);
       note("投稿失败："+(err?.message||String(err)),true);
     }finally{button.disabled=false;button.textContent="发布后立即公开";}
+  };
+
+  // Admin-only batch CSV import. Database RLS remains the final authority.
+  let bulkRows=[];
+  const bulkPanel=$("wsdBulkPanel"),bulkFile=$("wsdBulkFile"),bulkPreview=$("wsdBulkPreview"),bulkImport=$("wsdBulkImport"),bulkStatus=$("wsdBulkStatus");
+  const bulkHeaders=["athlete_name","meet_name","event_name","race_date","result_time","rank","source_url","career_stage","school_name","notes"];
+  function parseBulkCsv(src){
+    const rows=[];let row=[],field="",quoted=false;
+    src=src.replace(/^\\uFEFF/,"");
+    for(let i=0;i<src.length;i++){const ch=src[i];
+      if(quoted){if(ch==='"'&&src[i+1]==='"'){field+='"';i++;}else if(ch==='"')quoted=false;else field+=ch;}
+      else if(ch==='"')quoted=true;else if(ch===","){row.push(field);field="";}
+      else if(ch==="\\n"){row.push(field.replace(/\\r$/,""));rows.push(row);row=[];field="";}
+      else field+=ch;
+    }
+    if(quoted)throw Error("CSV 引号未闭合");
+    if(field||row.length){row.push(field.replace(/\\r$/,""));rows.push(row);}
+    return rows;
+  }
+  const bulkKey=x=>[x.athlete_name,x.meet_name,x.event_name,x.race_date,x.result_time].map(v=>String(v||"").trim().toLowerCase()).join("|");
+  $("wsdBulkTemplate").onclick=()=>{
+    const csv=bulkHeaders.join(",")+"\\r\\n"+["示例选手","示例大会","5000m","2026-11-01","13:45.12","","https://example.org/results","university","",""].join(",")+"\\r\\n";
+    const blob=new Blob(["\\uFEFF"+csv],{type:"text/csv;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="waseda-athlete-results-template.csv";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+  };
+  bulkFile.onchange=async()=>{
+    bulkRows=[];bulkImport.disabled=true;bulkPreview.textContent="";bulkStatus.textContent="";
+    if(!admin||!user)return;
+    const file=bulkFile.files?.[0];if(!file)return;
+    if(file.size>1024*1024){bulkStatus.textContent="文件不能超过 1MB";return;}
+    try{
+      const parsed=parseBulkCsv(await file.text());if(parsed.length<2)throw Error("CSV 没有数据行");
+      const headers=parsed.shift().map(x=>x.trim().toLowerCase());
+      for(const key of ["athlete_name","meet_name","event_name","race_date","result_time","source_url"])if(!headers.includes(key))throw Error("缺少必填列："+key);
+      if(parsed.length>300)throw Error("单次最多导入 300 行");
+      const seen=new Set();
+      const {data:existing,error:existingError}=await sb.from(TABLE).select("athlete_name,meet_name,event_name,race_date,result_time").eq("kind","race").limit(5000);
+      if(existingError)throw existingError;
+      for(const x of existing||[])seen.add(bulkKey(x));
+      const valid=[],issues=[];
+      parsed.forEach((cells,i)=>{
+        if(cells.length===1&&!cells[0].trim())return;
+        const x=Object.fromEntries(bulkHeaders.map(k=>[k,(cells[headers.indexOf(k)]||"").trim()]));
+        let err="";
+        if(!x.athlete_name||!x.meet_name||!x.event_name||!x.race_date||!x.result_time||!x.source_url)err="必填字段缺失";
+        else if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(x.race_date)||Number.isNaN(Date.parse(x.race_date)))err="日期格式错误";
+        else if(!/^\\d{1,2}(:\\d{2}){1,2}(\\.\\d{1,2})?$/.test(x.result_time))err="成绩格式错误";
+        else if(!https(x.source_url))err="来源须为 HTTPS 链接";
+        else if(x.rank&&(!/^\\d+$/.test(x.rank)||Number(x.rank)<1))err="名次须为正整数";
+        else if(x.athlete_name.length>100||x.meet_name.length>120||x.event_name.length>120||x.notes.length>1000)err="字段过长";
+        else if(x.career_stage&&!["university","high_school","junior_high","elementary","other"].includes(x.career_stage))err="阶段不支持";
+        else if(seen.has(bulkKey(x)))err="重复记录";
+        if(err)issues.push("第"+(i+2)+"行："+err);else{seen.add(bulkKey(x));valid.push(x);}
+      });
+      bulkRows=valid;
+      bulkPreview.innerHTML="<strong>可导入 "+valid.length+" 条；跳过 "+issues.length+" 条</strong>"+
+        "<div style='font-size:12px'>"+issues.slice(0,40).map(x=>"<p>"+esc(x)+"</p>").join("")+"</div>"+
+        "<div style='font-size:12px'>"+valid.slice(0,15).map(x=>"<p>"+esc(x.athlete_name)+" · "+esc(x.meet_name)+" · "+esc(x.event_name)+" · "+esc(x.result_time)+"</p>").join("")+"</div>";
+      bulkImport.disabled=!valid.length;
+    }catch(e){bulkStatus.textContent="读取失败："+e.message;}
+  };
+  bulkImport.onclick=async()=>{
+    if(!admin||!user||!bulkRows.length)return;
+    if(!confirm("确认公开导入 "+bulkRows.length+" 条个人比赛成绩？"))return;
+    bulkImport.disabled=true;let done=0;
+    for(let i=0;i<bulkRows.length;i+=25){
+      const batch=bulkRows.slice(i,i+25).map(x=>({author_id:user.id,display_name:"管理员",kind:"race",athlete_name:x.athlete_name,meet_name:x.meet_name,event_name:x.event_name,race_date:x.race_date,result_time:x.result_time,rank:x.rank?Number(x.rank):null,source_url:x.source_url,career_stage:x.career_stage||"university",school_name:x.school_name||null,notes:x.notes||""}));
+      const {error}=await sb.from(TABLE).insert(batch);
+      if(error){bulkStatus.textContent="已导入 "+done+" 条；第 "+(i+1)+" 行起失败："+error.message+"。请重新导出未导入数据，避免重复。";await refresh();return;}
+      done+=batch.length;bulkStatus.textContent="已导入 "+done+" / "+bulkRows.length+" 条";
+    }
+    bulkRows=[];bulkFile.value="";bulkStatus.textContent="成功导入 "+done+" 条比赛成绩。";await refresh();
   };
   async function loadReports(){
     if(!admin)return;
