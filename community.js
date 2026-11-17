@@ -715,6 +715,10 @@
         preview.hidden=true;preview.removeAttribute("src");
         form.querySelector("[data-wsd-photo-instruction]").hidden=false;
         await refresh();
+        const galleryFold=detailEl.querySelector("[data-wsd-photo-gallery-fold]");
+        if(galleryFold)galleryFold.open=true;
+        const visibleStatus=detailEl.querySelector("[data-wsd-photo-status]");
+        if(visibleStatus){visibleStatus.textContent="照片上传成功，已自动展开「其他照片」。请在下方查看新照片。";visibleStatus.style.color="#23714c";}
       }catch(err){
         if(uploaded)await sb.storage.from(BUCKET).remove([uploaded]);
         say("照片发布失败："+(err?.message||String(err)),true);
