@@ -287,3 +287,20 @@
 .wsd-official-diary-card small{font-size:11px;color:#927984}
 .wsd-official-diary-card a{font-size:12px;color:#81314f}
 @media(max-width:600px){.wsd-diary-tools input,.wsd-diary-tools select{font-size:16px}.wsd-official-diaries button{min-height:44px}}
+
+/* Compact official diary index: five recent entries and a collapsed archive. */
+.wsd-official-diaries [hidden]{display:none!important}
+.wsd-diary-latest>h3{font-size:15px;color:#672a48;margin:16px 0 5px}
+.wsd-official-diaries .wsd-diary-archive,.wsd-official-diaries .wsd-diary-manage{border:1px solid #eadde3;border-radius:12px;padding:0 14px;margin-top:16px;background:#fffafb}
+.wsd-official-diaries details>summary{cursor:pointer;font-size:13px;font-weight:700;color:#752d4d;padding:15px 2px;line-height:1.6}
+.wsd-official-diaries details[open]>summary{border-bottom:1px solid #eadde3}
+.wsd-diary-help{font-size:12px;line-height:1.8;color:#806875}
+.wsd-diary-buttons{display:flex;flex-wrap:wrap;gap:8px;margin-top:11px}
+.wsd-diary-buttons .btn{max-width:max-content}
+.wsd-official-diaries .wsd-diary-delete{color:#9f3450;border-color:#dab1be}
+.wsd-diary-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:13px 0 17px;padding:13px;border:1px solid #e9d9df;border-radius:10px;background:#fff}
+.wsd-diary-form label{display:grid;gap:5px;min-width:0;font-size:12px;color:#755363}
+.wsd-diary-form input{box-sizing:border-box;width:100%;min-width:0;padding:10px;border-radius:8px;border:1px solid #dcc9d2;font:inherit;font-size:13px;background:#fff}
+.wsd-diary-form .wsd-diary-buttons{grid-column:1/-1}
+.wsd-official-diaries .wsd-diary-feedback{font-size:12px;line-height:1.7;margin:12px 0 0}
+@media(max-width:600px){.wsd-diary-form{grid-template-columns:1fr}.wsd-diary-form input{font-size:16px}.wsd-official-diaries details>summary{padding:13px 0}}
