@@ -136,7 +136,7 @@
   function decorateBio(name,head){
     const body=$("detailBody");
     if(!body||!head)return;
-    let panel=body.querySelector(".wsd-athlete-bio");
+    let panel=body.querySelector(".wsd-community-gallery.wsd-athlete-bio");
     if(panel&&panel.dataset.wsdAthlete!==name){panel.remove();panel=null;}
     if(!panel){
       panel=document.createElement("section");
