@@ -812,8 +812,23 @@
         uploaded=key;
         item.image_path=key;item.image_credit=credit;item.image_license=license;
       }
+      if(kind==="race"){
+        const {data:matches,error:checkError}=await sb.from(TABLE)
+          .select("id,meet_name,result_time").eq("kind","race")
+          .ilike("athlete_name",item.athlete_name.trim())
+          .ilike("event_name",item.event_name.trim())
+          .eq("race_date",item.race_date).limit(200);
+        if(checkError)throw checkError;
+        const normalize=v=>String(v||"").trim().toLowerCase();
+        if((matches||[]).some(x=>normalize(x.meet_name)===normalize(item.meet_name)&&normalize(x.result_time)===normalize(item.result_time))){
+          note("这条比赛成绩已经有人提交过，系统没有重复录入。",true);return;
+        }
+      }
       const {error}=await sb.from(TABLE).insert(item);
-      if(error)throw error;
+      if(error){
+        if(kind==="race"&&error.code==="23505"){note("这条比赛成绩已存在，系统已阻止重复提交。",true);return;}
+        throw error;
+      }
       note("已公开发布，其他访客可以立即看到！");
       $("wsdSubmitForm").reset();$("wsdKind").value="race";$("wsdKind").onchange();
       await refresh();
@@ -823,7 +838,7 @@
     }finally{button.disabled=false;button.textContent="发布后立即公开";}
   };
 
-  // Admin-only batch CSV import. Database RLS remains the final authority.
+  // Signed-in batch CSV import. Database RLS and unique index remain the final authority.
   let bulkRows=[];
   const bulkPanel=$("wsdBulkPanel"),bulkFile=$("wsdBulkFile"),bulkPreview=$("wsdBulkPreview"),bulkImport=$("wsdBulkImport"),bulkStatus=$("wsdBulkStatus");
   const bulkHeaders=["athlete_name","meet_name","event_name","race_date","result_time","rank","source_url","career_stage","school_name","notes"];
