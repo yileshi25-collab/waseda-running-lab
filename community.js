@@ -999,9 +999,9 @@
     }finally{photoActionBusy=false;set.disabled=false;}
   });
   function editorialFormHTML(scope,name,raceRef){
-    const choices=scope==="race"?
+    const choices=true?
       '<label>资料类型<select name="category" required>'+
-      '<option value="interview">采访</option><option value="summary">赛后总结</option><option value="diary">部员日志</option>'+
+      '<option value="bio">选手简介</option><option value="interview">采访</option><option value="summary">赛后总结</option><option value="diary">部员日志</option>'+
       '<option value="article">相关文章</option><option value="analysis">赛事分析</option>'+
       '<option value="other">其他补充</option></select></label>':"";
     return '<form class="wsd-editorial-form" data-wsd-editorial-form data-scope="'+esc(scope)+'"'+
@@ -1063,6 +1063,17 @@
     holder.innerHTML=editorialFormHTML(scope,name,raceRef);
     holder.querySelector('input[name="title"]')?.focus();
   });
+  // Unified community contribution entry: articles live alongside race and photo submissions.
+  const communitySubmit=document.getElementById("wsdSubmitForm");
+  if(communitySubmit){
+    const slot=document.createElement("section");
+    slot.className="wsd-community-panel wsd-editorial-form-slot";
+    slot.innerHTML='<h3>采访／赛后总结／部员日志投稿</h3><p>登录后可投稿，资料会关联到选手个人档案。</p>'+editorialFormHTML("bio","",null);
+    const f=slot.querySelector("form");
+    f.dataset.wsdAthlete="";
+    f.insertAdjacentHTML("afterbegin",'<label>选手姓名<input name="athlete_name" list="wsdAthleteNames" maxlength="75" required placeholder="输入选手日文姓名"></label>');
+    communitySubmit.insertAdjacentElement("afterend",slot);
+  }
   document.addEventListener("submit",async e=>{
     const form=e.target.closest("[data-wsd-editorial-form]");
     if(!form)return;
@@ -1071,13 +1082,13 @@
     const fail=msg=>{status.textContent=msg;status.style.color="#b33659";};
     if(!user){fail("请先使用 Google 登录。");return;}
     const scope=form.dataset.scope||"";
-    const name=resolveAthleteName(form.dataset.wsdAthlete||"");
+    const name=resolveAthleteName(form.querySelector("[name=athlete_name]")?.value||form.dataset.wsdAthlete||"");
     const raceRef=form.dataset.wsdRaceRef||"";
     const title=form.elements.namedItem("title").value.trim();
     const body=form.elements.namedItem("body").value.trim();
     const url=form.elements.namedItem("source_url").value.trim();
     const displayName=form.elements.namedItem("display_name").value.trim();
-    const category=scope==="bio"?"bio":form.elements.namedItem("category")?.value;
+    const category=form.elements.namedItem("category")?.value||"bio";
     if(!["bio","race"].includes(scope)||name.length<2||name.length>75){fail("选手姓名无效。");return;}
     if(scope==="race"&&!editorialRaceRefValid(raceRef)){fail("关联赛事编号无效。");return;}
     if(!["bio","interview","summary","diary","article","analysis","other"].includes(category)||(scope==="race"&&category==="bio")){fail("资料类型无效。");return;}
