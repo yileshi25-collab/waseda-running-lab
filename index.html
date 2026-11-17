@@ -614,6 +614,8 @@ function sharedDateControls(r){
   '</div><div class="wsd-date-edit-slot"></div>'+history;
 }
 window.WSD_2026_ATHLETE_RESULTS=ANNUAL_2026;
+window.WSD_GET_ATHLETE_2026_RESULTS=getAnnualRows;
+window.WSD_ATHLETE_DATE_CONTROLS=sharedDateControls;
 function annualFor(name){return getAnnualRows().filter(r=>r.name===name)
  .sort((a,b)=>b.date.localeCompare(a.date)||String(b.id).localeCompare(String(a.id)));}
 
