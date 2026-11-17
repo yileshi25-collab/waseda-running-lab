@@ -1237,7 +1237,7 @@
     const rankOf=v=>v===''?null:Number(v);
     if(world===''&&asia==='')throw Error('至少填写世界排名或亚洲排名。');
     const date=n("ranking_date");
-    if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(date)||date>new Date(Date.now()+7*86400000).toISOString().slice(0,10))throw Error('请填写正确的官方排名发布日期。');
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||date>new Date(Date.now()+7*86400000).toISOString().slice(0,10))throw Error('请填写正确的官方排名发布日期。');
     const source=n("source_url");
     if(!https(source)||!source.toLowerCase().startsWith('https://worldathletics.org/')&&!source.toLowerCase().startsWith('https://www.worldathletics.org/'))throw Error('请使用 World Athletics 官方 HTTPS 链接。');
     const athlete=n("athlete_name");
