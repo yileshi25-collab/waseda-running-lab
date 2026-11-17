@@ -613,6 +613,7 @@ function sharedDateControls(r){
   (r.correctionId&&canRemove(r.correctionId)?'<button class="wsd-date-revert-btn" type="button" data-wsd-date-remove="'+escapeHTML(r.correctionId)+'">撤销此修订</button>':"")+
   '</div><div class="wsd-date-edit-slot"></div>'+history;
 }
+window.WSD_2026_ATHLETE_RESULTS=ANNUAL_2026;
 function annualFor(name){return getAnnualRows().filter(r=>r.name===name)
  .sort((a,b)=>b.date.localeCompare(a.date)||String(b.id).localeCompare(String(a.id)));}
 
