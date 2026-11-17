@@ -70,7 +70,7 @@
     '<h3>跑友实时投稿</h3><select id="wsdFeedKind" aria-label="筛选投稿"><option value="all">所有投稿</option><option value="race">比赛成绩</option><option value="photo">人物照片</option><option value="editorial">采访／总结／日志</option></select></div>'+
     '<div class="wsd-community-feed" id="wsdFeed"><div class="wsd-community-skeleton">正在准备投稿列表…</div></div>'+
     '<p class="wsd-community-help">社区投稿不等于官方认证。请核对比赛原始来源；若发现错误、侵权或隐私问题，请举报。</p>'+
-    '<section id="wsdBulkPanel" hidden style="margin:18px 0;padding:16px;border:1px solid #e4cfd7;border-radius:12px"><h3>管理员 · 批量导入个人比赛成绩（CSV）</h3><p>仅管理员可导入。CSV 表头：athlete_name,meet_name,event_name,race_date,result_time,rank,source_url,career_stage,school_name,notes。必填：选手、赛事、项目、日期、成绩、来源。</p><button type="button" class="btn btn-small" id="wsdBulkTemplate">下载 CSV 模板</button> <input type="file" id="wsdBulkFile" accept=".csv,text/csv" aria-label="选择比赛成绩CSV"><div id="wsdBulkPreview" style="margin-top:10px;max-height:320px;overflow:auto"></div><button type="button" class="btn btn-small" id="wsdBulkImport" disabled>确认导入有效记录</button><p id="wsdBulkStatus" role="status"></p></section>'+ 
+    '<section id="wsdBulkPanel" hidden style="margin:18px 0;padding:16px;border:1px solid #e4cfd7;border-radius:12px"><h3>批量导入个人比赛成绩（CSV）</h3><p>Google 登录用户均可导入；重复成绩自动跳过。CSV 表头：athlete_name,meet_name,event_name,race_date,result_time,rank,source_url,career_stage,school_name,notes。必填：选手、赛事、项目、日期、成绩、来源。</p><button type="button" class="btn btn-small" id="wsdBulkTemplate">下载 CSV 模板</button> <input type="file" id="wsdBulkFile" accept=".csv,text/csv" aria-label="选择比赛成绩CSV"><div id="wsdBulkPreview" style="margin-top:10px;max-height:320px;overflow:auto"></div><button type="button" class="btn btn-small" id="wsdBulkImport" disabled>确认导入有效记录</button><p id="wsdBulkStatus" role="status"></p></section>'+ 
     '<div id="wsdAdminSummary" class="wsd-admin-indicator"></div>'+
     '</section></div>';
   const setup = $("wsdSetup");
@@ -699,7 +699,7 @@
     if(u){
       const {data}=await sb.rpc("wsd_is_community_admin");
       admin=data===true;
-      bulkPanel.hidden=!admin;
+      bulkPanel.hidden=false;
       if(admin)loadReports();else $("wsdAdminSummary").textContent="";
     }else{admin=false;bulkPanel.hidden=true;$("wsdAdminSummary").textContent="";}
     await loadOwnPostIds();
@@ -847,7 +847,7 @@
   };
   bulkFile.onchange=async()=>{
     bulkRows=[];bulkImport.disabled=true;bulkPreview.textContent="";bulkStatus.textContent="";
-    if(!admin||!user)return;
+    if(!user)return;
     const file=bulkFile.files?.[0];if(!file)return;
     if(file.size>1024*1024){bulkStatus.textContent="文件不能超过 1MB";return;}
     try{
@@ -882,16 +882,22 @@
     }catch(e){bulkStatus.textContent="读取失败："+e.message;}
   };
   bulkImport.onclick=async()=>{
-    if(!admin||!user||!bulkRows.length)return;
+    if(!user||!bulkRows.length)return;
     if(!confirm("确认公开导入 "+bulkRows.length+" 条个人比赛成绩？"))return;
-    bulkImport.disabled=true;let done=0;
-    for(let i=0;i<bulkRows.length;i+=25){
-      const batch=bulkRows.slice(i,i+25).map(x=>({author_id:user.id,display_name:"管理员",kind:"race",athlete_name:x.athlete_name,meet_name:x.meet_name,event_name:x.event_name,race_date:x.race_date,result_time:x.result_time,rank:x.rank?Number(x.rank):null,source_url:x.source_url,career_stage:x.career_stage||"university",school_name:x.school_name||null,notes:x.notes||""}));
-      const {error}=await sb.from(TABLE).insert(batch);
-      if(error){bulkStatus.textContent="已导入 "+done+" 条；第 "+(i+1)+" 行起失败："+error.message+"。请重新导出未导入数据，避免重复。";await refresh();return;}
-      done+=batch.length;bulkStatus.textContent="已导入 "+done+" / "+bulkRows.length+" 条";
+    bulkImport.disabled=true;let done=0,skipped=0;
+    for(let i=0;i<bulkRows.length;i++){
+      const x=bulkRows[i];
+      const item={author_id:user.id,display_name:(user.user_metadata?.full_name||user.email?.split("@")[0]||"早稻田跑友").slice(0,60),kind:"race",athlete_name:x.athlete_name,meet_name:x.meet_name,event_name:x.event_name,race_date:x.race_date,result_time:x.result_time,rank:x.rank?Number(x.rank):null,source_url:x.source_url,career_stage:x.career_stage||"university",school_name:x.school_name||null,notes:x.notes||""};
+      const {error}=await sb.from(TABLE).insert(item);
+      if(error){
+        if(error.code==="23505"){skipped++;continue;}
+        bulkStatus.textContent="成功 "+done+" 条、重复跳过 "+skipped+" 条；第 "+(i+2)+" 行失败："+error.message;
+        await refresh();return;
+      }
+      done++;
+      bulkStatus.textContent="已处理 "+(i+1)+" / "+bulkRows.length+" 条（新增 "+done+"，重复跳过 "+skipped+"）";
     }
-    bulkRows=[];bulkFile.value="";bulkStatus.textContent="成功导入 "+done+" 条比赛成绩。";await refresh();
+    bulkRows=[];bulkFile.value="";bulkStatus.textContent="导入完成：新增 "+done+" 条，重复跳过 "+skipped+" 条。";await refresh();
   };
   async function loadReports(){
     if(!admin)return;
