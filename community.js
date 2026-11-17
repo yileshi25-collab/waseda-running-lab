@@ -67,7 +67,7 @@
       '<div class="wsd-community-status" id="wsdCommunityStatus" role="status" aria-live="polite"></div>'+
       '<p class="wsd-community-help">Google 账号登录后可以连续上传照片和比赛成绩，不设每分钟、每小时或每天的投稿次数上限。图片限制大小并重新编码以清除位置元数据。作者可删除自己的投稿，管理员可删除任何投稿；违规内容也可举报。</p>'+
     '</section><section class="wsd-community-panel"><div class="wsd-community-top">'+
-    '<h3>跑友实时投稿</h3><select id="wsdFeedKind" aria-label="筛选投稿"><option value="all">所有投稿</option><option value="race">比赛成绩</option><option value="photo">人物照片</option></select></div>'+
+    '<h3>跑友实时投稿</h3><select id="wsdFeedKind" aria-label="筛选投稿"><option value="all">所有投稿</option><option value="race">比赛成绩</option><option value="photo">人物照片</option><option value="editorial">采访／总结／日志</option></select></div>'+
     '<div class="wsd-community-feed" id="wsdFeed"><div class="wsd-community-skeleton">正在准备投稿列表…</div></div>'+
     '<p class="wsd-community-help">社区投稿不等于官方认证。请核对比赛原始来源；若发现错误、侵权或隐私问题，请举报。</p>'+
     '<div id="wsdAdminSummary" class="wsd-admin-indicator"></div>'+
@@ -182,6 +182,7 @@
     const name=head?.querySelector("h2")?.textContent?.trim();
     if(name)decorateBio(name,head);
     decorateEditorialSlots();
+    drawFeed();
   }
   function syncSharedViews(){
     window.WSD_COMMUNITY_RACES=posts.filter(p=>p.kind==="race").map(p=>({...p,athlete_name:resolveAthleteName(p.athlete_name)}));
@@ -270,8 +271,9 @@
     if($("wsdFeed")?.querySelector("[data-wsd-editorial-form]")){
       decorateRoster();decorateDetails();return;
     }
-    const items=posts.filter(r=>active==="all"||r.kind===active);
+    const items=[...posts,...editorial.map(r=>({...r,kind:"editorial"}))].filter(r=>active==="all"||r.kind===active).sort((a,b)=>String(b.created_at||"").localeCompare(String(a.created_at||"")));
     $("wsdFeed").innerHTML=items.length?items.map(r=>{
+      if(r.kind==="editorial")return '<article class="wsd-post"><div class="wsd-post-body"><div class="wsd-post-type">ARTICLE / '+esc(editorialCategories[r.category]||"文字资料")+'</div><h4>'+esc(r.title)+'</h4><p>选手：'+esc(r.athlete_name)+'</p>'+(r.body?'<p>'+esc(r.body)+'</p>':"")+'<small>投稿者：'+esc(r.display_name)+' · '+new Date(r.created_at).toLocaleString("zh-CN")+'</small><footer>'+sourceLink(r.source_url,"阅读原文")+'</footer></div></article>';
       const image=r.kind==="photo"?postImage(r):"";
       const chosen=r.kind==="photo"?coverPhoto(resolveAthleteName(r.athlete_name)):null;
       const isCover=chosen?.id===r.id;
@@ -999,9 +1001,9 @@
     }finally{photoActionBusy=false;set.disabled=false;}
   });
   function editorialFormHTML(scope,name,raceRef){
-    const choices=true?
+    const choices=scope==="race"?
       '<label>资料类型<select name="category" required>'+
-      '<option value="bio">选手简介</option><option value="interview">采访</option><option value="summary">赛后总结</option><option value="diary">部员日志</option>'+
+      '<option value="interview">采访</option><option value="summary">赛后总结</option><option value="diary">部员日志</option>'+
       '<option value="article">相关文章</option><option value="analysis">赛事分析</option>'+
       '<option value="other">其他补充</option></select></label>':"";
     return '<form class="wsd-editorial-form" data-wsd-editorial-form data-scope="'+esc(scope)+'"'+
@@ -1063,17 +1065,6 @@
     holder.innerHTML=editorialFormHTML(scope,name,raceRef);
     holder.querySelector('input[name="title"]')?.focus();
   });
-  // Unified community contribution entry: articles live alongside race and photo submissions.
-  const communitySubmit=document.getElementById("wsdSubmitForm");
-  if(communitySubmit){
-    const slot=document.createElement("section");
-    slot.className="wsd-community-panel wsd-editorial-form-slot";
-    slot.innerHTML='<h3>采访／赛后总结／部员日志投稿</h3><p>登录后可投稿，资料会关联到选手个人档案。</p>'+editorialFormHTML("bio","",null);
-    const f=slot.querySelector("form");
-    f.dataset.wsdAthlete="";
-    f.insertAdjacentHTML("afterbegin",'<label>选手姓名<input name="athlete_name" list="wsdAthleteNames" maxlength="75" required placeholder="输入选手日文姓名"></label>');
-    communitySubmit.insertAdjacentElement("afterend",slot);
-  }
   document.addEventListener("submit",async e=>{
     const form=e.target.closest("[data-wsd-editorial-form]");
     if(!form)return;
@@ -1082,13 +1073,13 @@
     const fail=msg=>{status.textContent=msg;status.style.color="#b33659";};
     if(!user){fail("请先使用 Google 登录。");return;}
     const scope=form.dataset.scope||"";
-    const name=resolveAthleteName(form.querySelector("[name=athlete_name]")?.value||form.dataset.wsdAthlete||"");
+    const name=resolveAthleteName(form.dataset.wsdAthlete||"");
     const raceRef=form.dataset.wsdRaceRef||"";
     const title=form.elements.namedItem("title").value.trim();
     const body=form.elements.namedItem("body").value.trim();
     const url=form.elements.namedItem("source_url").value.trim();
     const displayName=form.elements.namedItem("display_name").value.trim();
-    const category=form.elements.namedItem("category")?.value||"bio";
+    const category=scope==="bio"?"bio":form.elements.namedItem("category")?.value;
     if(!["bio","race"].includes(scope)||name.length<2||name.length>75){fail("选手姓名无效。");return;}
     if(scope==="race"&&!editorialRaceRefValid(raceRef)){fail("关联赛事编号无效。");return;}
     if(!["bio","interview","summary","diary","article","analysis","other"].includes(category)||(scope==="race"&&category==="bio")){fail("资料类型无效。");return;}
