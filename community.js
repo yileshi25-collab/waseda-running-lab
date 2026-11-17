@@ -296,11 +296,53 @@
   function photoActions(r,isCover,withDelete){
     if(!canManagePhoto(r))return "";
     return '<div class="wsd-photo-actions">'+
+      '<button type="button" data-wsd-edit-photo-info="'+esc(r.id)+'">编辑照片信息</button>'+
       '<button type="button" data-wsd-edit-crop="'+esc(r.id)+'">调整显示位置</button>'+
       (isCover?"":'<button type="button" data-wsd-set-cover="'+esc(r.id)+'">设为头像</button>')+
       (withDelete?'<button type="button" class="wsd-photo-action-delete" data-wsd-delete="'+esc(r.id)+'">删除照片</button>':"")+
       '</div>';
   }
+  document.addEventListener("click",e=>{
+    const btn=e.target.closest("[data-wsd-edit-photo-info]");
+    if(!btn||!user)return;
+    e.preventDefault();
+    const row=posts.find(r=>r.id===btn.dataset.wsdEditPhotoInfo&&r.kind==="photo");
+    if(!row||(!admin&&!ownPostIds.has(row.id)))return;
+    const card=btn.closest(".wsd-athlete-photo-tile, .wsd-athlete-photo-hero");
+    if(!card)return;
+    const existing=card.querySelector(".wsd-photo-info-edit-form");
+    if(existing){existing.remove();return;}
+    const form=document.createElement("form");
+    form.className="wsd-photo-info-edit-form";
+    form.style.cssText="display:grid;gap:9px;padding:12px;margin-top:10px;border:1px solid #dfcbd2;border-radius:9px;background:#fff";
+    const fields=[["athlete_name","关联选手",row.athlete_name],["image_credit","摄影者／来源署名",row.image_credit||""],["source_url","照片来源链接",row.source_url||""],["notes","补充说明",row.notes||""]];
+    for(const [key,label,value] of fields){
+      const wrap=document.createElement("label");wrap.textContent=label;
+      const input=document.createElement(key==="notes"?"textarea":"input");
+      input.name=key;input.value=value;input.style.cssText="display:block;width:100%;box-sizing:border-box;margin-top:4px";
+      if(key==="source_url")input.type="url";
+      if(key==="notes")input.rows=2;
+      wrap.append(input);form.append(wrap);
+    }
+    const save=document.createElement("button");save.type="submit";save.className="btn btn-primary btn-small";save.textContent="保存照片信息";form.append(save);
+    const status=document.createElement("p");status.setAttribute("role","status");form.append(status);
+    form.onsubmit=async ev=>{
+      ev.preventDefault();
+      const payload=Object.fromEntries(fields.map(([key])=>[key,form.elements.namedItem(key).value.trim()]));
+      payload.athlete_name=resolveAthleteName(payload.athlete_name);
+      if(payload.athlete_name.length<2||!payload.image_credit){status.textContent="请填写选手及摄影署名";return;}
+      if(payload.source_url&&!https(payload.source_url)){status.textContent="来源链接必须使用 HTTPS";return;}
+      payload.source_url=payload.source_url||null;
+      save.disabled=true;
+      try{
+        const {data,error}=await sb.from(TABLE).update(payload).eq("id",row.id).select("id");
+        if(error||!data?.length)throw new Error(error?.message||"没有编辑权限");
+        await refresh();
+        note("照片信息已保存。");
+      }catch(err){status.textContent="修改失败："+err.message;save.disabled=false;}
+    };
+    card.append(form);
+  });
   function drawFeed(){
     if($("wsdFeed")?.querySelector("[data-wsd-editorial-form]")){
       decorateRoster();decorateDetails();return;
@@ -412,7 +454,7 @@
       (cover.is_primary?'<small>已指定为头像</small>':'<small>默认使用最早上传的照片</small>')+
       photoActions(cover,true,true)+'</div></div>':
       '<div class="wsd-no-athlete-photos"><span aria-hidden="true">▧</span><strong>暂无公开照片</strong><small>上传第一张照片后，它会自动成为选手头像</small></div>';
-    const ids=photos.map(r=>r.id+":"+r.is_primary+":"+r.focal_x+":"+r.focal_y+":"+(admin?"admin":ownPostIds.has(r.id)?"owner":"visitor")).join(",");
+    const ids=photos.map(r=>r.id+":"+r.is_primary+":"+r.focal_x+":"+r.focal_y+":"+r.athlete_name+":"+r.image_credit+":"+r.source_url+":"+r.notes+":"+(admin?"admin":ownPostIds.has(r.id)?"owner":"visitor")).join(",");
     return {count:photos.length,ids,
       coverHTML,html:gallery.map(renderTile).join("")||
        (cover?'<p class="wsd-gallery-empty">还没有其他照片。继续上传的照片会进入这里。</p>':"")};
