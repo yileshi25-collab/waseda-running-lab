@@ -112,13 +112,15 @@ const GRADUATES_2026=[
 const grad2026Keys=new Set(GRADUATES_2026.map(x=>normalizeName(x.name)));
 const obNames=[...new Map([...records.map(r=>r.name),...GRADUATES_2026.map(r=>r.name)].map(n=>[normalizeName(n),n])).values()].sort((a,b)=>a.localeCompare(b,'ja'));
 const obNameKeys=new Set([...records.filter(r=>r.status==='OB').map(r=>normalizeName(r.name)),...grad2026Keys]);
+function currentRosterKeys(){return new Set((window.WSD_GET_CURRENT_ATHLETE_NAMES?.()||[]).map(normalizeName));}
+function isHistoricalObName(name,all){const key=normalizeName(name);return !currentRosterKeys().has(key)&&(grad2026Keys.has(key)||all.some(r=>normalizeName(r.name)===key&&r.status==='OB'));}
 const page2024=panel('archive2024','2024 · HISTORICAL RACE DATABASE','2024 全年成绩','2024自然年 · 在校及OB毕业后比赛成绩',
  '<div class="hist24-note">共209条成绩，按自然年及比赛时身份归档。资料如需修改，可在跑友共建提交补充，管理员可查验。</div>'+
  '<div class="sectionhead" style="margin:22px 0 10px"><div><div class="eyebrow">2024 · THREE MAJOR EKIDEN</div><h3>三大驿传 · 团队总成绩</h3><p>点击赛事可查看每区选手、成绩与名次</p></div></div><div id="hist24Ekiden" class="hist24-ekiden-list"></div>'+
  '<div class="hist24-toolbar"><input id="hist24Search" type="search" placeholder="搜索姓名、比赛或项目"><select id="hist24Status"><option value="all">在校与OB</option><option value="student">在校成绩</option><option value="OB">OB毕业后</option></select><select id="hist24Meet"><option value="all">全部赛事</option></select><select id="hist24Event"><option value="all">全部项目</option></select><select id="hist24Month"><option value="all">全年月份</option>'+Array.from({length:12},(_,i)=>'<option value="'+String(i+1).padStart(2,'0')+'">'+(i+1)+'月</option>').join('')+'</select><button id="hist24Export" class="btn btn-small">导出CSV ↓</button></div>'+
  '<p id="hist24Count" class="hist24-summary"></p><div id="hist24List" class="hist24-grid"></div><div class="hist24-loadrow"><button type="button" id="hist24More" class="btn btn-small" hidden>加载更多成绩 ↓</button></div>');
 const obPage=panel('obarchive','WASEDA ATHLETE HISTORY · ALUMNI','选手历史档案 / OB','一人一档 · 合并历史成绩 · 2026届毕业选手已加入',
- '<div class="hist24-note">共'+obNames.length+'位历史选手档案，包括2026届毕业生及2026年有来源的OB赛果。2026年1月箱根属于毕业前成绩，4月后的职业比赛归入OB；可提交修改，管理员可查验。</div>'+ 
+ '<div class="hist24-note">仅列已毕业／OB选手，自动排除与2026现役名单重复的人物；在校期间比赛记录仍保留在年度成绩中。历史档案包括2026届毕业生及2026年有来源的OB赛果。2026年1月箱根属于毕业前成绩，4月后的职业比赛归入OB；可提交修改，管理员可查验。</div>'+ 
  '<div class="wsd-open-controls"><button type="button" class="wsd-open-btn" data-wsd-new="ob_result">＋ 新增OB比赛成绩</button></div>'+
  '<div class="hist24-toolbar"><input id="histObSearch" type="search" placeholder="搜索选手姓名"><select id="histObScope"><option value="all">全部历史选手</option><option value="ob">仅OB毕业选手</option><option value="2026">2026届毕业选手</option></select><select id="histObYear" aria-label="按比赛年份筛选"><option value="all">所有比赛年份</option><option value="2026">2026年比赛</option><option value="2025">2025年比赛</option><option value="2024">2024年比赛</option></select><button class="btn btn-small" id="histObExport">导出OB成绩 ↓</button></div>'+ 
  '<div id="histObCount" class="hist24-summary"></div><details class="hist24-ob-fold"><summary>展开／收起 OB 选手名单（按年份筛选）</summary><div id="histObNames" class="hist24-ob-list"></div></details><div id="histObDetail" class="hist24-ob-detail"></div>');
@@ -217,7 +219,7 @@ function renderAlumniTimeline(name){
  $('histObProfileExport').onclick=()=>exportRows(all,'waseda_'+name.replace(/[\\/:*?"<>|]/g,'_')+'_all_results.csv');
 }
 function openAlumniProfile(name,scroll=true){
- const found=obNames.find(n=>normalizeName(n)===normalizeName(name));
+ const found=obNames.find(n=>normalizeName(n)===normalizeName(name)&&isHistoricalObName(n,allAthleteHistory()));
  if(!found)return false;
  currentOb=found;
  $('histObSearch').value='';
@@ -237,7 +239,7 @@ function refreshOB(){
  select.innerHTML='<option value="all">所有比赛年份</option>'+years.map(y=>'<option value="'+y+'">'+y+'年比赛</option>').join('');
  if(years.includes(picked))select.value=picked;
  const allNames=[...new Map([...all.map(r=>r.name),...GRADUATES_2026.map(r=>r.name)].map(n=>[normalizeName(n),n])).values()].sort((a,b)=>a.localeCompare(b,'ja'));
- obNames.splice(0,obNames.length,...allNames);
+ obNames.splice(0,obNames.length,...allNames.filter(n=>isHistoricalObName(n,all)));
  for(const r of all)if(r.status==='OB')obNameKeys.add(normalizeName(r.name));
  const q=$('histObSearch').value.trim().toLowerCase();
  const scope=$('histObScope').value,year=$('histObYear').value;
