@@ -99,7 +99,7 @@ function renderSchool(){
  const g=$('wrecGender').value,c=$('wrecCategory').value,q=$('wrecRecordSearch').value.trim().toLowerCase();
  const rows=D.school.filter(r=>(g==='all'||r.gender===g)&&(c==='all'||category(r.event)===c)&&(!q||(r.event+' '+r.athlete).toLowerCase().includes(q)));
  $('wrecRecordCount').textContent='展示 '+rows.length+' / '+D.school.length+' 条学校纪录';
- $('wrecRecordList').innerHTML=rows.map(r=>'<article class="wrec-record"><small>'+esc(r.gender)+'子 · '+esc(r.event)+'</small><b>'+esc(r.performance)+'</b><strong>'+esc(r.athlete)+'</strong><small>'+esc(r.date)+'</small>'+urlLink('https://waseda-ac.jp/record/')+'</article>').join('')||'<p class="wrec-keyline">没有匹配纪录。</p>';
+ $('wrecRecordList').innerHTML=rows.map(r=>'<article class="wrec-record"><small>'+esc(r.gender)+'子 · '+esc(r.event)+'</small><b>'+esc(r.performance)+'</b><strong>'+esc(r.athlete)+'</strong><small>'+esc(r.date)+'</small>'+urlLink(r.source||'https://waseda-ac.jp/record/')+(r.sourceNote?'<small>'+esc(r.sourceNote)+'</small>':'')+'</article>').join('')||'<p class="wrec-keyline">没有匹配纪录。</p>';
 }
 
 function renderAlltimeRanking(){
