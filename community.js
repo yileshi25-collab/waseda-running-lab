@@ -573,6 +573,7 @@
       section.dataset.wsdAthlete=name;
       section.innerHTML='<div class="wsd-athlete-photo-heading"><h4>选手照片 · ATHLETE PHOTOS</h4>'+
         '<span data-wsd-photo-count>0 张</span></div>'+
+        '<div data-wsd-photo-feedback role="status" aria-live="polite" style="display:none;margin:12px 0;padding:12px;border-radius:10px;font-weight:700"></div>'+
         '<div class="wsd-athlete-photo-cover" data-wsd-photo-cover></div>'+
         '<details class="wsd-photo-gallery-fold" data-wsd-photo-gallery-fold>'+
           '<summary class="wsd-gallery-subheading">其他照片 · PHOTO GALLERY <span data-wsd-gallery-count></span></summary>'+
@@ -709,7 +710,8 @@
           image_license:license
         });
         if(postError)throw postError;
-        say("照片发布成功！已加入 "+name+" 的资料页，其他访客可以看到。");
+        const feedback=detailEl.querySelector("[data-wsd-photo-feedback]");
+        if(feedback){feedback.style.display="block";feedback.style.background="#e7f5ed";feedback.style.color="#17663e";feedback.textContent="照片已成功发布到 "+name+" 的资料页。";}
         form.reset();
         const preview=form.querySelector("[data-wsd-photo-preview]");
         preview.hidden=true;preview.removeAttribute("src");
@@ -717,10 +719,14 @@
         await refresh();
         const galleryFold=detailEl.querySelector("[data-wsd-photo-gallery-fold]");
         if(galleryFold)galleryFold.open=true;
+        const latest=detailEl.querySelector("[data-wsd-photo-feedback]");
+        if(latest){latest.style.display="block";latest.style.background="#e7f5ed";latest.style.color="#17663e";latest.textContent="照片上传成功！请展开或查看下方「其他照片」。";latest.scrollIntoView({behavior:"smooth",block:"center"});}
         const visibleStatus=detailEl.querySelector("[data-wsd-photo-status]");
         if(visibleStatus){visibleStatus.textContent="照片上传成功，已自动展开「其他照片」。请在下方查看新照片。";visibleStatus.style.color="#23714c";}
       }catch(err){
         if(uploaded)await sb.storage.from(BUCKET).remove([uploaded]);
+        const feedback=detailEl.querySelector("[data-wsd-photo-feedback]");
+        if(feedback){feedback.style.display="block";feedback.style.background="#fff0f0";feedback.style.color="#a92338";feedback.textContent="照片发布失败："+(err?.message||String(err));}
         say("照片发布失败："+(err?.message||String(err)),true);
       }finally{
         button.disabled=false;button.textContent="发布这位选手的照片";
