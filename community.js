@@ -308,7 +308,7 @@
     e.preventDefault();
     const row=posts.find(r=>r.id===btn.dataset.wsdEditPhotoInfo&&r.kind==="photo");
     if(!row||(!admin&&!ownPostIds.has(row.id)))return;
-    const card=btn.closest(".wsd-athlete-photo-tile, .wsd-athlete-photo-hero");
+    const card=btn.closest(".wsd-athlete-photo-tile, .wsd-athlete-photo-hero, .wsd-post");
     if(!card)return;
     const existing=card.querySelector(".wsd-photo-info-edit-form");
     if(existing){existing.remove();return;}
