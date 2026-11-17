@@ -132,6 +132,8 @@
 @media(max-width:750px){.hak27-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hak27-row{grid-template-columns:58px minmax(0,1fr) 115px}.hak27-row .leg-hint{grid-column:2/-1}}
 @media(max-width:430px){.hak27-row{grid-template-columns:48px minmax(0,1fr)}.hak27-row .time-field{grid-column:2}.hak27-row .leg-hint{grid-column:2}}
 
+
+.hak27-live{margin:16px 0 20px;padding:18px;border:1px solid #e9dce3;background:linear-gradient(115deg,#fff,#fbf2f5);border-radius:15px}.hak27-live-head,.hak27-live-foot{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center}.hak27-live-head b{font-size:13px;color:#63243f}.hak27-live-head span{font-weight:850;color:#692540;font-variant-numeric:tabular-nums}.hak27-live-foot{font-size:11px;color:#8c7780}.hak27-track{height:16px;border-radius:15px;background:#ebdce3;position:relative;margin:25px 9px 18px}.hak27-track>div{height:100%;width:0%;background:linear-gradient(90deg,#a35471,#5a1934);border-radius:15px;transition:width .18s linear}.hak27-track>span{position:absolute;left:0%;top:-20px;transform:translateX(-50%);font-size:25px;transition:left .18s linear}.hak27-speed-label{font-size:12px;color:#71334d}.hak27-speed-label select{margin-left:5px;border:1px solid #e4ced8;border-radius:8px;padding:7px;background:white} @media(prefers-reduced-motion:reduce){.hak27-track>div,.hak27-track>span{transition:none}}
 /* 2027 Hakone fan lineup vote */
 .hak27-vote{margin-top:20px;padding-top:20px;border-top:1px solid #efe4e8}
 .hak27-vote h3{margin:0 0 6px;font-size:17px;color:#612a41}
@@ -287,11 +289,11 @@
       <div class="hak27-stat"><small>总预估时间</small><b id="hak27Total">—</b></div>
     </div>
     <div class="hak27-actions">
-      <button class="btn btn-small btn-primary" id="hak27Export" type="button">导出我的模拟方案 ↓</button>
+      <button class="btn btn-small btn-primary" id="hak27Play" type="button">▶ 开始模拟比赛</button><button class="btn btn-small" id="hak27Pause" type="button" disabled>暂停</button><button class="btn btn-small" id="hak27Share" type="button">生成阵容分享图 ↓</button><label class="hak27-speed-label">播放速度 <select id="hak27Speed" aria-label="模拟播放速度"><option value="1">1×</option><option value="2">2×</option><option value="5">5×</option></select></label><button class="btn btn-small btn-primary" id="hak27Export" type="button">导出我的模拟方案 ↓</button>
       <button class="btn btn-small" id="hak27Reset" type="button">清空模拟</button>
       <span class="note" style="margin:0">仅保存在本机浏览器 · 不会修改正式赛事数据</span>
     </div>
-    <div class="hak27-section">往路 · 2027年1月2日</div><div class="hak27-rows" id="hak27Outbound"></div>
+    <div class="hak27-live" aria-live="polite"><div class="hak27-live-head"><b id="hak27LiveTitle">模拟待开始 · 选择十区选手并填写预计用时</b><span id="hak27LiveClock">0:00:00</span></div><div class="hak27-track"><div id="hak27TrackFill"></div><span id="hak27Runner" aria-hidden="true">🏃</span></div><div class="hak27-live-foot"><span>东京 · 大手町</span><span id="hak27LiveProgress">0 / 10 区</span><span>箱根 · 往返</span></div></div><div class="hak27-section">往路 · 2027年1月2日</div><div class="hak27-rows" id="hak27Outbound"></div>
     <div class="hak27-section">复路 · 2027年1月3日</div><div class="hak27-rows" id="hak27Return"></div>
     <div id="hak27Issues" aria-live="polite"></div>
 <div class="hak27-vote" id="hak27PollBoard">
@@ -743,6 +745,23 @@ $('hak27Export').addEventListener('click',()=>{
  download('waseda_hakone_2027_fan_simulation.csv','\ufeff2027箱根驿传跑友非官方模拟\n区间,距离,自选选手,预估用时\n'+line.join('\n')+'\n总预估时间,,,'+total+'\n','text/csv;charset=utf-8');
 });
 
+
+
+/* Lightweight fan simulation: visualization uses user-entered times, not a performance prediction. */
+(function(){
+ const $h=id=>document.getElementById(id);
+ const play=$h('hak27Play');if(!play)return;
+ let timer=null,elapsed=0,last=0;
+ const stop=()=>{if(timer!==null){cancelAnimationFrame(timer);timer=null;}play.disabled=false;$h('hak27Pause').disabled=true;};
+ const validate=()=>{const a=hak27Plan(),names=a.map(x=>x.athlete),times=a.map(x=>hak27ParseTime(x.time));if(names.some(n=>!n)||new Set(names).size!==10||names.some(n=>!getCurrentAthletes().some(x=>x.name===n&&x.gender==='男'))||times.some(t=>t===null||t===-1)){alert('请先选择10位不重复的现役男子选手，并为每一区填写有效预计用时。');return null;}return {a,times,total:times.reduce((x,y)=>x+y,0)};};
+ const showFrame=(secondsNow,data)=>{const pct=Math.min(1,secondsNow/data.total),cum=[];data.times.reduce((sum,v)=>{cum.push(sum+v);return sum+v;},0);const idx=Math.min(9,cum.findIndex(x=>secondsNow<x)===-1?9:cum.findIndex(x=>secondsNow<x));$h('hak27TrackFill').style.width=(pct*100).toFixed(2)+'%';$h('hak27Runner').style.left=(pct*100).toFixed(2)+'%';$h('hak27LiveClock').textContent=hak27Clock(Math.floor(secondsNow));$h('hak27LiveProgress').textContent=(secondsNow>=data.total?10:idx+1)+' / 10 区';$h('hak27LiveTitle').textContent=secondsNow>=data.total?'🏁 模拟完成 · 总用时 '+hak27Clock(data.total):'第 '+(idx+1)+' 区 · '+data.a[idx].athlete+' · '+(idx===4?'山上坡':idx===5?'山下坡':'赛道进行中');};
+ play.addEventListener('click',()=>{const data=validate();if(!data)return;stop();elapsed=0;last=0;play.disabled=true;$h('hak27Pause').disabled=false;const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;if(reduced){showFrame(data.total,data);stop();return;}const duration=20000;const tick=t=>{if(!last)last=t;elapsed+=(t-last)*Number($h('hak27Speed').value||1);last=t;const progress=Math.min(1,elapsed/duration);showFrame(progress*data.total,data);if(progress>=1){stop();return;}timer=requestAnimationFrame(tick);};timer=requestAnimationFrame(tick);});
+ $h('hak27Pause').addEventListener('click',()=>{if(timer!==null){cancelAnimationFrame(timer);timer=null;$h('hak27Pause').textContent='继续';}else{const data=validate();if(!data)return;$h('hak27Pause').textContent='暂停';last=0;const tick=t=>{if(!last)last=t;elapsed+=(t-last)*Number($h('hak27Speed').value||1);last=t;const p=Math.min(1,elapsed/20000);showFrame(p*data.total,data);if(p>=1){stop();return;}timer=requestAnimationFrame(tick);};timer=requestAnimationFrame(tick);}});
+ $h('hak27Share').addEventListener('click',()=>{const data=validate();if(!data)return;const canvas=document.createElement('canvas');canvas.width=1080;canvas.height=1400;const c=canvas.getContext('2d');c.fillStyle='#fdf8fa';c.fillRect(0,0,1080,1400);c.fillStyle='#541726';c.fillRect(0,0,1080,220);c.fillStyle='#fff';c.font='bold 54px sans-serif';c.fillText('WASEDA · HAKONE 2027',65,110);c.font='26px sans-serif';c.fillText('FAN LINEUP · 非官方自选阵容',65,166);c.fillStyle='#61273e';c.font='bold 36px sans-serif';c.fillText('十区阵容',65,285);data.a.forEach((v,i)=>{const y=350+i*88;c.fillStyle=i%2?'#fff':'#f5e9ee';c.fillRect(52,y-50,975,76);c.fillStyle='#652640';c.font='bold 29px sans-serif';c.fillText(String(i+1).padStart(2,'0')+' 区',75,y);c.fillText(v.athlete,270,y);c.font='26px sans-serif';c.fillText(v.time,825,y);});c.fillStyle='#541726';c.font='bold 43px sans-serif';c.fillText('模拟总用时  '+hak27Clock(data.total),65,1300);c.font='22px sans-serif';c.fillText('仅供跑友交流 · 时间由用户自行填写 · 不代表官方预测',65,1350);const link=document.createElement('a');link.download='waseda-hakone-2027-fan-lineup.png';link.href=canvas.toDataURL('image/png');link.click();});
+ document.addEventListener('change',e=>{if(e.target.matches('[data-hak27-athlete]'))stop();});
+ document.addEventListener('input',e=>{if(e.target.matches('[data-hak27-time]'))stop();});
+ $h('hak27Reset').addEventListener('click',stop);
+})();
 
 /* Public poll: uses publishable (non-secret) API key. Database exposes aggregate views only. */
 const HAK27_POLL_API='https://oflrjljywtqpgrcetwob.supabase.co/rest/v1';
