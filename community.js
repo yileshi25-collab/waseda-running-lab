@@ -414,9 +414,9 @@
     // We never assume a race was from a specific school stage without evidence.
     const static2025=(Array.isArray(window.WSD_2025_ARCHIVE_ROWS)?window.WSD_2025_ARCHIVE_ROWS:[])
       .filter(r=>r.profileName===name);
-    const static2026=(Array.isArray(window.WSD_2026_ATHLETE_RESULTS)?window.WSD_2026_ATHLETE_RESULTS:[]).filter(r=>r.name===name);
+    const static2026=(typeof window.WSD_GET_ATHLETE_2026_RESULTS==="function"?window.WSD_GET_ATHLETE_2026_RESULTS():(window.WSD_2026_ATHLETE_RESULTS||[])).filter(r=>r.name===name);
     const rows=[
-      ...static2026.map(r=>({date:r.date||"2026",stage:"站内 2026 赛事档案",meet:r.meet||"",event:r.event||"",time:r.time||"",rank:r.rank,school:"",note:r.notes||"",source:r.link||"",communityId:null,raceRef:"2026-"+r.id})),
+      ...static2026.map(r=>({date:r.date||"2026",stage:"站内 2026 赛事档案",meet:r.meet||"",event:r.event||"",time:r.time||"",rank:r.rank,school:"",note:r.notes||"",source:r.link||"",communityId:r.communityId||null,recordId:r.id,correctionId:r.correctionId||null,raceRef:r.communityId?"community-"+r.communityId:"2026-"+r.id})),
       ...static2025.map(r=>({date:r.date,stage:"站内 2025 赛事档案",
         meet:r.event||"",event:r.metric||"",time:r.time||"",rank:r.rank,
         school:"",note:r.note||"",source:r.source||"",communityId:null,raceRef:r.raceRef||""})),
@@ -457,6 +457,7 @@
           (r.rank?'<span>第 '+esc(r.rank)+' 名</span>':"")+'</div>'+
         (r.school?'<small>当时学校／队伍：'+esc(r.school)+'</small>':"")+
         (r.note?'<p>'+esc(r.note)+'</p>':"")+
+        (r.recordId!=null&&typeof window.WSD_ATHLETE_DATE_CONTROLS==="function"?window.WSD_ATHLETE_DATE_CONTROLS({id:r.recordId,date:r.date==="2026"?"":r.date,communityId:r.communityId,correctionId:r.correctionId}):"")+
         '<div class="wsd-race-editorial-slot" data-wsd-race-attach data-wsd-race-ref="'+esc(r.raceRef||"")+'" data-wsd-athlete="'+esc(name)+'"></div>'+
         '<div class="wsd-career-record-foot">'+
           (r.communityId?'<span class="wsd-community-origin">跑友补录 · 未经独立核实</span>':
