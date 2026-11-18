@@ -68,6 +68,9 @@ test('home highlights the meaning of a PB using on-site athlete comparisons',asy
   await expect(story.locator('#wsdStoryExplanation')).toContainText('排名第1');
   await expect(story.locator('#wsdStoryPace')).toContainText('2:39/km');
   await expect(story).toContainText('区间第1');
+  await expect(story.locator('[data-story-slide]')).toHaveCount(6);
+  await expect(story).toContainText('日本人学生5000m历代第4');
+  await expect(story).toContainText('世界田联');
   await story.locator('[data-player="山口 竣平"]').click();
   await expect(page.locator('#detailOverlay')).toHaveClass(/active/);
   await expect(page.locator('#detailBody [data-athlete-insight]')).toContainText('第1 / 38');
@@ -90,6 +93,42 @@ test('PB explanations follow the selected distance and race interpretations foll
   await page.locator('#racePills [data-race="hak"]').click();
   await expect(race).toContainText('箱根駅伝');
   await expect(race).toContainText('全队最终第4名');
+});
+
+
+test('six athlete stories can be browsed with buttons, dots, and keyboard',async({page})=>{
+  await setup(page);
+  const carousel=page.locator('#wsdStoryCarousel');
+  await expect(carousel.locator('[data-story-slide]')).toHaveCount(6);
+  await expect(carousel.locator('[data-story-dot]')).toHaveCount(6);
+  await expect(carousel.locator('#wsdStoryCount')).toHaveText('1 / 6');
+  await carousel.locator('[data-story-next]').click();
+  await expect(carousel.locator('#wsdStoryCount')).toHaveText('2 / 6');
+  await expect(carousel).toHaveAttribute('data-active-name','増子 陽太');
+  await expect(carousel.locator('[data-story-slide="1"]')).toContainText('U20');
+  await carousel.locator('[data-story-dot="4"]').click();
+  await expect(carousel).toHaveAttribute('data-active-name','本田 桜二郎');
+  await expect(carousel.locator('[data-story-slide="4"]')).toContainText('世界U20锦标赛铜牌');
+  await carousel.locator('[data-story-dot="5"]').click();
+  await expect(carousel.locator('#wsdStoryCount')).toHaveText('6 / 6');
+  await expect(carousel.locator('[data-story-slide="5"]')).toContainText('2026世界U20锦标赛第11');
+  await carousel.locator('[data-story-next]').click();
+  await expect(carousel.locator('#wsdStoryCount')).toHaveText('1 / 6');
+  await carousel.locator('#wsdStoryTrack').focus();
+  await page.keyboard.press('ArrowLeft');
+  await expect(carousel.locator('#wsdStoryCount')).toHaveText('6 / 6');
+});
+
+test('main athlete story carousel supports horizontal phone swipe',async({page})=>{
+  await page.setViewportSize({width:375,height:812});
+  await setup(page);
+  const track=page.locator('#wsdStoryTrack');
+  await expect(track).toHaveCSS('overflow-x','auto');
+  await expect(track.locator('[data-story-slide]')).toHaveCount(6);
+  const sizes=await track.evaluate(el=>({scroll:el.scrollWidth,client:el.clientWidth}));
+  expect(sizes.scroll).toBeGreaterThan(sizes.client);
+  await track.evaluate(el=>{el.scrollLeft=el.clientWidth+12;});
+  await expect(page.locator('#wsdStoryCarousel')).toHaveAttribute('data-active-name','増子 陽太');
 });
 
 async function newsForm(page,year=2026) {
