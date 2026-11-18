@@ -59,6 +59,39 @@ test('beginner navigation fits a narrow phone screen',async({page})=>{
   await expect(guide.evaluate(el=>el.scrollWidth <= el.clientWidth)).resolves.toBe(true);
 });
 
+
+test('home highlights the meaning of a PB using on-site athlete comparisons',async({page})=>{
+  await setup(page);
+  const story=page.locator('#homePerformanceStory');
+  await expect(story).toBeVisible();
+  await expect(story.locator('#wsdStoryPB')).toHaveText('13:17.19');
+  await expect(story.locator('#wsdStoryExplanation')).toContainText('排名第1');
+  await expect(story.locator('#wsdStoryPace')).toContainText('2:39/km');
+  await expect(story).toContainText('区间第1');
+  await story.locator('[data-player="山口 竣平"]').click();
+  await expect(page.locator('#detailOverlay')).toHaveClass(/active/);
+  await expect(page.locator('#detailBody [data-athlete-insight]')).toContainText('第1 / 38');
+  await expect(page.locator('#detailBody [data-athlete-insight]')).toContainText('区间第1名');
+});
+
+test('PB explanations follow the selected distance and race interpretations follow the selected race',async({page})=>{
+  await setup(page);
+  const rank=page.locator('#wsdRankInsight');
+  await expect(rank).toContainText('5000m');
+  await page.locator('#rankingPills [data-rank-metric="pb10000"]').click();
+  await expect(rank).toContainText('10000m');
+  await page.evaluate(()=>show('races'));
+  const race=page.locator('#wsdRaceInsight');
+  await expect(race).toContainText('同一赛段');
+  await expect(race).toContainText('全日本大学駅伝');
+  await page.locator('#racePills [data-race="izu"]').click();
+  await expect(race).toContainText('出雲駅伝');
+  await expect(race).toContainText('区间第1');
+  await page.locator('#racePills [data-race="hak"]').click();
+  await expect(race).toContainText('箱根駅伝');
+  await expect(race).toContainText('全队最终第4名');
+});
+
 async function newsForm(page,year=2026) {
   await page.evaluate(year=>show(year===2026?'season':'archive2027'),year);
   const p=page.locator(`[data-news-year="${year}"]`);
