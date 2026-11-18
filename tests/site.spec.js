@@ -30,6 +30,35 @@ async function setup(page, {guest=false, failInsert=false, failRefresh=false}={}
   await page.goto('/');
   await expect(page.locator('[data-news-year="2026"] .wsd-news-card')).toHaveCount(2);
 }
+test('homepage introduces the site and offers beginner navigation',async({page})=>{
+  await setup(page);
+  const guide=page.locator('#view-overview .wsd-start');
+  await expect(guide).toBeVisible();
+  await expect(guide.locator('.wsd-start-card')).toHaveCount(3);
+  await expect(guide.locator('.wsd-start-glossary')).not.toHaveAttribute('open','');
+  await guide.locator('summary').click();
+  await expect(guide.locator('dt')).toHaveCount(6);
+  await expect(guide).toContainText('箱根驿传');
+  await guide.locator('[data-go="athletes"]').click();
+  await expect(page.locator('#view-athletes')).toBeVisible();
+  await expect(page).toHaveURL(/#athletes$/);
+  await page.evaluate(()=>show('overview'));
+  await guide.locator('[data-go="season"]').click();
+  await expect(page.locator('#view-season')).toBeVisible();
+  await page.evaluate(()=>show('overview'));
+  await guide.locator('[data-go="races"]').click();
+  await expect(page.locator('#view-races')).toBeVisible();
+});
+
+test('beginner navigation fits a narrow phone screen',async({page})=>{
+  await page.setViewportSize({width:375,height:812});
+  await setup(page);
+  const guide=page.locator('#view-overview .wsd-start');
+  await expect(guide).toBeVisible();
+  await expect(guide.locator('.wsd-start-card')).toHaveCount(3);
+  await expect(guide.evaluate(el=>el.scrollWidth <= el.clientWidth)).resolves.toBe(true);
+});
+
 async function newsForm(page,year=2026) {
   await page.evaluate(year=>show(year===2026?'season':'archive2027'),year);
   const p=page.locator(`[data-news-year="${year}"]`);
