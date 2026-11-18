@@ -34,6 +34,7 @@
       '<div class="eyebrow">OFFICIAL MEMBER DIARIES · 2026</div>',
       '<h2>官方部员日志</h2>',
       '<p data-diary-description>正在读取官方日志索引…</p>',
+      '<p class="wsd-diary-help">2026年以前（2025年及更早）的部员日志，请先前往<a href="https://waseda-ac.jp/diary/category/1" target="_blank" rel="noopener noreferrer">早稻田竞走部官网</a>查看。</p>',
       '<p data-diary-status role="status" aria-live="polite"></p>',
       '<div class="wsd-diary-latest"><h3>最新五篇</h3><div data-diary-list></div></div>',
       '<details class="wsd-diary-archive" data-diary-archive>',
