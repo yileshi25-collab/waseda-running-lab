@@ -25,7 +25,7 @@
   }).catch(error => ({entries:[], error:error.message}));
 
   window.addEventListener('DOMContentLoaded', async () => {
-    const root = document.getElementById('wsdCommunityRoot');
+    const root = document.getElementById('wsdDiariesRoot');
     if (!root) return;
     const section = document.createElement('section');
     section.className = 'panel panel-pad wsd-official-diaries';
@@ -35,6 +35,7 @@
       '<h2>官方部员日志</h2>',
       '<p data-diary-description>正在读取官方日志索引…</p>',
       '<p class="wsd-diary-help">2026年以前（2025年及更早）的部员日志，请先前往<a href="https://waseda-ac.jp/diary/category/1" target="_blank" rel="noopener noreferrer">早稻田竞走部官网</a>查看。</p>',
+      '<p class="wsd-diary-help">如需添加或修改部员日志，请先在<button class="btn btn-small" type="button" data-go="community">跑友共建</button>登录 Google 账号，再返回本页操作。</p>',
       '<p data-diary-status role="status" aria-live="polite"></p>',
       '<div class="wsd-diary-latest"><h3>最新五篇</h3><div data-diary-list></div></div>',
       '<details class="wsd-diary-archive" data-diary-archive>',
@@ -64,7 +65,7 @@
       '<details class="wsd-diary-manage" data-diary-hidden-panel hidden><summary data-diary-hidden-summary>已隐藏日志</summary><div data-diary-hidden-list></div></details>',
       '<p class="wsd-diary-feedback" role="status" aria-live="polite" data-diary-feedback></p>'
     ].join('');
-    root.after(section);
+    root.appendChild(section);
     const index = await window.WSD_OFFICIAL_DIARIES_READY;
     const description = section.querySelector('[data-diary-description]');
     if (index.error) {
@@ -323,8 +324,7 @@
       try {const result=await db.auth.getUser();signedIn=result.data?.user;}
       catch {}
       if (!signedIn) {
-        message('请先在本页上方使用 Google 账号登录，再提交部员日志。',true);
-        document.getElementById('wsdAuth')?.scrollIntoView({behavior:'smooth',block:'start'});
+        message('请先前往「跑友共建」使用 Google 账号登录，再返回本页提交部员日志。',true);
         return;
       }
       busy=true;
