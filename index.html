@@ -236,6 +236,31 @@
  .wsd-race-calendar-title{font-size:17px;color:#772c4c;font-weight:800;margin:0 0 12px;line-height:1.5}
 .wsd-news-archive-fold{margin-top:14px;border:1.5px solid #d7b0c0;border-radius:12px;background:#fff8fb;overflow:hidden}.wsd-news-archive-fold>summary{cursor:pointer;padding:14px 16px;color:#792b4c;font-weight:750;list-style:none;display:flex;justify-content:space-between;gap:10px}.wsd-news-archive-fold>summary::-webkit-details-marker{display:none}.wsd-news-archive-fold>summary:before{content:"＋";margin-right:8px}.wsd-news-archive-fold[open]>summary:before{content:"−"}.wsd-news-archive-fold>summary span{font-size:12px;font-weight:500}.wsd-news-archive-list{padding:12px;border-top:1px solid #e6cbd6}
 .wsd-news-manage{display:flex;gap:8px;margin-top:12px}.wsd-news-manage button{cursor:pointer;border:1px solid #c99aac;border-radius:8px;background:#fff;padding:6px 12px;color:#78364f;font-weight:650}
+
+/* Beginner wayfinding on the homepage: keep the data-first layout, remove entry friction. */
+.wsd-start{margin:21px 0 24px;padding:25px 25px 20px;background:var(--panel);border:1px solid #e9e0e3;border-radius:18px;box-shadow:var(--shadow)}
+.wsd-start-heading{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:18px}
+.wsd-start-heading h2{font-size:20px;line-height:1.35;letter-spacing:-.025em;color:var(--deep);margin:7px 0 5px}
+.wsd-start-heading p{font-size:12px;line-height:1.8;color:#83747c;margin:0}
+.wsd-start-tag{font-size:10px;font-weight:800;letter-spacing:.12em;color:#91657a;white-space:nowrap;border:1px solid #eedde4;border-radius:999px;padding:8px 11px}
+.wsd-start-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.wsd-start-card{text-align:left;display:flex;flex-direction:column;align-items:flex-start;gap:9px;width:100%;min-height:167px;padding:17px;border-radius:13px;border:1px solid #e8d9df;background:linear-gradient(145deg,#fffbfc 0%,#f9f5f6 100%);color:var(--ink);transition:border-color .16s,transform .16s,box-shadow .16s}
+.wsd-start-card:hover{border-color:#bb8198;box-shadow:0 7px 20px rgba(77,22,43,.08);transform:translateY(-2px)}
+.wsd-start-index{font-size:10px;color:#a0647c;font-weight:850;letter-spacing:.13em}
+.wsd-start-card strong{font-size:16px;color:#512036;line-height:1.35}
+.wsd-start-card small{font-size:12px;line-height:1.7;color:#786a71;flex:1}
+.wsd-start-action{font-size:11px;font-weight:800;color:#8a3555}
+.wsd-start-glossary{border-top:1px solid #eee5e8;margin-top:17px;padding-top:12px}
+.wsd-start-glossary summary{cursor:pointer;list-style:none;color:#74364f;font-size:12px;font-weight:800;padding:6px 0}
+.wsd-start-glossary summary::-webkit-details-marker{display:none}
+.wsd-start-glossary summary span{display:inline-block;font-size:15px;margin-left:4px}
+.wsd-start-glossary[open] summary span{transform:rotate(45deg)}
+.wsd-start-glossary dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 17px;margin:15px 0 4px}
+.wsd-start-glossary dl>div{border-radius:10px;background:#faf7f8;padding:11px 13px}
+.wsd-start-glossary dt{color:#682b45;font-size:12px;font-weight:800;margin-bottom:4px}
+.wsd-start-glossary dd{color:#72656c;font-size:11px;line-height:1.75;margin:0}
+@media(max-width:1080px){.wsd-start-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.wsd-start-card:last-child{grid-column:1/-1}}
+@media(max-width:700px){.wsd-start{padding:19px 16px}.wsd-start-heading{display:block}.wsd-start-tag{display:none}.wsd-start-grid{grid-template-columns:1fr}.wsd-start-card:last-child{grid-column:auto}.wsd-start-card{min-height:0;padding:16px}.wsd-start-glossary dl{grid-template-columns:1fr}}
 </style>
 <link rel="stylesheet" href="community.css?v=20261117-diaries3">
 </head>
@@ -246,7 +271,49 @@
 <main class="main">
 <div class="topbar"><div class="bread"><span>研究工作台</span><span> / </span><span class="strong" id="breadCurrent">总览</span></div><div class="topright"><button class="btn btn-small" id="shareWebsite" type="button" style="display:none;white-space:nowrap" title="分享此研究网站">分享网站 ↗</button><span class="chip"><i class="dot"></i> 公开资料 · 更新至 2026.11.16</span><div class="avatar" title="个人研究空间（浏览器本地）">W</div></div></div>
 <div class="view active" id="view-overview">
-<section class="hero"><div class="eyebrow">WASEDA UNIVERSITY · EKIDEN RESEARCH 2026</div><h1>早稻田竞走部<br>数据研究室</h1><p>把长跑选手的个人最佳成绩、大学驿传战绩与自己的观察整理在一个地方。筛选、比较、收藏，研究你感兴趣的选手与赛季变化。</p><div class="hero-buttons"><button class="btn btn-white" data-go="athletes">探索选手数据 →</button><button class="btn btn-ghost" data-go="races">查看 2026 赛季战绩</button><button class="btn btn-ghost" data-go="season">2026 年度成绩 ✦</button><button class="btn btn-ghost" data-go="archive2025">查看 2025 全年档案 →</button><button class="btn btn-ghost" data-go="community">跑友共同投稿 ↗</button></div></section>
+<section class="hero"><div class="eyebrow">WASEDA UNIVERSITY · EKIDEN RESEARCH 2026</div><h1>早稻田竞走部<br>数据研究室</h1><p>这里研究的是早稻田大学田径队的长距离与驿传选手。无论你是资深跑迷，还是第一次听说箱根驿传，都能从选手、比赛和成绩开始探索。</p><div class="hero-buttons"><button class="btn btn-white" data-go="athletes">探索选手数据 →</button><button class="btn btn-ghost" data-go="races">查看 2026 赛季战绩</button><button class="btn btn-ghost" data-go="season">2026 年度成绩 ✦</button><button class="btn btn-ghost" data-go="archive2025">查看 2025 全年档案 →</button><button class="btn btn-ghost" data-go="community">跑友共同投稿 ↗</button></div></section>
+
+<section class="wsd-start" aria-labelledby="wsdStartTitle">
+  <div class="wsd-start-heading">
+    <div>
+      <div class="eyebrow">FIRST TIME HERE? / 新手导览</div>
+      <h2 id="wsdStartTitle">第一次来到这里？从这三步开始</h2>
+      <p>不需要先懂专业术语。认识选手、看看比赛，再读懂团队的长跑成绩。</p>
+    </div>
+    <span class="wsd-start-tag">3 STEPS TO EXPLORE</span>
+  </div>
+  <div class="wsd-start-grid">
+    <button class="wsd-start-card" type="button" data-go="athletes">
+      <span class="wsd-start-index">01 / ATHLETES</span>
+      <strong>先认识选手</strong>
+      <small>查看队员年级、参赛项目及个人最好成绩，找到你想关注的人。</small>
+      <span class="wsd-start-action">进入选手资料 →</span>
+    </button>
+    <button class="wsd-start-card" type="button" data-go="season">
+      <span class="wsd-start-index">02 / RESULTS</span>
+      <strong>最近跑得怎么样？</strong>
+      <small>按比赛日期浏览2026年度赛果，了解选手在哪些赛事中取得成绩。</small>
+      <span class="wsd-start-action">查看赛季成绩 →</span>
+    </button>
+    <button class="wsd-start-card" type="button" data-go="races">
+      <span class="wsd-start-index">03 / EKIDEN</span>
+      <strong>看懂大学驿传</strong>
+      <small>从每位选手负责的区间、距离和排名，了解团队接力长跑。</small>
+      <span class="wsd-start-action">查看区间战绩 →</span>
+    </button>
+  </div>
+  <details class="wsd-start-glossary">
+    <summary>看不懂 PB、OB、区间？打开 30 秒术语说明 <span aria-hidden="true">＋</span></summary>
+    <dl>
+      <div><dt>竞走部</dt><dd>早稻田大学田径队的日文名称，涵盖不同田径项目；本站重点研究长距离和驿传。</dd></div>
+      <div><dt>PB</dt><dd>Personal Best（个人最好成绩）；同一距离下，用时越短通常代表跑得越快。</dd></div>
+      <div><dt>驿传</dt><dd>长距离团队接力赛，选手各跑一段路，并通过传递接力绶带完成比赛。</dd></div>
+      <div><dt>区间</dt><dd>驿传中每名选手负责的一段路线；区间排名反映该赛段的表现。</dd></div>
+      <div><dt>箱根驿传</dt><dd>每年1月举行的日本大学接力长跑赛事，往返东京与箱根，分为10个区间。</dd></div>
+      <div><dt>OB / OG</dt><dd>已毕业校友的常见称呼；本站「OB／历史选手」栏目主要收录已毕业选手资料。</dd></div>
+    </dl>
+  </details>
+</section>
 <div class="stats"><div class="stat"><div class="label">2026年度选手数据库</div><div class="number">46 <small style="font-size:12px;font-weight:600">人</small></div><div class="foot">2026学年度现役选手 · 不含已毕业历史选手2人</div></div><div class="stat"><div class="label">5000m · 男子前10人PB均值</div><div class="number">13:35.08</div><div class="foot">数值越低越快</div></div><div class="stat"><div class="label">10000m · 男子前10人PB均值</div><div class="number" id="live10000Avg">29:00.51</div><div class="foot" id="live10000Note">现役男子10000m PB收录 26人（毕业选手不参与）</div></div><div class="stat"><div class="label">2026 大学驿传</div><div class="number">2 冠</div><div class="foot">出云 + 全日本</div></div></div>
 
 <section class="section" id="latest26Home"><div class="sectionhead"><div><div class="eyebrow">LATEST RESULT · 2026 NOVEMBER</div><h2>最新赛事 · 吉倉ナヤブ直希</h2><p>11 月 15 日 · 荷兰 Seven Hills Run 15km 公路赛</p></div><span class="tag">已核实</span></div><div class="latest26-card"><div class="latest26-info"><span>2026.11.15 · ZEVENHEUVELENLOOP</span><h3><button type="button" data-player="吉倉 ナヤブ直希">吉倉 ナヤブ直希 ↗</button></h3><p>男子 15km 公路 · 第 19 名 · 荷兰奈梅亨</p><small>单场实绩，不计为 PB；已归入 2026 年度赛果。</small></div><div class="latest26-time"><b>44:12</b><small>15km · 第 19 名</small></div><a class="btn btn-small" href="https://readyfor.jp/projects/waseda-ac2025/announcements/453372" target="_blank" rel="noopener noreferrer">监督赛后报告 ↗</a><button class="btn btn-small" type="button" id="latest26Export">导出 2026 最新赛果 CSV ↓</button></div></section>
