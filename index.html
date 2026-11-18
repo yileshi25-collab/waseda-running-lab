@@ -261,6 +261,35 @@
 .wsd-start-glossary dd{color:#72656c;font-size:11px;line-height:1.75;margin:0}
 @media(max-width:1080px){.wsd-start-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.wsd-start-card:last-child{grid-column:1/-1}}
 @media(max-width:700px){.wsd-start{padding:19px 16px}.wsd-start-heading{display:block}.wsd-start-tag{display:none}.wsd-start-grid{grid-template-columns:1fr}.wsd-start-card:last-child{grid-column:auto}.wsd-start-card{min-height:0;padding:16px}.wsd-start-glossary dl{grid-template-columns:1fr}}
+
+/* Interpretive storytelling: accessible to new fans, grounded in local records. */
+.wsd-story-layout{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(270px,.88fr);gap:14px}
+.wsd-story-primary{background:linear-gradient(130deg,#491626 0%,#79314a 100%);border-radius:17px;padding:27px;color:#fff;display:flex;flex-direction:column;gap:12px;min-width:0}
+.wsd-story-primary .eyebrow{color:#e9bcca}
+.wsd-story-name{color:#fff;font-size:18px;line-height:1.4;font-weight:800}
+.wsd-story-time{display:block;font-size:clamp(38px,4.5vw,54px);font-weight:860;letter-spacing:-.045em;line-height:1.08}
+.wsd-story-primary p{line-height:1.85;font-size:12px;color:#f0dbe2;margin:0}
+.wsd-story-chips{display:flex;flex-wrap:wrap;gap:8px;margin:3px 0 8px}
+.wsd-story-chips span{border:1px solid #e9afc185;color:#ffe6ee;background:#ffffff12;padding:7px 10px;border-radius:9px;font-size:11px;font-weight:700}
+.wsd-story-primary button{align-self:flex-start;margin-top:auto}
+.wsd-story-context{background:#fff;border:1px solid #eadfe3;border-radius:17px;padding:23px;display:flex;flex-direction:column;gap:15px}
+.wsd-story-step{display:flex;flex-direction:column;gap:5px;padding-bottom:14px;border-bottom:1px solid #f0e8eb}
+.wsd-story-step:last-of-type{border:0;padding-bottom:0}
+.wsd-story-step .eyebrow{font-size:10px}
+.wsd-story-step strong{font-size:14px;color:#5d2841}
+.wsd-story-step p{font-size:12px;line-height:1.8;color:#776771;margin:0}
+.wsd-story-source{font-size:11px;line-height:1.7;color:#927d88;margin-top:auto}
+.wsd-story-source a{text-decoration:underline;text-underline-offset:2px;color:#7c3451}
+.wsd-rank-insight{margin-top:13px;border-left:3px solid #a86580;background:#fbf7f9;border-radius:0 9px 9px 0;padding:10px 13px;font-size:11px;line-height:1.75;color:#74435a}
+.wsd-athlete-insight{border:1px solid #ebdce3;border-radius:13px;padding:16px 18px;background:#fbf7f8;margin:17px 0 20px}
+.wsd-athlete-insight strong{font-size:13px;color:#632941}
+.wsd-athlete-insight p{font-size:12px;color:#776771;line-height:1.8;margin:9px 0 0}
+.wsd-race-insight{border:1px solid #e8d9e0;background:#fdf9fb;border-radius:12px;padding:16px 18px;margin:15px 0 22px}
+.wsd-race-insight strong{display:block;font-size:14px;color:#63283f;margin-bottom:7px}
+.wsd-race-insight p{font-size:12px;line-height:1.8;color:#756572;margin:0 0 7px}
+.wsd-race-insight small{font-size:11px;line-height:1.75;color:#937985}
+@media(max-width:820px){.wsd-story-layout{grid-template-columns:1fr}.wsd-story-primary{padding:22px}.wsd-story-context{padding:19px}}
+@media(max-width:480px){.wsd-story-primary{padding:18px}.wsd-story-context{padding:16px}.wsd-story-time{font-size:39px}}
 </style>
 <link rel="stylesheet" href="community.css?v=20261117-diaries3">
 </head>
@@ -316,6 +345,33 @@
 </section>
 <div class="stats"><div class="stat"><div class="label">2026年度选手数据库</div><div class="number">46 <small style="font-size:12px;font-weight:600">人</small></div><div class="foot">2026学年度现役选手 · 不含已毕业历史选手2人</div></div><div class="stat"><div class="label">5000m · 男子前10人PB均值</div><div class="number">13:35.08</div><div class="foot">数值越低越快</div></div><div class="stat"><div class="label">10000m · 男子前10人PB均值</div><div class="number" id="live10000Avg">29:00.51</div><div class="foot" id="live10000Note">现役男子10000m PB收录 26人（毕业选手不参与）</div></div><div class="stat"><div class="label">2026 大学驿传</div><div class="number">2 冠</div><div class="foot">出云 + 全日本</div></div></div>
 
+
+<section class="section wsd-story-block" id="homePerformanceStory" aria-labelledby="wsdStoryTitle">
+  <div class="sectionhead">
+    <div><div class="eyebrow">BEHIND THE NUMBERS / 成绩背后的故事</div>
+      <h2 id="wsdStoryTitle">为什么 13分17秒 值得关注？</h2>
+      <p>用个人PB、队内比较和驿传实绩，读懂一名选手的表现。</p>
+    </div>
+    <button class="btn btn-small" data-go="athletes" type="button">探索更多选手 →</button>
+  </div>
+  <div class="wsd-story-layout">
+    <div class="wsd-story-primary">
+      <div class="eyebrow">ATHLETE SPOTLIGHT / 5000M PB</div>
+      <div class="wsd-story-name">山口 竣平 · 个人最佳成绩</div>
+      <span class="wsd-story-time" id="wsdStoryPB">13:17.19</span>
+      <p id="wsdStoryExplanation" aria-live="polite">这是5000米个人最好成绩，不是单场驿传区间用时。我们会结合队内同距离排名解释它的意义。</p>
+      <div class="wsd-story-chips"><span id="wsdStoryRank">队内5000米成绩比较</span><span id="wsdStoryPace">平均配速换算中</span></div>
+      <button type="button" class="btn btn-white btn-small" data-player="山口 竣平">查看山口竣平完整档案 →</button>
+    </div>
+    <div class="wsd-story-context">
+      <div class="wsd-story-step"><div class="eyebrow">01 / SPEED</div><strong>为什么这个数字值得关注？</strong><p>5000米在田径场上跑12圈半。与同距离选手比较PB，才知道快在哪里；不要直接将它与马拉松或驿传用时相比。</p></div>
+      <div class="wsd-story-step"><div class="eyebrow">02 / TEAM IMPACT</div><strong>速度如何体现在团队比赛？</strong><p>2026年出云驿传第5区，山口竣平以17:35获得区间第1；全日本大学驿传第7区，他以50:58获得区间第3。不同路线不能拿来与5000米PB直接换算。</p></div>
+      <div class="wsd-story-step"><div class="eyebrow">03 / WHAT TO WATCH</div><strong>关注个人，也关注团队</strong><p>PB反映一次个人最佳表现；区间名次显示特定赛段与对手相比的结果。两种数据结合，比单看一个数字更有价值。</p></div>
+      <div class="wsd-story-source">依据本站2026选手PB与逐区赛果整理 · 仅与本站已收录选手比较。<a href="https://gakusei-ekiden.jp/u/waseda/" target="_blank" rel="noopener noreferrer">PB参考来源</a> · <a href="https://www.izumo-ekiden.jp/record/" target="_blank" rel="noopener noreferrer">出云赛事来源</a></div>
+    </div>
+  </div>
+</section>
+
 <section class="section" id="latest26Home"><div class="sectionhead"><div><div class="eyebrow">LATEST RESULT · 2026 NOVEMBER</div><h2>最新赛事 · 吉倉ナヤブ直希</h2><p>11 月 15 日 · 荷兰 Seven Hills Run 15km 公路赛</p></div><span class="tag">已核实</span></div><div class="latest26-card"><div class="latest26-info"><span>2026.11.15 · ZEVENHEUVELENLOOP</span><h3><button type="button" data-player="吉倉 ナヤブ直希">吉倉 ナヤブ直希 ↗</button></h3><p>男子 15km 公路 · 第 19 名 · 荷兰奈梅亨</p><small>单场实绩，不计为 PB；已归入 2026 年度赛果。</small></div><div class="latest26-time"><b>44:12</b><small>15km · 第 19 名</small></div><a class="btn btn-small" href="https://readyfor.jp/projects/waseda-ac2025/announcements/453372" target="_blank" rel="noopener noreferrer">监督赛后报告 ↗</a><button class="btn btn-small" type="button" id="latest26Export">导出 2026 最新赛果 CSV ↓</button></div></section>
 <section class="section" id="homeSeasonPreview"><div class="sectionhead"><div><div class="eyebrow">ANNUAL RESULTS / 2026</div><h2>2026 年度 · 重点选手</h2><p>已收录的代表性比赛表现，原文记录与公开赛果按来源区分</p></div><button class="btn btn-small" data-go="season">浏览全部成绩 →</button></div>
 <div class="season-spotlights">
@@ -324,7 +380,7 @@
 <button class="season-spotlight" data-season-target="佐々木 哲"><span class="tiny">TRACK / 3000M SC</span><b>佐々木 哲</b><strong>8:24.96</strong><small>关东 IC 3000m 障碍冠军 · 赛会新纪录</small></button>
 <button class="season-spotlight" data-season-target="本田 桜二郎"><span class="tiny">U20 / WORLD</span><b>本田 桜二郎</b><strong>7:48.49</strong><small>U20 世界锦标赛 3000m 第3名 · PB</small></button>
 </div></section>
-<section class="section"><div class="sectionhead"><div><div class="eyebrow">PERFORMANCE INSIGHTS</div><h2>赛季成绩一眼看懂</h2><p>查看代表性选手的 PB 排名与赛事里程碑</p></div><button class="btn btn-small" data-go="athletes">完整选手表 →</button></div><div class="two-col"><div class="panel panel-pad"><div class="panel-toolbar"><div><div class="panel-title">个人最佳成绩 · 男女分组排名</div><p class="panel-desc">仅2026学年度现役选手 · 已毕业选手不计入排名</p></div><div class="pillrow" id="rankingPills"></div></div><div class="ranklist" id="rankings"></div><p class="note">条形长度仅表示本组相对排名，非时间轴等比例。PB 可能包含高中时期记录。</p></div><div class="panel panel-pad"><div class="panel-title" style="margin-bottom:17px">2026 重大赛事</div><div class="honor"><div class="medal">🏆</div><div><div class="title">出云全日本大学选拔驿传</div><div class="minor">2026.10.12 · 综合第 1</div></div><div class="time">2:05:56<small>大会新纪录</small></div></div><div class="honor"><div class="medal">🏆</div><div><div class="title">全日本大学驿传</div><div class="minor">2026.11.01 · 综合第 1</div></div><div class="time">5:03:31<small>大会新纪录</small></div></div><div class="honor"><div class="medal" style="background:#eee8ed;color:#846d81">04</div><div><div class="title">第102届箱根驿传</div><div class="minor">2026.01.02—01.03 · 综合第 4</div></div><div class="time">10:44:29<small>总成绩</small></div></div><div class="mini-insight"><strong>研究提示：</strong>2026 年出云与全日本夺冠是已发生的事实；2027 年箱根驿传尚未举行。请勿将阵容推测、模拟预测当作正式成绩。</div></div></div></section>
+<section class="section"><div class="sectionhead"><div><div class="eyebrow">PERFORMANCE INSIGHTS</div><h2>赛季成绩一眼看懂</h2><p>查看代表性选手的 PB 排名与赛事里程碑</p></div><button class="btn btn-small" data-go="athletes">完整选手表 →</button></div><div class="two-col"><div class="panel panel-pad"><div class="panel-toolbar"><div><div class="panel-title">个人最佳成绩 · 男女分组排名</div><p class="panel-desc">仅2026学年度现役选手 · 已毕业选手不计入排名</p></div><div class="pillrow" id="rankingPills"></div></div><div class="ranklist" id="rankings"></div><p class="wsd-rank-insight" id="wsdRankInsight" aria-live="polite"></p><p class="note">条形长度仅表示本组相对排名，非时间轴等比例。PB 可能包含高中时期记录。</p></div><div class="panel panel-pad"><div class="panel-title" style="margin-bottom:17px">2026 重大赛事</div><div class="honor"><div class="medal">🏆</div><div><div class="title">出云全日本大学选拔驿传</div><div class="minor">2026.10.12 · 综合第 1</div></div><div class="time">2:05:56<small>大会新纪录</small></div></div><div class="honor"><div class="medal">🏆</div><div><div class="title">全日本大学驿传</div><div class="minor">2026.11.01 · 综合第 1</div></div><div class="time">5:03:31<small>大会新纪录</small></div></div><div class="honor"><div class="medal" style="background:#eee8ed;color:#846d81">04</div><div><div class="title">第102届箱根驿传</div><div class="minor">2026.01.02—01.03 · 综合第 4</div></div><div class="time">10:44:29<small>总成绩</small></div></div><div class="mini-insight"><strong>研究提示：</strong>2026 年出云与全日本夺冠是已发生的事实；2027 年箱根驿传尚未举行。请勿将阵容推测、模拟预测当作正式成绩。</div></div></div></section>
 <section class="section"><div class="sectionhead"><div><div class="eyebrow">TEAM FORM</div><h2>历年三大驿传排名</h2><p>2023—2026 年的综合名次；名次数字越小越好</p></div><button class="btn btn-small" data-go="races">查看区间成绩 →</button></div><div class="panel panel-pad"><div class="trend-chart"><svg id="trendSvg" viewBox="0 0 900 250" width="100%" role="img" aria-label="2023至2026年早稻田大学出云、全日本、箱根驿传综合排名走势图"></svg></div><div class="legend"><span style="--c:#823351">出云驿传</span><span style="--c:#cf9b52">全日本大学驿传</span><span style="--c:#72949f">箱根驿传</span></div><p class="note">按赛事举行的公历年份归类；箱根为该年1月赛事，另外两项为秋季赛事。</p></div></section>
 </div>
 <div class="view" id="view-athletes"><div class="sectionhead"><div><div class="eyebrow">ATHLETE DATABASE / 2026</div><h2>长距离选手数据库</h2><p>默认仅显示2026学年度现役46人（女子4人）；另有2名已毕业的箱根历史参赛者可选查</p></div><button class="btn btn-small" id="csvExport">导出 CSV ↓</button></div><div class="latest26-inline"><span>2026 最新路跑实绩 · <b>吉倉 ナヤブ直希</b> · 11/15 荷兰 Seven Hills Run 15km · <strong>44:12 / 第 19 名</strong></span><button type="button" class="btn btn-small" data-player="吉倉 ナヤブ直希">查看个人档案 ↗</button></div><div class="filters"><input class="input" type="search" id="searchInput" placeholder="搜索选手姓名（支持日文原名）"><select class="select" id="genderFilter"><option value="all">全部性别</option><option value="男">男子</option><option value="女">女子</option></select><select class="select" id="gradeFilter"><option value="all">全部年级</option><option value="1">一年级</option><option value="2">二年级</option><option value="3">三年级</option><option value="4">四年级</option></select><select class="select" id="metricSort"><option value="pb5000">按 5000m PB 排序</option><option value="pb10000">按 10000m PB 排序</option><option value="pb1500">按 1500m PB 排序</option><option value="pbHalf">按半马 PB 排序</option><option value="grade">按年级排序</option><option value="name">按姓名排序</option></select><label style="font-size:11px;color:#8b7780;white-space:nowrap"><input type="checkbox" id="favoriteOnly"> 仅看收藏</label><label style="font-size:11px;color:#8b7780;white-space:nowrap"><input type="checkbox" id="includeAlumni"> 显示已毕业选手（历史档案）</label><span class="counter" id="rosterCount"></span></div>
@@ -338,7 +394,7 @@
  </div>
 </details>
 <div class="panel panel-pad" id="currentRosterFold" style="margin-top:14px"><h3 style="font-size:16px;margin:0 0 12px">👟 现役选手名单（可按姓名筛选）</h3><div class="tablewrap" style="margin-top:12px"><table class="data-table"><thead><tr><th>选手 / PLAYER</th><th>组别</th><th>学年</th><th>1500m PB</th><th>5000m PB</th><th>10000m PB</th><th>半马 PB</th><th>2026 驿传</th><th>研究操作</th></tr></thead><tbody id="rosterBody"></tbody></table></div></div><p class="keyline mt20">— 代表数据源未收录，并不等于选手从未跑过。PB 为公开资料中收录的个人最佳记录，可能包含入学前成绩；本地自行导入的记录会标为「自定义」。</p><div class="panel panel-pad mt20"><div class="sectionhead" style="margin:0 0 10px"><div><h2 style="font-size:16px">导入你的后续比赛数据</h2><p>可补充新选手或覆盖同名记录，不修改网页源文件</p></div></div><div class="tools"><button class="btn btn-small" id="templateBtn">下载 CSV 模板</button><button class="btn btn-small" onclick="document.getElementById('csvImport').click()">导入 CSV ↥</button><button class="btn btn-small" id="clearCustom">清除自定义数据</button><input type="file" id="csvImport" accept=".csv,text/csv,text/plain" hidden></div><p class="keyline" style="margin-bottom:0">CSV 表头：name, grade, pb1500, pb5000, pb10000, pbHalf；格式例：13:35.33 或 1:02:26。导入资料仅在当前浏览器储存。</p></div></div>
-<div class="view" id="view-races"><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:15px"><button class="btn btn-small" type="button" data-go="racehistory">查看历年驿传战绩 ↗</button><button class="btn btn-small" type="button" data-go="schoolrecords">查看学校纪录 ↗</button></div><div class="sectionhead"><div><div class="eyebrow">RACE BREAKDOWN</div><h2>2026 大学驿传区间数据</h2><p>逐区查看选手、距离、区间成绩、排名及大会／区间纪录</p></div><div class="pillrow" id="racePills"></div></div><div class="panel panel-pad"><div class="racesummary" id="raceSummary"></div><div class="hak26-summary" id="hak26Summary" style="display:none"></div><div class="panel-title" style="margin:24px 0 6px">逐区成绩与跑者</div><p class="panel-desc">每一区距离不同，单纯比较区间用时不能反映谁跑得更快</p><div class="mt20" id="raceRows"></div><div class="panel-title" style="margin-top:25px">各区名次（越低越好）</div><div id="raceBarChart"></div></div><div id="raceDeepAnalysis"></div>
+<div class="view" id="view-races"><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:15px"><button class="btn btn-small" type="button" data-go="racehistory">查看历年驿传战绩 ↗</button><button class="btn btn-small" type="button" data-go="schoolrecords">查看学校纪录 ↗</button></div><div class="sectionhead"><div><div class="eyebrow">RACE BREAKDOWN</div><h2>2026 大学驿传区间数据</h2><p>逐区查看选手、距离、区间成绩、排名及大会／区间纪录</p></div><div class="pillrow" id="racePills"></div></div><div class="panel panel-pad"><div class="racesummary" id="raceSummary"></div><div class="wsd-race-insight" id="wsdRaceInsight" aria-live="polite"></div><div class="hak26-summary" id="hak26Summary" style="display:none"></div><div class="panel-title" style="margin:24px 0 6px">逐区成绩与跑者</div><p class="panel-desc">每一区距离不同，单纯比较区间用时不能反映谁跑得更快</p><div class="mt20" id="raceRows"></div><div class="panel-title" style="margin-top:25px">各区名次（越低越好）</div><div id="raceBarChart"></div></div><div id="raceDeepAnalysis"></div>
 
 <section class="section"><div class="sectionhead"><div><div class="eyebrow">HOW TO READ</div><h2>如何分析这支队伍？</h2></div></div><div class="col2"><div class="panel panel-pad"><div class="panel-title">田径 PB 与驿传成绩的差别</div><p class="panel-desc" style="font-size:12px">5000m、10000m、半马 PB 适合衡量不同选手在同距离的表现；驿传区间受路线长度、坡度与比赛战术影响，更适合按同一区间名次及相同线路比较。</p></div><div class="panel panel-pad"><div class="panel-title">2026 赛季观察角度</div><p class="panel-desc" style="font-size:12px">可以关注新生在全年比赛中的发挥、核心选手在关键区间的名次，以及不同年级的成绩分布。相关判断应结合比赛条件，不应视为官方选拔预测。</p></div></div></section></div>
 
@@ -601,6 +657,70 @@ function setupNav(){
 }
 
 document.addEventListener('click',e=>{const go=e.target.closest('[data-go]');if(go)show(go.dataset.go);const n=e.target.closest('[data-player]');if(n)openDetail(n.dataset.player);const f=e.target.closest('[data-fav]');if(f){e.stopPropagation();toggleFav(f.dataset.fav);}const c=e.target.closest('[data-compare]');if(c){e.stopPropagation();toggleCompare(c.dataset.compare);}});
+
+/* Explain what a result means within this site's current data, not a national ranking. */
+const WSD_PB_DISTANCES={pb1500:1.5,pb5000:5,pb10000:10,pbHalf:21.0975};
+function wsdPace(time,metric){
+ const km=WSD_PB_DISTANCES[metric],s=seconds(time);
+ if(!km||!Number.isFinite(s)||s<=0)return null;
+ const total=Math.round(s/km);
+ return Math.floor(total/60)+':'+String(total%60).padStart(2,'0')+'/km';
+}
+function wsdPBContext(athlete,metric){
+ if(!athlete?.[metric]||!Number.isFinite(seconds(athlete[metric])))return null;
+ const gender=athlete.gender||'男';
+ const group=getCurrentAthletes().filter(a=>(a.gender||'男')===gender&&a[metric]&&Number.isFinite(seconds(a[metric]))&&!a.communityOnly)
+  .sort((a,b)=>seconds(a[metric])-seconds(b[metric]));
+ const rank=group.findIndex(a=>a.name===athlete.name)+1;
+ return {rank,count:group.length,pace:wsdPace(athlete[metric],metric),
+  top10Average:group.slice(0,10).reduce((sum,a)=>sum+seconds(a[metric]),0)/Math.min(10,group.length)};
+}
+function renderHomePerformanceStory(){
+ const athlete=getCurrentAthletes().find(a=>a.name==='山口 竣平');
+ if(!athlete)return;
+ const metric='pb5000',context=wsdPBContext(athlete,metric);
+ if(!context)return;
+ $('wsdStoryPB').textContent=athlete[metric];
+ $('wsdStoryRank').textContent='已收录现役男子 '+context.rank+'/'+context.count+' 名';
+ $('wsdStoryPace').textContent='平均约 '+context.pace;
+ const meanDelta=(context.top10Average-seconds(athlete[metric])).toFixed(2);
+ const comparison=context.rank===1?'目前在本站已收录现役男子5000米PB中排名第1。':'目前在本站已收录现役男子5000米PB中排名第'+context.rank+'。';
+ $('wsdStoryExplanation').textContent='相当于每400米约'+(seconds(athlete[metric])/12.5).toFixed(1)+'秒。'+comparison+
+  '与本站男子前十名PB均值相比，快'+meanDelta+'秒；这是站内数据比较，不是全国排名。';
+}
+function wsdAthleteInsightHTML(a){
+ const metric=['pb5000','pb10000','pb1500','pbHalf'].find(m=>a[m]&&Number.isFinite(seconds(a[m])));
+ if(!metric||a.historical||a.communityOnly)return '';
+ const context=wsdPBContext(a,metric);
+ if(!context?.rank)return '';
+ const label=labels[metric]||metric;
+ const note='在本站已收录'+(a.gender==='女'?'女子':'男子')+'现役选手的'+label+' PB中排第'+context.rank+' / '+context.count+'，相当于平均配速约'+context.pace+'。';
+ const raceName={hak:'2026年箱根驿传',izu:'2026年出云驿传',zen:'2026年全日本大学驿传'};
+ const stages=Object.entries(RACES).flatMap(([kind,race])=>race.legs.map((leg,i)=>({kind,leg,i})))
+  .filter(x=>x.leg[0].replace(/\s/g,'')===a.name.replace(/\s/g,''))
+  .sort((a,b)=>a.leg[3]-b.leg[3]);
+ const stage=stages[0];
+ const teamNote=stage?('另外，他在'+raceName[stage.kind]+'第'+(stage.i+1)+'区以'+stage.leg[2]+
+ '跑出区间第'+stage.leg[3]+'名，反映该段与同场参赛者的比较。'):'若要评价驿传表现，还需要结合实际赛段、对手和比赛条件。';
+ return '<section class="wsd-athlete-insight" data-athlete-insight><strong>成绩解读 · 这个PB说明什么？</strong><p>'+
+  escapeHTML(note)+' '+escapeHTML(teamNote)+'</p><p>说明：仅使用本站收录成绩排序；PB可能来自不同日期或高中时期，不代表当前状态，也不能直接预测驿传结果。</p></section>';
+}
+function renderRaceInsight(){
+ const target=$('wsdRaceInsight');if(!target)return;
+ const race=RACES[selectedRace];
+ const wins=race.legs.filter(l=>l[3]===1).length;
+ const top3=race.legs.filter(l=>l[3]<=3).length;
+ const topExample=race.legs.map((leg,i)=>({leg,i})).find(x=>x.leg[3]===1) ||
+  race.legs.map((leg,i)=>({leg,i})).sort((a,b)=>a.leg[3]-b.leg[3])[0];
+ const example=topExample?escapeHTML(topExample.leg[0])+'在第'+(topExample.i+1)+'区取得第'+topExample.leg[3]+'名':'尚无逐区排名';
+ target.innerHTML='<strong>为什么要看区间排名？</strong>'+
+  '<p>一场驿传由不同距离、路线的赛段构成。区间排名是在<strong style="display:inline;font-size:inherit">同一赛段</strong>与对手比较，而不是拿不同区间的完成时间直接比较。</p>'+
+  '<p>本站收录的'+escapeHTML(race.label)+'中，'+race.legs.length+'个区间有'+wins+'个区间第1、'+top3+
+  '个区间前3；例如'+example+'。全队最终第'+race.rank+'名则由各区累计表现决定。</p>'+
+  '<small>这些是该场比赛的分段结果，不等同于个人PB、全国排名或下一场比赛预测；区间距离、路线起伏、战术也需要分别考虑。</small>';
+}
+
+
 let rankMetric='pb5000',rankGender='男';
 function renderRank(){
  const wrap=$('rankingPills');
@@ -614,6 +734,11 @@ function renderRank(){
  const score=slow===fast?100:(100-(seconds(a[rankMetric])-fast)/(slow-fast)*52);
  return '<div class="rankrow"><div class="rankno">'+String(i+1).padStart(2,'0')+'</div><div class="rankname" tabindex="0" role="button" data-player="'+escapeHTML(a.name)+'">'+escapeHTML(a.name)+'</div><div class="rankbar"><div style="width:'+score+'%"></div></div><div class="ranktime">'+escapeHTML(a[rankMetric])+'</div></div>';
  }).join(''):'<div class="empty-mini">当前组别暂无该项目的 PB 记录。请切换项目，或到 2026 年度页面查看比赛成绩。</div>';
+ const insight=$('wsdRankInsight');
+ const lead=ranked[0];
+ const total=getCurrentAthletes().filter(a=>(a.gender||'男')===rankGender&&a[rankMetric]&&Number.isFinite(seconds(a[rankMetric]))&&!a.communityOnly).length;
+ insight.textContent=lead?'如何读懂：'+lead.name+'以'+lead[rankMetric]+'暂列本站已收录'+(rankGender==='男'?'男子':'女子')+labels[rankMetric]+' PB第1（共'+total+'人有记录），平均配速约'+wsdPace(lead[rankMetric],rankMetric)+'。仅为站内相同距离成绩比较，不代表全国排名或当前状态。':'此项目暂无可比较的站内PB成绩。';
+ renderHomePerformanceStory();
 }
 $('rankingPills').addEventListener('click',e=>{
  const g=e.target.closest('[data-rank-gender]');if(g){rankGender=g.dataset.rankGender;renderRank();return;}
@@ -625,7 +750,7 @@ function renderRoster(){if($('searchInput').value.trim()||$('favoriteOnly').chec
 function toggleFav(name){if(state.favorites.includes(name)){state.favorites=state.favorites.filter(x=>x!==name);toast('已取消收藏 '+name);}else{state.favorites.push(name);toast('已收藏 '+name);}persist();renderRoster();renderNotebook();refreshDetail(name);}
 function toggleCompare(name){if(state.compare.includes(name)){state.compare=state.compare.filter(x=>x!==name);toast('已从对比中移除');}else{if(state.compare.length>=4){toast('最多比较四名选手');return;}state.compare.push(name);toast('已加入对比（'+state.compare.length+'/4）');}persist();renderRoster();renderCompare();refreshDetail(name);}
 let selectedRace='zen';
-function renderRace(){const race=RACES[selectedRace];$('racePills').innerHTML=[['hak','箱根 · 01/02–03'],['izu','出云 · 10/12'],['zen','全日本 · 11/01']].map(([id,name])=>`<button class="pill ${id===selectedRace?'active':''}" data-race="${id}">${name}</button>`).join('');$('raceSummary').innerHTML=`<div><span>赛事 / EVENT</span><b style="font-size:13px">${escapeHTML(race.label)}</b></div><div><span>综合排名 / RANK</span><b>第 ${race.rank} 名${race.rank===1?' 🏆':''}</b></div><div><span>总用时 / TIME</span><b>${race.total}${RACE_RECORDS[selectedRace].teamRecord?'<span class="record-badge team">大会新</span>':''}</b></div>`;const hakBox=$('hak26Summary');if(selectedRace==='hak'){hakBox.style.display='flex';hakBox.innerHTML='<div><small>往路（1月2日）</small><b>第'+race.outboundRank+'名 · '+race.outbound+'</b></div><div><small>复路（1月3日）</small><b>第'+race.returnRank+'名 · '+race.return+'</b></div><a href="'+race.source+'" target="_blank" rel="noopener noreferrer">早稻田官方逐区赛果 ↗</a><span class="hak26-academic">按2026公历年归档 · 比赛时年级属于2025学年度</span>';}else{hakBox.style.display='none';} const records=RACE_RECORDS[selectedRace].sections;
+function renderRace(){const race=RACES[selectedRace];$('racePills').innerHTML=[['hak','箱根 · 01/02–03'],['izu','出云 · 10/12'],['zen','全日本 · 11/01']].map(([id,name])=>`<button class="pill ${id===selectedRace?'active':''}" data-race="${id}">${name}</button>`).join('');$('raceSummary').innerHTML=`<div><span>赛事 / EVENT</span><b style="font-size:13px">${escapeHTML(race.label)}</b></div><div><span>综合排名 / RANK</span><b>第 ${race.rank} 名${race.rank===1?' 🏆':''}</b></div><div><span>总用时 / TIME</span><b>${race.total}${RACE_RECORDS[selectedRace].teamRecord?'<span class="record-badge team">大会新</span>':''}</b></div>`;const hakBox=$('hak26Summary');if(selectedRace==='hak'){hakBox.style.display='flex';hakBox.innerHTML='<div><small>往路（1月2日）</small><b>第'+race.outboundRank+'名 · '+race.outbound+'</b></div><div><small>复路（1月3日）</small><b>第'+race.returnRank+'名 · '+race.return+'</b></div><a href="'+race.source+'" target="_blank" rel="noopener noreferrer">早稻田官方逐区赛果 ↗</a><span class="hak26-academic">按2026公历年归档 · 比赛时年级属于2025学年度</span>';}else{hakBox.style.display='none';} const records=RACE_RECORDS[selectedRace].sections;renderRaceInsight();
 $('raceRows').innerHTML='<div class="record-note">纪录说明：<span class="record-badge team">大会新</span>＝整队刷新赛事总纪录；<span class="record-badge">区间新</span>＝超越该区原有纪录（即使不是区间第1名也可能成立）；<span class="record-badge jp">日本人最高新</span>＝刷新该区日本选手最佳纪录，并非该区全体选手纪录。</div>'+race.legs.map(([name,dist,time,rank],i)=>{const rec=records[i+1];const badge=rec?`<span class="record-badge ${rec.type==='japanese'?'jp':''}" title="${rec.type==='japanese'?'该区日本选手历史最佳更新':'该区原有纪录被刷新'}">${rec.label}</span>`:'';return `<div class="stage-row"><strong>${i+1}区</strong><span class="runner" tabindex="0" role="button" data-player="${escapeHTML(name)}">${escapeHTML(name)}${selectedRace==='hak'?` · 赛时${race.legs[i][4]}年级`:``}${badge}</span><span class="small">${dist} km</span><b class="mono">${time}</b><span class="stagerank ${rank===1?'first':''}">${rank===1?'🏅':''}${rank}位</span></div>`}).join('');$('raceBarChart').innerHTML=`<div class="racechart">${race.legs.map(([name,dist,time,rank])=>`<div class="rbar"><b>${rank}</b><div class="shape" style="--height:${Math.max(22,(8-rank)*12+17)}%" title="${escapeHTML(name)} ${rank}位"></div></div>`).join('')}</div><div class="rlabels">${race.legs.map((p,i)=>`<span>${i+1}区</span>`).join('')}</div><p class="note">仅可比较区间名次；柱高为名次示意，非速度或时间的比例尺。</p>`;renderRaceDeepAnalysis();}
 $('racePills').addEventListener('click',e=>{const b=e.target.closest('[data-race]');if(!b)return;selectedRace=b.dataset.race;renderRace();});
 function renderCompare(){const a=state.compare.map(getAthlete).filter(Boolean);if(!a.length){$('compareContent').innerHTML=`<div class="blank">还没有选手参与比较。<br><button class="btn btn-primary mt20" data-go="athletes">前往选手数据库 →</button></div>`;return;}const fields=[['年级','grade'],['性别','gender'],['主项','mainEvent'],['1500m PB','pb1500'],['5000m PB','pb5000'],['3000mSC PB','pb3000sc'],['10000m PB','pb10000'],['半马 PB','pbHalf'],['2026 驿传','highlight']];let h=`<div class="panel compare-wrap"><table class="compare-table"><thead><tr><th>对比维度</th>${a.map(p=>`<th>${escapeHTML(p.name)}<br><button class="btn btn-small mt20" data-compare="${escapeHTML(p.name)}">移除 ×</button></th>`).join('')}</tr></thead><tbody>`;for(const [title,key] of fields){let numeric=!['grade','gender','highlight','mainEvent'].includes(key);const min=Math.min(...a.map(p=>seconds(p[key])));h+=`<tr><td>${title}</td>${a.map(p=>{const val=p[key];const best=numeric&&(new Set(a.map(x=>x.gender||'男')).size===1)&&val&&seconds(val)===min;return `<td class="${best?'best':''}">${key==='grade'?p.grade+'年级':key==='gender'?((p.gender||'男')==='女'?'女子':'男子'):escapeHTML(val||'—')}${best?' ★':''}</td>`}).join('')}</tr>`;}h+='</tbody></table></div>';$('compareContent').innerHTML=h;}
@@ -635,7 +760,7 @@ function openDetail(name){const a=getAthlete(name);if(!a){toast('暂时找不到
 function detailSignature(a){return JSON.stringify([a,state.favorites.includes(a.name),state.compare.includes(a.name),state.notes[a.name]||'']);}
 function refreshDetail(name){if(currentDetail===name&&$('detailOverlay').classList.contains('active')){const a=getAthlete(name);if(a&&$('detailBody').dataset.profileSignature!==detailSignature(a))renderDetail(a);}}
 const WSD_BIO_INITIAL={"山口 竣平":["2006-01-15","日本・石川県金沢市","佐久長聖高校"],"工藤 慎作":["2004-11-10","日本・千葉県","八千代松陰高校"],"吉倉 ナヤブ直希":["2005-05-18","日本・埼玉県","早稲田実業高校"],"上杉 敦史":["2007-05-16","日本・千葉県","八千代松陰高等学校"],"新妻 遼己":["2007-05-17","日本・兵庫県","西脇工業高等学校"],"鈴木 琉胤":["2006-04-19","日本・千葉県","八千代松陰高等学校"],"山﨑 一吹":["2004-07-14","日本・栃木県","学法石川高校"],"本田 桜二郎":["2007-04-06","日本・福岡県","鳥取城北高校"],"和田 寛":["2008-03-06","日本・埼玉県","西武学園文理高等学校"],"佐々木 哲":["2006-11-24","日本・愛知県","佐久長聖高等学校"],"鈴木 翔瑛":["2006-01-21","日本・群馬県","群馬県立富岡高等学校"],"増子 陽季":["2004-11-20","日本・栃木県","大田原高校"],"増子 陽太":["2007-08-03","日本・福島県鏡石町","学校法人石川高等学校"]};
-function renderDetail(a){$('detailBody').dataset.profileSignature=detailSignature(a);const fav=state.favorites.includes(a.name),cmp=state.compare.includes(a.name);const seasonHTML=annualProfileHTML(a);$('detailBody').innerHTML=`<button class="close" id="closeDetail" aria-label="关闭详情">×</button><div class="detail-head"><div class="eyebrow">ATHLETE PROFILE · 2026</div><h2>${escapeHTML(a.name)}</h2><div class="keyline">${a.communityOnly?'社区新增选手 · 年级／组别待核实':a.grade+'年级　·　'+(a.gender==='女'?'女子':'男子')+'长距离组'}${a.historical?" · 2026箱根历史参赛者（赛时4年级）":""}${a.mainEvent?` · <span class="sp26-pill">主项：${escapeHTML(a.mainEvent)}</span>`:""}　${a.communityOnly?'· 跑友补录资料（未经核实）':a.custom?'· 自定义数据':'· 公开成绩'}</div><div class="tools" style="margin-top:17px"><button class="btn btn-small ${fav?'btn-primary':''}" data-fav="${escapeHTML(a.name)}">${fav?'♥ 已收藏':'♡ 收藏选手'}</button><button class="btn btn-small ${cmp?'btn-primary':''}" data-compare="${escapeHTML(a.name)}">${cmp?'✓ 已加入对比':'＋ 加入对比'}</button></div></div><section class="wsd-athlete-bio" data-athlete-name="${escapeHTML(a.name)}"><h3>👤 基本资料 · BASIC PROFILE</h3><div class="wsd-athlete-bio-read">${(()=>{const b=WSD_BIO_INITIAL[a.name];return b?'<div><b>生日：</b>'+escapeHTML(b[0])+'</div><div><b>出身地区：</b>'+escapeHTML(b[1])+'</div><div><b>毕业高中：</b>'+escapeHTML(b[2])+'</div>':'<div>生日、出身地区及毕业高中待补充</div>';})()}</div><button type="button" class="btn btn-small wsd-athlete-bio-edit">＋ 补充／编辑基本资料</button><form class="wsd-athlete-bio-form" hidden><label>生日<input type="date" name="birthday" class="input"></label><label>出生地区<input name="birthplace" maxlength="120" class="input" placeholder="例如：日本・東京都"></label><label>出身地区<input name="hometown" maxlength="120" class="input"></label><label>毕业高中<input name="high_school" maxlength="160" class="input"></label><label>身高（cm）<input type="number" min="100" max="240" step=".1" name="height_cm" class="input"></label><label>个人简介<textarea name="bio" maxlength="1500" rows="3" class="input"></textarea></label><label>资料来源（HTTPS）<input type="url" name="source_url" class="input" placeholder="https://..."></label><button type="submit" class="btn btn-small btn-primary">保存并公开</button><button type="button" class="btn btn-small wsd-athlete-bio-delete">删除已补充资料</button><p class="wsd-athlete-bio-status" role="status"></p></form><p class="keyline">登录用户可以共同补充、修改或删除这些基本资料；尚未核实的信息不会自动填写。</p></section><div class="detail-kpis">${Object.entries(labels).map(([key,label])=>`<div><small>${label} · PB</small><b>${escapeHTML(a[key]||'—')}</b></div>`).join('')}</div>${specialtyHTML(a)}${internationalRankProfileHTML(a.name)}${latestResultHTML(a)}<div class="panel-title">驿传出场记录</div><p class="keyline">${escapeHTML(a.highlight||'暂无收录的2026驿传出场记录')}</p><hr style="margin:24px 0;border:0;border-top:1px solid #ece5e8"><div class="panel-title">我的研究笔记</div><p class="keyline">仅由你本人填写，不代表官方训练数据或个人真实偏好。</p><textarea class="textarea" id="athleteNote" maxlength="15000" placeholder="例如：关注的区间、比赛表现、个人观察、后续想追踪的问题……">${escapeHTML(state.notes[a.name]||'')}</textarea><div class="tools" style="margin-top:13px"><button class="btn btn-primary" id="saveNote">保存笔记</button><a class="btn" href="https://waseda-ac.jp/team/member/block/3" target="_blank" rel="noopener">查看官网名单 ↗</a></div>`;$('closeDetail').onclick=closeDetail;$('saveNote').onclick=()=>{state.notes[a.name]=$('athleteNote').value;persist();renderNotebook();toast('笔记已保存到浏览器本地');};}
+function renderDetail(a){$('detailBody').dataset.profileSignature=detailSignature(a);const fav=state.favorites.includes(a.name),cmp=state.compare.includes(a.name);const seasonHTML=annualProfileHTML(a);$('detailBody').innerHTML=`<button class="close" id="closeDetail" aria-label="关闭详情">×</button><div class="detail-head"><div class="eyebrow">ATHLETE PROFILE · 2026</div><h2>${escapeHTML(a.name)}</h2><div class="keyline">${a.communityOnly?'社区新增选手 · 年级／组别待核实':a.grade+'年级　·　'+(a.gender==='女'?'女子':'男子')+'长距离组'}${a.historical?" · 2026箱根历史参赛者（赛时4年级）":""}${a.mainEvent?` · <span class="sp26-pill">主项：${escapeHTML(a.mainEvent)}</span>`:""}　${a.communityOnly?'· 跑友补录资料（未经核实）':a.custom?'· 自定义数据':'· 公开成绩'}</div><div class="tools" style="margin-top:17px"><button class="btn btn-small ${fav?'btn-primary':''}" data-fav="${escapeHTML(a.name)}">${fav?'♥ 已收藏':'♡ 收藏选手'}</button><button class="btn btn-small ${cmp?'btn-primary':''}" data-compare="${escapeHTML(a.name)}">${cmp?'✓ 已加入对比':'＋ 加入对比'}</button></div></div><section class="wsd-athlete-bio" data-athlete-name="${escapeHTML(a.name)}"><h3>👤 基本资料 · BASIC PROFILE</h3><div class="wsd-athlete-bio-read">${(()=>{const b=WSD_BIO_INITIAL[a.name];return b?'<div><b>生日：</b>'+escapeHTML(b[0])+'</div><div><b>出身地区：</b>'+escapeHTML(b[1])+'</div><div><b>毕业高中：</b>'+escapeHTML(b[2])+'</div>':'<div>生日、出身地区及毕业高中待补充</div>';})()}</div><button type="button" class="btn btn-small wsd-athlete-bio-edit">＋ 补充／编辑基本资料</button><form class="wsd-athlete-bio-form" hidden><label>生日<input type="date" name="birthday" class="input"></label><label>出生地区<input name="birthplace" maxlength="120" class="input" placeholder="例如：日本・東京都"></label><label>出身地区<input name="hometown" maxlength="120" class="input"></label><label>毕业高中<input name="high_school" maxlength="160" class="input"></label><label>身高（cm）<input type="number" min="100" max="240" step=".1" name="height_cm" class="input"></label><label>个人简介<textarea name="bio" maxlength="1500" rows="3" class="input"></textarea></label><label>资料来源（HTTPS）<input type="url" name="source_url" class="input" placeholder="https://..."></label><button type="submit" class="btn btn-small btn-primary">保存并公开</button><button type="button" class="btn btn-small wsd-athlete-bio-delete">删除已补充资料</button><p class="wsd-athlete-bio-status" role="status"></p></form><p class="keyline">登录用户可以共同补充、修改或删除这些基本资料；尚未核实的信息不会自动填写。</p></section><div class="detail-kpis">${Object.entries(labels).map(([key,label])=>`<div><small>${label} · PB</small><b>${escapeHTML(a[key]||'—')}</b></div>`).join('')}</div>${wsdAthleteInsightHTML(a)}${specialtyHTML(a)}${internationalRankProfileHTML(a.name)}${latestResultHTML(a)}<div class="panel-title">驿传出场记录</div><p class="keyline">${escapeHTML(a.highlight||'暂无收录的2026驿传出场记录')}</p><hr style="margin:24px 0;border:0;border-top:1px solid #ece5e8"><div class="panel-title">我的研究笔记</div><p class="keyline">仅由你本人填写，不代表官方训练数据或个人真实偏好。</p><textarea class="textarea" id="athleteNote" maxlength="15000" placeholder="例如：关注的区间、比赛表现、个人观察、后续想追踪的问题……">${escapeHTML(state.notes[a.name]||'')}</textarea><div class="tools" style="margin-top:13px"><button class="btn btn-primary" id="saveNote">保存笔记</button><a class="btn" href="https://waseda-ac.jp/team/member/block/3" target="_blank" rel="noopener">查看官网名单 ↗</a></div>`;$('closeDetail').onclick=closeDetail;$('saveNote').onclick=()=>{state.notes[a.name]=$('athleteNote').value;persist();renderNotebook();toast('笔记已保存到浏览器本地');};}
 function closeDetail(){$('detailOverlay').classList.remove('active');document.body.style.overflow='';currentDetail=null;}
 $('detailOverlay').addEventListener('click',e=>{if(e.target===$('detailOverlay'))closeDetail();});document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDetail();if((e.key==='Enter'||e.key===' ')&&e.target.matches('[data-player][role="button"]')){e.preventDefault();openDetail(e.target.dataset.player);}});
 ['searchInput','genderFilter','gradeFilter','metricSort','favoriteOnly','includeAlumni'].forEach(id=>$(id).addEventListener(id==='searchInput'?'input':'change',renderRoster));
