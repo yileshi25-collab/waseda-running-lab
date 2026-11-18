@@ -21,8 +21,12 @@ const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
       'maybeSingle:()=>q,then:resolve=>Promise.resolve({data:[],error:null}).then(resolve)};return q;},'+
       'channel:()=>({on(){return this},subscribe(){return this}})});');
     await guest.goto('http://127.0.0.1:8080/');
-    await guest.evaluate(()=>show('community'));
+    await guest.locator('#mobileNavSelect').selectOption('diaries');
     const section=guest.locator('#wsdOfficialDiaries');
+    assert.equal(await guest.locator('#view-diaries #wsdOfficialDiaries').count(),1);
+    assert.equal(await guest.locator('#view-community #wsdOfficialDiaries').count(),0);
+    assert.equal(await guest.locator('#sideNav [data-nav-folder="analysis"] [data-nav="diaries"]').count(),1);
+    assert.equal(await guest.locator('#view-diaries').isVisible(),true);
     await guest.waitForFunction(()=>document.querySelector('[data-diary-status]')?.textContent.includes('97'));
     assert.equal(await section.locator('[data-diary-list] .wsd-official-diary-card').count(),5);
     assert.equal(await section.locator('[data-diary-archive]').getAttribute('open'),null);
@@ -46,13 +50,16 @@ const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
     await group.waitFor();await group.locator('summary').click();
     await guest.waitForFunction(()=>document.querySelector('[data-wsd-editorial-group="diary"]')?.textContent.includes('≠philanthropy'));
     assert.equal(await group.locator('[data-wsd-editorial-edit],[data-wsd-editorial-delete]').count(),0);
+    await guest.evaluate(()=>show('community'));
+    assert.equal(await guest.locator('#view-diaries').isVisible(),false);
+    assert.equal(await guest.locator('#view-community').isVisible(),true);
     await guest.close();
 
     const offline=await browser.newPage();
     await offline.route('https://cdn.jsdelivr.net/npm/@supabase/**',route=>route.abort());
     await offline.route('https://*.supabase.co/**',route=>route.abort());
     await offline.goto('http://127.0.0.1:8080/');
-    await offline.evaluate(()=>show('community'));
+    await offline.evaluate(()=>show('diaries'));
     await offline.waitForFunction(()=>document.querySelector('[data-diary-status]')?.textContent.includes('97'));
     await offline.close();
 
@@ -60,7 +67,7 @@ const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
       const page=await browser.newPage({viewport:{width:375,height:812}});
       await stubNetwork(page,MOCK_SOURCE.replace('__ADMIN__',String(isAdmin)));
       await page.goto('http://127.0.0.1:8080/');
-      await page.evaluate(()=>show('community'));
+      await page.evaluate(()=>show('diaries'));
       await page.waitForFunction(()=>document.querySelector('[data-diary-status]')?.textContent.includes('97') &&
         !!window.WSD_COMMUNITY_DIARY_PERMISSIONS);
       return page;
@@ -84,7 +91,7 @@ const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
     assert.equal(await runner.evaluate(()=>window.__diaryData[0].athlete_name),'谷川 航太');
     await runner.evaluate(()=>{show('athletes');openDetail('谷川 航太');});
     await runner.waitForFunction(()=>document.querySelector('#detailBody [data-wsd-editorial-group="diary"]')?.textContent.includes('テスト日誌'));
-    await runner.evaluate(()=>{closeDetail();show('community');});
+    await runner.evaluate(()=>{closeDetail();show('diaries');});
 
     await posted.locator('[data-wsd-editorial-edit]').click();
     await posted.locator('.wsd-editorial-admin-form input[name="title"]').fill('谷川航太：修正後の日誌');
