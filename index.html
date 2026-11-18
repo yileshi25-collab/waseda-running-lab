@@ -290,6 +290,32 @@
 .wsd-race-insight small{font-size:11px;line-height:1.75;color:#937985}
 @media(max-width:820px){.wsd-story-layout{grid-template-columns:1fr}.wsd-story-primary{padding:22px}.wsd-story-context{padding:19px}}
 @media(max-width:480px){.wsd-story-primary{padding:18px}.wsd-story-context{padding:16px}.wsd-story-time{font-size:39px}}
+
+/* Horizontal, manually operated main-athlete story carousel. */
+.wsd-story-carousel{min-width:0}
+.wsd-story-carousel-controls{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:0 0 11px}
+.wsd-story-carousel-hint{font-size:11px;color:#85717b}
+.wsd-story-arrows{display:flex;align-items:center;gap:10px}
+.wsd-story-counter{font-size:12px;font-weight:800;color:#69344c;min-width:44px;text-align:center;font-variant-numeric:tabular-nums}
+.wsd-story-carousel-track{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:thin;scrollbar-color:#d4adbd transparent;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;padding:0 0 6px}
+.wsd-story-slide{flex:0 0 100%;min-width:0;scroll-snap-align:start;scroll-snap-stop:always}
+.wsd-story-slide .wsd-story-layout{height:100%}
+.wsd-story-slide .wsd-story-primary,.wsd-story-slide .wsd-story-context{height:100%;min-width:0}
+.wsd-story-slide .wsd-story-primary{min-height:380px}
+.wsd-story-slide .wsd-story-name{font-size:23px}
+.wsd-story-slide .wsd-story-context{gap:12px}
+.wsd-story-slide .wsd-story-step{padding-bottom:9px}
+.wsd-story-slide .wsd-story-step strong{font-size:13px}
+.wsd-story-slide .wsd-story-step p{font-size:11px;line-height:1.7}
+.wsd-story-slide .wsd-story-primary p{font-size:13px}
+.wsd-story-slide .wsd-story-source{margin-top:auto}
+.wsd-story-slide .wsd-story-source a{display:inline-block;margin:0 4px}
+.wsd-story-dots{display:flex;justify-content:center;flex-wrap:wrap;gap:7px;margin-top:11px}
+.wsd-story-dots button{border:1px solid #e7d8df;background:#fff;border-radius:999px;padding:7px 10px;font-size:11px;color:#684456;min-height:33px}
+.wsd-story-dots button[aria-current="true"]{background:#7c3151;border-color:#7c3151;color:white}
+.wsd-story-ranking-note{margin:11px 0 0;color:#8b7982;font-size:11px;line-height:1.8}
+@media(max-width:820px){.wsd-story-slide .wsd-story-primary{min-height:0}.wsd-story-slide .wsd-story-layout{height:auto}}
+@media(max-width:540px){.wsd-story-slide .wsd-story-name{font-size:20px}.wsd-story-slide .wsd-story-primary{padding:20px}.wsd-story-slide .wsd-story-context{padding:18px}.wsd-story-dots button{font-size:10px;padding:6px 8px}}
 </style>
 <link rel="stylesheet" href="community.css?v=20261117-diaries3">
 </head>
@@ -346,30 +372,35 @@
 <div class="stats"><div class="stat"><div class="label">2026年度选手数据库</div><div class="number">46 <small style="font-size:12px;font-weight:600">人</small></div><div class="foot">2026学年度现役选手 · 不含已毕业历史选手2人</div></div><div class="stat"><div class="label">5000m · 男子前10人PB均值</div><div class="number">13:35.08</div><div class="foot">数值越低越快</div></div><div class="stat"><div class="label">10000m · 男子前10人PB均值</div><div class="number" id="live10000Avg">29:00.51</div><div class="foot" id="live10000Note">现役男子10000m PB收录 26人（毕业选手不参与）</div></div><div class="stat"><div class="label">2026 大学驿传</div><div class="number">2 冠</div><div class="foot">出云 + 全日本</div></div></div>
 
 
+
 <section class="section wsd-story-block" id="homePerformanceStory" aria-labelledby="wsdStoryTitle">
-  <div class="sectionhead">
-    <div><div class="eyebrow">BEHIND THE NUMBERS / 成绩背后的故事</div>
-      <h2 id="wsdStoryTitle">为什么 13分17秒 值得关注？</h2>
-      <p>用个人PB、队内比较和驿传实绩，读懂一名选手的表现。</p>
-    </div>
-    <button class="btn btn-small" data-go="athletes" type="button">探索更多选手 →</button>
-  </div>
-  <div class="wsd-story-layout">
-    <div class="wsd-story-primary">
-      <div class="eyebrow">ATHLETE SPOTLIGHT / 5000M PB</div>
-      <div class="wsd-story-name">山口 竣平 · 个人最佳成绩</div>
-      <span class="wsd-story-time" id="wsdStoryPB">13:17.19</span>
-      <p id="wsdStoryExplanation" aria-live="polite">这是5000米个人最好成绩，不是单场驿传区间用时。我们会结合队内同距离排名解释它的意义。</p>
-      <div class="wsd-story-chips"><span id="wsdStoryRank">队内5000米成绩比较</span><span id="wsdStoryPace">平均配速换算中</span></div>
-      <button type="button" class="btn btn-white btn-small" data-player="山口 竣平">查看山口竣平完整档案 →</button>
-    </div>
-    <div class="wsd-story-context">
-      <div class="wsd-story-step"><div class="eyebrow">01 / SPEED</div><strong>为什么这个数字值得关注？</strong><p>5000米在田径场上跑12圈半。与同距离选手比较PB，才知道快在哪里；不要直接将它与马拉松或驿传用时相比。</p></div>
-      <div class="wsd-story-step"><div class="eyebrow">02 / TEAM IMPACT</div><strong>速度如何体现在团队比赛？</strong><p>2026年出云驿传第5区，山口竣平以17:35获得区间第1；全日本大学驿传第7区，他以50:58获得区间第3。不同路线不能拿来与5000米PB直接换算。</p></div>
-      <div class="wsd-story-step"><div class="eyebrow">03 / WHAT TO WATCH</div><strong>关注个人，也关注团队</strong><p>PB反映一次个人最佳表现；区间名次显示特定赛段与对手相比的结果。两种数据结合，比单看一个数字更有价值。</p></div>
-      <div class="wsd-story-source">依据本站2026选手PB与逐区赛果整理 · 仅与本站已收录选手比较。<a href="https://gakusei-ekiden.jp/u/waseda/" target="_blank" rel="noopener noreferrer">PB参考来源</a> · <a href="https://www.izumo-ekiden.jp/record/" target="_blank" rel="noopener noreferrer">出云赛事来源</a></div>
-    </div>
-  </div>
+ <div class="sectionhead">
+   <div><div class="eyebrow">BEHIND THE NUMBERS / MAIN ATHLETES</div><h2 id="wsdStoryTitle">主力选手 · 成绩背后的故事</h2>
+    <p>六位重点选手：从个人最好成绩，看日本范围、学生纪录与世界舞台上的位置。</p>
+   </div>
+   <button class="btn btn-small" data-go="athletes" type="button">查看全部选手 →</button>
+ </div>
+ <div class="wsd-story-carousel" id="wsdStoryCarousel" aria-label="六位主力选手的成绩故事">
+   <div class="wsd-story-carousel-controls">
+     <span class="wsd-story-carousel-hint">左右滑动查看 · 可用箭头切换</span>
+     <div class="wsd-story-arrows">
+       <button class="btn btn-small" type="button" data-story-prev aria-label="上一位选手">←</button>
+       <span id="wsdStoryCount" class="wsd-story-counter" aria-live="polite">1 / 6</span>
+       <button class="btn btn-small" type="button" data-story-next aria-label="下一位选手">→</button>
+     </div>
+   </div>
+   <div class="wsd-story-carousel-track" id="wsdStoryTrack" tabindex="0" role="region" aria-roledescription="carousel" aria-label="选手成绩轮播">
+     <div class="wsd-story-slide">
+       <div class="wsd-story-layout">
+         <div class="wsd-story-primary"><div class="eyebrow">ATHLETE SPOTLIGHT</div><div class="wsd-story-name">山口 竣平</div>
+         <span class="wsd-story-time">13:17.19</span><p>5000m PB · 日本人学生历代第4</p></div>
+         <div class="wsd-story-context"><p>六位主力选手的全国、学生与世界比较正在载入；若没有显示，请刷新页面。</p></div>
+       </div>
+     </div>
+   </div>
+   <div class="wsd-story-dots" id="wsdStoryDots" aria-label="选择主力选手"></div>
+ </div>
+ <p class="wsd-story-ranking-note">资料快照：2026年11月。日本年榜、学生历代、世界田联项目积分排名与单次年度成绩榜是不同统计口径；每位选手附来源链接，名次会随新赛事更新，不能当作永久纪录。</p>
 </section>
 
 <section class="section" id="latest26Home"><div class="sectionhead"><div><div class="eyebrow">LATEST RESULT · 2026 NOVEMBER</div><h2>最新赛事 · 吉倉ナヤブ直希</h2><p>11 月 15 日 · 荷兰 Seven Hills Run 15km 公路赛</p></div><span class="tag">已核实</span></div><div class="latest26-card"><div class="latest26-info"><span>2026.11.15 · ZEVENHEUVELENLOOP</span><h3><button type="button" data-player="吉倉 ナヤブ直希">吉倉 ナヤブ直希 ↗</button></h3><p>男子 15km 公路 · 第 19 名 · 荷兰奈梅亨</p><small>单场实绩，不计为 PB；已归入 2026 年度赛果。</small></div><div class="latest26-time"><b>44:12</b><small>15km · 第 19 名</small></div><a class="btn btn-small" href="https://readyfor.jp/projects/waseda-ac2025/announcements/453372" target="_blank" rel="noopener noreferrer">监督赛后报告 ↗</a><button class="btn btn-small" type="button" id="latest26Export">导出 2026 最新赛果 CSV ↓</button></div></section>
@@ -675,19 +706,252 @@ function wsdPBContext(athlete,metric){
  return {rank,count:group.length,pace:wsdPace(athlete[metric],metric),
   top10Average:group.slice(0,10).reduce((sum,a)=>sum+seconds(a[metric]),0)/Math.min(10,group.length)};
 }
-function renderHomePerformanceStory(){
- const athlete=getCurrentAthletes().find(a=>a.name==='山口 竣平');
- if(!athlete)return;
- const metric='pb5000',context=wsdPBContext(athlete,metric);
- if(!context)return;
- $('wsdStoryPB').textContent=athlete[metric];
- $('wsdStoryRank').textContent='已收录现役男子 '+context.rank+'/'+context.count+' 名';
- $('wsdStoryPace').textContent='平均约 '+context.pace;
- const meanDelta=(context.top10Average-seconds(athlete[metric])).toFixed(2);
- const comparison=context.rank===1?'目前在本站已收录现役男子5000米PB中排名第1。':'目前在本站已收录现役男子5000米PB中排名第'+context.rank+'。';
- $('wsdStoryExplanation').textContent='相当于每400米约'+(seconds(athlete[metric])/12.5).toFixed(1)+'秒。'+comparison+
-  '与本站男子前十名PB均值相比，快'+meanDelta+'秒；这是站内数据比较，不是全国排名。';
+const WSD_STORY_FEATURES=[
+  {
+    "name": "山口 竣平",
+    "grade": "3年",
+    "event": "5000m PB",
+    "mark": "13:17.19",
+    "metric": "pb5000",
+    "paceKm": 5,
+    "hook": "5000米跑到13分17秒，意味着什么？",
+    "national": "2026日本男子5000m年榜第3",
+    "nationalDetail": "2026赛季公开日本男子成绩榜快照；包括职业选手，不是“日本历代第3”。",
+    "student": "日本人学生5000m历代第4",
+    "studentDetail": "早稻田大学2026年7月报道所列历史位置；同时是早稻田队史第2。",
+    "global": "WA世界5000m积分排名第153",
+    "globalDetail": "2026年11月世界田联项目积分排名；单次5000m成绩的2026世界榜约第100。两种榜单不能混用。",
+    "story": "2026出云驿传第5区跑出17:35、获区间第1；全日本第7区50:58、区间第3。PB展示速度能力，区间排名展示接力赛中的实际贡献。",
+    "links": [
+      [
+        "早稻田大学报道",
+        "https://www.waseda.jp/inst/athletic/news/2026/07/07/59082/?lng=en"
+      ],
+      [
+        "日本2026年榜",
+        "https://www.rikujyokyogi.co.jp/archives/207018"
+      ],
+      [
+        "世界田联排名",
+        "https://worldathletics.org/world-rankings/5000m/men?page=2&regionType=world"
+      ]
+    ]
+  },
+  {
+    "name": "増子 陽太",
+    "grade": "1年",
+    "event": "5000m PB",
+    "mark": "13:20.35",
+    "metric": "pb5000",
+    "paceKm": 5,
+    "hook": "一年级就打破U20日本纪录",
+    "national": "2026日本男子5000m年榜第7",
+    "nationalDetail": "刷新自己保持的男子U20日本纪录；要与成人组的全国历史纪录区分。",
+    "student": "2026日本学生5000m年榜第3",
+    "studentDetail": "早稻田队史5000m第4；日本人学生历代前十的表现。",
+    "global": "WA世界5000m积分排名第114",
+    "globalDetail": "世界田联5000m项目积分排名；另在2026世界U20 5000m成绩榜前列（第7）。",
+    "story": "2026全日本大学驿传第2区30:51，取得区间第1并帮助团队向前推进。年轻选手不仅PB突出，也已在接力关键赛段交出成绩。",
+    "links": [
+      [
+        "U20纪录报道",
+        "https://www.rikujyokyogi.co.jp/archives/206577"
+      ],
+      [
+        "大学学生年榜",
+        "https://www.rikujyokyogi.co.jp/archives/207020"
+      ],
+      [
+        "世界田联选手资料",
+        "https://worldathletics.org/athletes/japan/youta-mashiko-15050329"
+      ]
+    ]
+  },
+  {
+    "name": "工藤 慎作",
+    "grade": "4年",
+    "event": "马拉松 PB",
+    "mark": "2:07:34",
+    "metric": null,
+    "paceKm": 42.195,
+    "hook": "第一次跑马拉松，就进入学生历史前列",
+    "national": "东京马拉松2026日本选手第5",
+    "nationalDetail": "该场马拉松总名次第20；获得MGC选拔赛资格。不是全年全国排名。",
+    "student": "日本学生马拉松历代第4",
+    "studentDetail": "日本陆联赛事总结明确记载的当时历史名次；这是他的首次马拉松。",
+    "global": "2026世界马拉松成绩榜约第137",
+    "globalDetail": "世界田联2026年单人最佳成绩榜快照；不同于世界田联积分排名。",
+    "story": "2026出云驿传最后第6区29:00、区间第1；全日本最后第8区56:20、区间第1。长跑耐力与关键收官赛段表现，让他不只是马拉松成绩亮眼。",
+    "links": [
+      [
+        "日本陆联报道",
+        "https://www.jaaf.or.jp/news/article/23195/"
+      ],
+      [
+        "东京马拉松赛果",
+        "https://www.marathon.tokyo/about/past/2026/"
+      ],
+      [
+        "世界田联年度成绩榜",
+        "https://worldathletics.org/records/toplists/road-running/marathon/all/men/senior/2026?bestResultsOnly=true&page=2&regionType=world&windReading=regular"
+      ]
+    ]
+  },
+  {
+    "name": "鈴木 琉胤",
+    "grade": "2年",
+    "event": "5000m PB",
+    "mark": "13:20.64",
+    "metric": "pb5000",
+    "paceKm": 5,
+    "hook": "5000米与接力赛的双重竞争力",
+    "national": "2026日本男子5000m年榜第8",
+    "nationalDetail": "2026赛季公开日本男子榜单快照；日本锦标赛5000m曾取得第4名。",
+    "student": "2026日本学生5000m年榜第4",
+    "studentDetail": "早稻田队史5000m第5；对同距离PB的比较比跨区间用时更合理。",
+    "global": "WA世界5000m积分排名第111",
+    "globalDetail": "世界田联5000m项目积分排名，综合比赛成绩和赛事积分，不按PB单次用时排序。",
+    "story": "出云驿传第3区23:31，区间第3并创该区纪录；全日本第5区34:31，区间第1并刷新纪录。即使某区不是第1，也可能打破历史区间纪录。",
+    "links": [
+      [
+        "早稻田队史",
+        "https://waseda-ac.jp/record/detail/2"
+      ],
+      [
+        "日本2026年榜",
+        "https://www.rikujyokyogi.co.jp/archives/207018"
+      ],
+      [
+        "世界田联选手资料",
+        "https://worldathletics.org/athletes/japan/rui-suzuki-15005772"
+      ]
+    ]
+  },
+  {
+    "name": "本田 桜二郎",
+    "grade": "1年",
+    "event": "3000m PB",
+    "mark": "7:48.49",
+    "metric": null,
+    "paceKm": 3,
+    "hook": "从早稻田新生到世界U20领奖台",
+    "national": "日本U20男子3000m历代顶尖",
+    "nationalDetail": "7:48.49获多家赛事报道列为U20日本历代第2；该成绩是在世界U20锦标赛创造的。",
+    "student": "早稻田男子3000m队史第1",
+    "studentDetail": "以7:48.49超越早稻田历代前辈；这里是校史排名，不是全国大学历史排名。",
+    "global": "2026世界U20锦标赛铜牌",
+    "globalDetail": "在世界U20男子3000m决赛获得第3名；此为年龄组世界大赛名次，非成年世界排名。",
+    "story": "2026全日本大学驿传第1区27:47取得区间第2，出云第2区15:42获得区间第1。个人国际赛与大学接力赛都留下具体成绩。",
+    "links": [
+      [
+        "世界U20官方赛果",
+        "https://worldathletics.org/competitions/world-athletics-u20-championships/world-athletics-u20-championships-7204186/results/men/3000-metres/final/result"
+      ],
+      [
+        "早稻田队史",
+        "https://waseda-ac.jp/record/detail/2"
+      ],
+      [
+        "日本U20纪录及资料",
+        "https://www.jaaf.or.jp/record/u20/?segment=1"
+      ]
+    ]
+  },
+  {
+    "name": "新妻 遼己",
+    "grade": "1年",
+    "event": "3000m PB",
+    "mark": "7:54.30",
+    "metric": null,
+    "paceKm": 3,
+    "hook": "世界U20舞台跑出PB，再回到驿传赛道",
+    "national": "日本U20代表 · 男子3000m",
+    "nationalDetail": "2026年代表日本参加世界U20锦标赛；目前不引用未经官方统一核实的全国学生历代精确名次。",
+    "student": "早稻田男子3000m队史第3",
+    "studentDetail": "2026年创造7:54.30，载于竞走部历代排名；本项校史与日本全国学生榜不是同一口径。",
+    "global": "2026世界U20锦标赛第11",
+    "globalDetail": "男子3000m决赛第11名，7:54.30为个人最佳成绩；不是成年组世界第11。",
+    "story": "2026出云驿传第4区17:10获区间第1并刷新纪录，全日本第3区32:45也获区间第1并刷新纪录。一年级就在接力中承担关键赛段。",
+    "links": [
+      [
+        "世界田联U20决赛",
+        "https://worldathletics.org/competitions/world-athletics-u20-championships/world-athletics-u20-championships-7204186/results/men/3000-metres/final/result"
+      ],
+      [
+        "早稻田队史",
+        "https://waseda-ac.jp/record/detail/2"
+      ],
+      [
+        "早稻田U20报道",
+        "https://waseda-ac.jp/news/detail/963"
+      ]
+    ]
+  }
+];
+function wdPaceForStory(mark,distanceKm){
+ const total=seconds(mark)/distanceKm;
+ if(!Number.isFinite(total))return '—';
+ const full=Math.round(total);
+ return Math.floor(full/60)+':'+String(full%60).padStart(2,'0')+'/km';
 }
+function renderHomePerformanceStory(){
+ const root=document.getElementById('wsdStoryCarousel');
+ const track=document.getElementById('wsdStoryTrack');
+ const dots=document.getElementById('wsdStoryDots');
+ if(!root||!track||!dots||root.dataset.ready==='yes')return;
+ const keys=['national','student','global'];
+ const headings=['01 / 日本范围','02 / 大学生与历史纪录','03 / 世界范围'];
+ track.innerHTML=WSD_STORY_FEATURES.map((f,i)=>{
+   const item=getCurrentAthletes().find(a=>a.name===f.name);
+   const context=f.metric && item && item[f.metric]===f.mark?wsdPBContext(item,f.metric):null;
+   const teamRank=context?.rank?'本站现役同项目第'+context.rank+' / '+context.count:'历史公开成绩快照';
+   const pace=Number.isFinite(seconds(f.mark))?wdPaceForStory(f.mark,f.paceKm):'—';
+   const contextText=f.metric&&context?.rank?'在本站已收录现役选手中，这个PB排名第'+context.rank+' / '+context.count+'；注意全国、世界排名有不同计算口径。':
+     '本卡以公开赛果、官方校史和赛事名次为依据；与其他距离成绩不可直接比较。';
+   const steps=keys.map((key,j)=>'<div class="wsd-story-step"><div class="eyebrow">'+headings[j]+'</div><strong>'+
+      escapeHTML(f[key])+'</strong><p>'+escapeHTML(f[key+'Detail'])+'</p></div>').join('');
+   const source=f.links.map(([label,url])=>'<a href="'+escapeHTML(url)+'" target="_blank" rel="noopener noreferrer">'+escapeHTML(label)+'</a>').join(' · ');
+   return '<article class="wsd-story-slide" data-story-slide="'+i+'" role="group" aria-roledescription="slide" aria-label="'+(i+1)+' / '+WSD_STORY_FEATURES.length+'：'+escapeHTML(f.name)+'">'+
+     '<div class="wsd-story-layout"><div class="wsd-story-primary"><div class="eyebrow">ATHLETE STORY / '+String(i+1).padStart(2,'0')+'</div>'+
+     '<div class="wsd-story-name">'+escapeHTML(f.name)+' · '+escapeHTML(f.grade)+'</div><span class="wsd-story-time"'+(i===0?' id="wsdStoryPB"':'')+'>'+escapeHTML(f.mark)+'</span>'+
+     '<div class="wsd-story-chips"><span>'+escapeHTML(f.event)+'</span><span'+(i===0?' id="wsdStoryPace"':'')+'>平均约 '+escapeHTML(pace)+'</span></div>'+
+     '<p class="wsd-story-highlight">'+escapeHTML(f.hook)+'</p>'+
+     '<p'+(i===0?' id="wsdStoryExplanation"':'')+'>'+escapeHTML(contextText)+'</p>'+
+     '<div class="wsd-story-chips"><span>'+escapeHTML(teamRank)+'</span></div>'+
+     '<button type="button" class="btn btn-white btn-small" data-player="'+escapeHTML(f.name)+'">查看个人完整档案 →</button>'+
+     '</div><div class="wsd-story-context">'+steps+
+     '<div class="wsd-story-step"><div class="eyebrow">04 / TEAM STORY</div><strong>在团队比赛里意味着什么？</strong><p>'+escapeHTML(f.story)+'</p></div>'+
+     '<div class="wsd-story-source">公开资料：'+source+'</div>'+
+     '</div></div></article>';
+ }).join('');
+ dots.innerHTML=WSD_STORY_FEATURES.map((f,i)=>'<button type="button" data-story-dot="'+i+'" aria-label="查看第'+(i+1)+'位：'+escapeHTML(f.name)+'" aria-current="'+(i===0?'true':'false')+'">'+escapeHTML(f.name.replace(/\s/g,''))+'</button>').join('');
+ root.dataset.ready='yes';
+ let current=0;
+ const slides=[...track.querySelectorAll('[data-story-slide]')];
+ function setCurrent(i){
+   current=Math.max(0,Math.min(slides.length-1,i));
+   document.getElementById('wsdStoryCount').textContent=(current+1)+' / '+slides.length;
+   dots.querySelectorAll('[data-story-dot]').forEach((dot,j)=>dot.setAttribute('aria-current',String(j===current)));
+   root.dataset.activeName=WSD_STORY_FEATURES[current].name;
+ }
+ function go(i){
+   const target=(i+slides.length)%slides.length;
+   setCurrent(target);
+   track.scrollTo({left:slides[target].offsetLeft-slides[0].offsetLeft,behavior:'smooth'});
+ }
+ root.querySelector('[data-story-prev]').addEventListener('click',()=>go(current-1));
+ root.querySelector('[data-story-next]').addEventListener('click',()=>go(current+1));
+ dots.addEventListener('click',e=>{const b=e.target.closest('[data-story-dot]');if(b)go(Number(b.dataset.storyDot));});
+ track.addEventListener('keydown',e=>{if(e.target!==track)return;if(e.key==='ArrowRight'){e.preventDefault();go(current+1);}else if(e.key==='ArrowLeft'){e.preventDefault();go(current-1);}});
+ track.addEventListener('scroll',()=>{
+  const x=track.scrollLeft;
+  let closest=0,minimum=Infinity;
+  for(let j=0;j<slides.length;j++){const dist=Math.abs((slides[j].offsetLeft-slides[0].offsetLeft)-x);if(dist<minimum){minimum=dist;closest=j;}}
+  setCurrent(closest);
+ },{passive:true});
+ setCurrent(0);
+}
+
 function wsdAthleteInsightHTML(a){
  const metric=['pb5000','pb10000','pb1500','pbHalf'].find(m=>a[m]&&Number.isFinite(seconds(a[m])));
  if(!metric||a.historical||a.communityOnly)return '';
